@@ -1,0 +1,25 @@
+.btree-plot-container {
+  flex: 1; /* Use the remaining space */
+  border: 3px solid #ccc; /* Customize the border color and thickness as needed */
+  margin-top: 10px;
+}
+
+.btree-input-form-container {
+  width: 100%; /* Set a fixed width */
+  height: 100%; /* Set the height to match the plot container */
+  border: 3px solid #ccc; /* Customize the border color and thickness as needed */
+  box-sizing: border-box; /* Include padding and border in the element's total width */
+}
+
+
+.btree-input-form-container input {
+  /* Add your custom styles for the input fields here */
+  width: 30px;
+  padding: 5px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.btree-container {
+  padding: 0px 20px;
+}
