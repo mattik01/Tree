@@ -34,6 +34,10 @@ function BTreeInputForm({ formData, onInputChange, onButtonClick }) {
             Allow Duplicates
           </label>
         </div>
+        {formData.KeyWarning && (
+          <div style={{ color: 'red' }}>{formData.KeyWarning}</div>
+        )}
+
       </div>
       <div>
         <label htmlFor="generateKeyAmount">Generate Keys:</label>

@@ -24,6 +24,26 @@ BTreeNode.prototype.isFull = function() {
     return (this._keyCount === this.NKEYS);
 };
 
+BTreeNode.prototype.contains = function(key){
+    if(this.isLeaf){
+        return this._keys.indexOf(key) != -1
+    }
+    else{
+        for(let i = 0; i < this._keyCount; i++){
+            if(key == this._keys[i]){
+                return true
+            }
+            if(key < this._keys[i]){
+                return this._childs[i].contains(key)
+            }
+            if(i == this._keyCount - 1){
+                return this._childs[i + 1].contains(key)
+            }
+        }
+        return false
+    }
+}
+
 BTreeNode.prototype.keyCount = function() {
     return this._keyCount;
 };
@@ -124,18 +144,22 @@ BTreeNode.prototype.split = function(key, keyRightChild) {
 
     // temp storage for keys and childs
     var keys = this._keys.slice();
+
     keys.push(null);
+
 
     var childs = this._childs.slice();
     childs.push(null);
 
     // find new key position
     var pos = keys.length-1;
+
     while (pos > 0 && keys[pos-1] > key) {
         keys[pos] = keys[pos-1];
         childs[pos+1] = childs[pos];
         pos--;
     }
+
 
     keys[pos] = key;
     childs[pos+1] = keyRightChild;
@@ -156,18 +180,22 @@ BTreeNode.prototype.split = function(key, keyRightChild) {
             left._keys[i] = null;
         }
         else {
-            left._childs[i] = this._keys[i] = null;
+            if (i != keys.length - 1){
+                left._childs[i] = this._keys[i] = null;
+            }
+            else{
+                left._childs[i] = null;
+
+            }
         }
     }
     left._keyCount = medianIndex;
 
     // fix right child keys and childs
-    for (i = 0; i < keys.length; i++) {
-        if (i > medianIndex) {
+    for (i = medianIndex + 1; i < keys.length; i++) {
             right._keys[i-medianIndex-1] = keys[i];
             right._childs[i-medianIndex-1] = childs[i];
             right._keyCount += 1;
-        }
     }
     right._childs[keys.length-medianIndex-1] = childs[keys.length];
 
@@ -376,18 +404,16 @@ BTreeNode.prototype.toString = function(indentOpt) {
 
 
 BTreeNode.prototype.toTreeData = function() {
+    // console.log(this._keys)
+    // console.log(this._keyCount)
+    // console.log(this._childs)
     const ret_obj = {
-        name : this._keys.slice(0, this.keyCount())
+        name : (this._keys.slice(0, this.keyCount())).map((function(val){return String(val)}))
     }
     if (!this.isLeaf()) {
-        const copyChilds = this._childs; // Create a shallow copy of the array
-        const cleanCopyChilds = copyChilds.filter(function(value) {
-            return value !== null;
-          });
-        ret_obj['children'] = cleanCopyChilds.map(function(child) {
+        ret_obj['children'] = (this._childs.slice(0, this.keyCount() + 1)).map(function(child) {
             return child.toTreeData();
         })
-
     }
     
     return ret_obj;
@@ -404,6 +430,20 @@ BTreeNode.fromSplit = function(split, nKeys) {
     return node;
 };
 
+BTreeNode.prototype.getDepth = function() {
+    if(this.isLeaf()){
+        return 0
+    }
+    else{
+    const childDepths = this._childs.
+    slice(0, this.keyCount() + 1).
+        map(function(child) {
+            return child.getDepth();
+        });
+    return Math.max(...childDepths) + 1
+}   
+};
+
 function BTree(nKeys) {
     this.NKEYS = nKeys;
     this._root = new BTreeNode(this.NKEYS);
@@ -413,9 +453,17 @@ BTree.prototype.isEmpty = function(){
     return this._root._keyCount == 0
 }
 
+BTree.prototype.contains = function(key){
+    return this._root.contains(key)
+}
+
+BTree.prototype.getDepth = function(){
+    return this._root.getDepth()
+}
+
 
 BTree.prototype.add = function(key) {
-    var curr = this._root;
+    var curr = this._root
 
     var split = curr.add(key);
     if (!split) return;

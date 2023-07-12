@@ -7,19 +7,48 @@ import BTree from './BTree';
 import BTreePlot from './BTreePlot';
 import BTreeInputForm from './BTreeInputForm';
 
-let btree = new BTree(3);
+let btree = new BTree(4);
+
 
 export default function BTreePage() {
 
-  function parseKeyString(keyString){
-    //TODO
+  function determineKeyStringType(keyString) {
+
+    keyString = String(keyString)
+    //Key Type String
+    if (keyString.startsWith('"') && keyString.endsWith('"')) {
+      return "string";
+    }
+    //Key Type Number
+    if (!isNaN(parseFloat(keyString))) {
+      return "float";
+    }
+    //anything else just use as string aswell
+    return "string";
   }
   
-  function validateKeyAdd(){
-    // TYPE CHECK
-    if(!btree.isEmpty){
-
+  function validateKeyAdd(keyString){
+    if(keyString == ""){
+      return "empty"
     }
+
+    // TYPE CHECK
+    const keyType = determineKeyStringType(keyString)
+    if(!btree.isEmpty()){
+      // just check the first Key, whole tree should match that type
+      if(keyType != determineKeyStringType(btree._root._keys[0])){
+        return "type mismatch"
+      }
+    }
+
+    if (!formData.allowDuplicates){
+       if(keyType == "float"){
+        keyString = parseFloat(keyString)
+       }
+       if(btree.contains(keyString)){
+       }
+    }
+    return keyType
   }
 
 
@@ -29,7 +58,6 @@ export default function BTreePage() {
   const [treeProps, setTreeProps] = useState({
     treeDepth: 0,
     order: 3,
-    longestKeyLength: 0,
   })
 
   //---State and Eventhandlers for the BTree Input Form--------------------
@@ -38,7 +66,8 @@ export default function BTreePage() {
     keyValue: "",
     generateKeyAmount: 10,
     generateKeyOrder: 'random',
-    allowDuplicates: false
+    allowDuplicates: false,
+    KeyWarning: ""
   });
   
   const handleInputChange = (event) => {
@@ -49,20 +78,68 @@ export default function BTreePage() {
     }));
   };
   
-  const handleButtonClick = (action) => {
+  const handleInputButtonClick = (action) => {
     switch (action) {
       case "orderSet":
         console.log('Set button clicked!');
         break;
 
       case "keyAdd":
-        validateKeyAdd()
-        btree.add(formData.keyValue);
-        setTreeData(btree.toTreeData());
-        setFormData((prevFormData) => ({
-        ...prevFormData,
-        keyValue: ""
-      }));
+        let keyString = formData.keyValue
+        const type = validateKeyAdd(keyString)
+        
+        switch (type) {
+
+          //------ ERROR CASES -------
+          case "empty":
+            setFormData((prevFormData) => ({
+              ...prevFormData,
+              KeyWarning: "Cannot insert empty"
+            }));
+            break;
+
+          case "type mismatch":
+          const treeType = determineKeyStringType(btree._root._keys[0])
+          const keyType = determineKeyStringType(keyString)
+            setFormData((prevFormData) => ({
+              ...prevFormData,
+              KeyWarning: `The tree contains ${treeType == "float" ? "number" : "string"} keys, but ${keyType} was given.`
+            }));
+            break;
+
+          case "duplicate":
+            setFormData((prevFormData) => ({
+              ...prevFormData,
+              KeyWarning: `The key ${keyString} already exists in the tree n  `
+            }));
+            break;
+
+
+          //----- SUCCESS CASES ------
+          case "float":
+            // Convert keyString to float if it has a float type
+            keyString = parseFloat(keyString);
+            // Fall through to the default case to execute the common code
+          default:
+            const keyLength = keyString.length;
+            btree.add(keyString);
+        
+            // Update TreeProps
+            setTreeProps((prevTreeProps) => ({
+              ...prevTreeProps,
+              treeDepth: btree.getDepth(),
+            }));
+        
+            // Render new Tree
+            setTreeData(btree.toTreeData());
+            setFormData((prevFormData) => ({
+              ...prevFormData,
+              keyValue: "",
+              KeyWarning: ""
+            }));
+            break;
+        }
+        
         break;
 
       case "keyRemove":
@@ -97,7 +174,7 @@ export default function BTreePage() {
         <BTreeInputForm 
           formData={formData} 
           onInputChange={handleInputChange} 
-          onButtonClick={handleButtonClick} />
+          onButtonClick={handleInputButtonClick} />
       </div>
       <div className="btree-plot-container">
         {Object.keys(treeData).length > 0 && (
