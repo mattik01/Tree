@@ -32,7 +32,7 @@ function BTreeInputForm({ formData, onInputChange, onButtonClick }) {
           ></Tooltipped>
 
           <input
-            type="number"  
+            type="number"
             id="bTreeOrder"
             name="bTreeOrder"
             value={formData.bTreeOrder}
@@ -55,16 +55,25 @@ function BTreeInputForm({ formData, onInputChange, onButtonClick }) {
       {/* INDIVIDUAL KEY SEGMENT */}
       <div className="input-form-segment">
         <div className="inline-input">
-          <label htmlFor="keyValue" className="inline-label">
-            key:
-          </label>
-          <input
-            type="text"
-            name="keyValue"
-            id="keyValue"
-            value={formData.keyValue}
-            onChange={onInputChange}
-            className="inline-input"
+          <Tooltipped
+            children={
+              <div>
+                <label htmlFor="keyValue" className="inline-label">
+                  key:
+                </label>
+                <input
+                  type="text"
+                  name="keyValue"
+                  id="keyValue"
+                  value={formData.keyValue}
+                  onChange={onInputChange}
+                  className="inline-input"
+                />
+              </div>
+            }
+            tooltipText={
+              "Its is recommended to surround keys meant as strings with quotes"
+            }
           />
         </div>
         <div className="inline-input">
