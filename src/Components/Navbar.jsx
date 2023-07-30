@@ -1,28 +1,30 @@
-import React, { useState } from 'react';
-import './Navbar.css';
+import React, { useState } from "react";
+import "./Navbar.css";
 
-export default function Navbar ({ selectedSegment, onSegmentClick }) {
+export default function Navbar({ selectedSegment, onSegmentClick }) {
   const handleSegmentClick = (segment) => {
     onSegmentClick(segment);
   };
 
   return (
-    <nav className='Navbar'>
+    <nav className="Navbar">
       <div className="logo">Tree Visualizer</div>
       <div className="segments">
         <div
-          className={`segment ${selectedSegment === 'B-Tree' ? 'selected' : ''}`}
-          onClick={() => handleSegmentClick('B-Tree')}
+          className={`segment ${
+            selectedSegment === "B-Tree" ? "selected" : ""
+          }`}
+          onClick={() => handleSegmentClick("B-Tree")}
         >
           B-Tree
         </div>
         <div
-          className={`segment ${selectedSegment === 'Test' ? 'selected' : ''}`}
-          onClick={() => handleSegmentClick('Test')}
+          className={`segment ${selectedSegment === "Info" ? "selected" : ""}`}
+          onClick={() => handleSegmentClick("Info")}
         >
-          Test
+          Info
         </div>
       </div>
     </nav>
   );
-};
+}

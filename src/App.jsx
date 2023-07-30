@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import {useState} from 'react';
 import './App.css';
 import BTreePage from './Components/BTreePage/BTreePage';
 import Navbar from './Components/Navbar';
+import InfoPage from './Components/InfoPage/InfoPage';
 
 function App() {
   const [selectedSegment, setSelectedSegment] = useState('B-Tree');
@@ -14,10 +15,11 @@ function App() {
   const renderPage = () => {
     switch (selectedSegment) {
       case 'B-Tree':
-        return <BTreePage />;
-      case 'Test':
-        return <p>Test</p>;
-      // Add additional cases for other segments if needed
+        return <BTreePage/>;
+
+      case 'Info':
+        return <InfoPage/>;
+
       default:
         return null;
     }
@@ -27,7 +29,7 @@ function App() {
     <div>
       <Navbar selectedSegment={selectedSegment} onSegmentClick={handleSegmentClick} />
       <div className="page-container">
-        {renderPage()}
+                {renderPage()}
       </div>
     </div>
   );

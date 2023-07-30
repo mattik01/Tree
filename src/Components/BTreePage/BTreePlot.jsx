@@ -1,6 +1,6 @@
 
 import { Tree } from 'react-d3-tree';
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 
 
 const extraRectWidth = 10
@@ -13,10 +13,10 @@ let biggestWidthGlobal = 0
 
 //fill it with Node information as soon as available, to avoid 
 //duplicate computations, Node Names serve as keys
-const nodeDict = {}
+let nodeDict = {}
 
 //avoid duiplicate calculations
-const textWidthDict = {}
+let textWidthDict = {}
 
 function getTextWidth(text, font) {
   const span = document.createElement("span");
@@ -39,28 +39,31 @@ function textWidthCalculations(text){
 
 //returns node_with and subnode with for a node key
 function widthCalculations(keyStrings){
-  // fill or use nodeDict to avoid duplicate Information
-  let rectWidth, sub_node_width
-  if (!nodeDict.hasOwnProperty(keyStrings)) {
-    const longestKeyWidth = Math.max(...keyStrings.map(keyString => textWidthCalculations(keyString)));
-    rectWidth = longestKeyWidth * keyStrings.length + (extraRectWidth * keyStrings.length)
-    sub_node_width = rectWidth / keyStrings.length
-    nodeDict[keyStrings] = {
-      rectWidth: rectWidth,
-      sub_node_width: sub_node_width
-    };
-    if(rectWidth > biggestWidthGlobal){
-      if(setBiggestWidthState != undefined){
-          setBiggestWidthState(rectWidth)
+  if(keyStrings){
+    // fill or use nodeDict to avoid duplicate Information
+    let rectWidth, sub_node_width
+    if (!nodeDict.hasOwnProperty(keyStrings)) {
+      const longestKeyWidth = Math.max(...keyStrings.map(keyString => textWidthCalculations(keyString)));
+      rectWidth = longestKeyWidth * keyStrings.length + (extraRectWidth * keyStrings.length)
+      sub_node_width = rectWidth / keyStrings.length
+      nodeDict[keyStrings] = {
+        rectWidth: rectWidth,
+        sub_node_width: sub_node_width
+      };
+      if(rectWidth > biggestWidthGlobal){
+        if(setBiggestWidthState != undefined){
+            setBiggestWidthState(rectWidth)
+        }
+        biggestWidthGlobal = rectWidth
       }
-      biggestWidthGlobal = rectWidth
     }
+    else{
+      rectWidth = nodeDict[keyStrings].rectWidth
+      sub_node_width = nodeDict[keyStrings].sub_node_width
+    }
+    return [rectWidth, sub_node_width]
   }
-  else{
-    rectWidth = nodeDict[keyStrings].rectWidth
-    sub_node_width = nodeDict[keyStrings].sub_node_width
-  }
-  return [rectWidth, sub_node_width]
+return [0,0]
 }
 
 
@@ -78,7 +81,13 @@ const renderBTreeNode = ({nodeDatum, toggleNode }) => {
     let xOffset = -rectWidth / 2 
     for (let i in keyStrings) {
         key_elements.push(
-        <text fill="black" strokeWidth="1" x={xOffset + (sub_node_width / 2 ) - (textWidthCalculations(keyStrings[i]) / 2) } y={rectHeight /1.5}>
+        <text 
+        fill="black" 
+        strokeWidth="1" 
+        x={xOffset + (sub_node_width / 2 ) - (textWidthCalculations(keyStrings[i]) / 2) } 
+        y={rectHeight /1.5}
+        key = {String(nodeDatum.name)+"Text"+String(i)}
+        >
           {keyStrings[i]}
         </text>
         )
@@ -102,6 +111,7 @@ const renderBTreeNode = ({nodeDatum, toggleNode }) => {
       <g>
         <rect width={rectWidth} height={rectHeight} x={-rectWidth / 2} 
             fill = 'white'
+            key = {String(nodeDatum.name)}
             strokeWidth = '2'
         />
         {separator_elements}
@@ -128,19 +138,29 @@ const renderBTreeNode = ({nodeDatum, toggleNode }) => {
            `L${target.x},${target.y}`; //target anchor
 };
 
-export default function BTreePlot({treeData, treeProps}) {
+export default function BTreePlot({treeData, treeProps, plotProps}) {
+
+    //cleanup for global variables
+    useEffect(() => {
+      // This is the cleanup function, runs when the component unmounts
+      return () => {
+        setBiggestWidthState = undefined
+        biggestWidthGlobal = 0
+        nodeDict = {}
+        textWidthDict = {}
+      };
+    }, []);
 
     //State, so that the Tree rerenders if we get a new biggestWidth
     const [biggestWidth, setBiggestWidth] = useState(0);
 
     //setting the state as global variables for the Node Render Function to use
     setBiggestWidthState = setBiggestWidth
-    biggestWidthGlobal = biggestWidth
+    biggestWidthGlobal = 0
     
-    const nodeSize = {x: biggestWidth, y: rectHeight * 3}
+    const nodeSize = {x: biggestWidth + 10, y: rectHeight * 3}
 
     return (
-      <div id="treeWrapper" style={{ width: '100%', height: `${(treeProps.treeDepth > 3 ? treeProps.treeDepth  : rectHeight)}em` }}>
         <Tree
           data={treeData}
           orientation='vertical'
@@ -148,8 +168,11 @@ export default function BTreePlot({treeData, treeProps}) {
           renderCustomNodeElement={renderBTreeNode}
           pathFunc={bTreePathFunc}
           nodeSize={nodeSize}
+          scaleExtent={{max : 5, min :0.05}}
+          separation={{nonSiblings: 1, siblings:1}}
+          translate={{x: plotProps.plotWidth / 2, y: plotProps.plotHeight/4}}
+          zoom={1.5}
         />
-      </div>
     );
   }
 

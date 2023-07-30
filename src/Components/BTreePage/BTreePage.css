@@ -1,22 +1,43 @@
+/* Apply these styles to the body to make the .btree-plot-container span the whole screen */
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Set the body height to occupy the full viewport height */
+}
+
+
+/* Styles for .btree-container */
+.btree-page-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-top: 70px; /* Set a 50px margin at the top */
+  height: calc(100vh - 70px); /* Calculate the height to fill the remaining screen space after considering the top margin */
+  border-bottom: 3px solid #ccc;
+}
+
+/* Styles for .btree-plot-container */
 .btree-plot-container {
-  flex: 1; /* Use the remaining space */
-  border-top: 3px solid #ccc; /* Customize the border color and thickness as needed */
-  border-bottom: 3px solid #ccc; /* Customize the border color and thickness as needed */
-  margin-top: 30px;
+  width: 100%;
+  flex: 1;
+  background-color: white; /* Set the background color for the plot container */
+  border-bottom: 3px solid #ccc;
 }
 
+/* Styles for .btree-input-form-container */
 .btree-input-form-container {
-  width: 100%; /* Set a fixed width */
-  height: 100%; /* Set the height to match the plot container */
-  border: 3px solid #ccc; /* Customize the border color and thickness as needed */
+  position: absolute;
+  top: 30px; /* Adjust the top position to add space from the top */
+  left: 30px; /* Adjust the left position to add space from the left */
+  background-color: rgba(242, 242, 242, 0.8); /* Use rgba() to set a translucent background color */
+  border : grey solid 1px;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 270px;
+  padding: 10px;
   box-sizing: border-box;
+  cursor: grab;
 }
 
-
-.btree-input-form-container input {
-  /* Add your custom styles for the input fields here */
-  width: 30px;
-  padding: 5px;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-}

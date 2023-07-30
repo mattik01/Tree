@@ -1,0 +1,66 @@
+/* InfoPage.css */
+.info-page-container {
+  max-width: 800px;
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.development-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  align-items: center; /* Align items vertically in the middle of their cell */
+  justify-items: center; /* Align items horizontally in the middle of their cell */
+}
+
+.upcoming-section {
+  text-align: start;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Styling for the unordered list */
+.upcoming-section ul {
+  list-style-type: disc; /* Change to 'circle' or 'square' if desired */
+  margin: 0;
+  padding: 0;
+}
+
+/* Styling for the list items */
+.upcoming-section li {
+  margin-bottom: 10px;
+  padding-left: 20px;
+}
+
+.info-page-container h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.info-page-container h2 {
+  font-size: 22px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.info-page-container p {
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.info-page-container a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.info-page-container a:hover {
+  text-decoration: underline;
+}
