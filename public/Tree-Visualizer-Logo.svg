@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <rect x="189.412" y="46.106" width="121.175" height="121.787" rx="15" ry="15" style="stroke-width: 7px; stroke-miterlimit: 1; paint-order: fill; fill: rgb(4, 52, 100); stroke: rgb(0, 0, 0);"/>
+  <rect x="189.107" y="326.482" width="121.175" height="121.787" rx="15" ry="15" style="stroke-width: 7px; stroke-miterlimit: 1; paint-order: fill; stroke: rgb(0, 0, 0); fill: rgb(244, 148, 4);"/>
+  <rect x="348.05" y="257.438" width="121.175" height="121.787" rx="15" ry="15" style="stroke-width: 7px; stroke-miterlimit: 1; paint-order: fill; stroke: rgb(0, 0, 0); fill: rgb(186, 195, 203);"/>
+  <rect y="-379.117" width="121.175" height="121.787" rx="15" ry="15" style="stroke-width: 7px; stroke-miterlimit: 1; paint-order: fill; stroke: rgb(0, 0, 0); fill: rgb(186, 195, 203);" transform="matrix(1, 0, 0, -1, 0, 0)" x="28"/>
+  <rect x="245.104" y="170.815" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0);"/>
+  <rect x="245.104" y="269.524" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0);"/>
+  <rect x="245.104" y="218.856" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0);"/>
+  <rect x="82.007" y="201.884" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0);"/>
+  <rect x="158.506" y="163.164" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0); transform-box: fill-box; transform-origin: 50% 50%;" transform="matrix(0, -1, 1, 0, 55.691568, 15.911861)"/>
+  <rect x="402.693" y="201.72" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0);"/>
+  <rect x="158.506" y="163.164" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0); transform-origin: 163.402px 190.398px;" transform="matrix(0, -1, 1, 0, 1.404829, 15.852371)"/>
+  <rect x="158.506" y="163.164" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0); transform-origin: 163.402px 190.398px;" transform="matrix(0, -1, 1, 0, -53.223289, 16.136353)"/>
+  <rect x="158.506" y="163.164" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0); transform-origin: 163.402px 190.398px;" transform="matrix(0, -1, 1, 0, 115.055779, 15.912354)"/>
+  <rect x="158.506" y="163.164" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0); transform-origin: 163.402px 190.398px;" transform="matrix(0, -1, 1, 0, 166.463379, 15.688354)"/>
+  <rect x="158.506" y="163.164" width="9.792" height="54.468" style="stroke: rgb(0, 0, 0); transform-origin: 163.402px 190.398px;" transform="matrix(0, -1, 1, 0, 221.154907, 15.912354)"/>
+</svg>

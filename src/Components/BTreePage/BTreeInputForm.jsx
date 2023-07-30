@@ -1,8 +1,7 @@
 import React from "react";
 import ImportExportBar from "./ImportExportBar";
-import DraggableIcon from "../../assets/draggable-icon.svg";
+import DraggableIcon from "../../../public/draggable-icon.svg";
 import Warning from "../Warning";
-import Tooltip from "@mui/material/Tooltip";
 import Tooltipped from "../Tooltipped";
 
 import "./BTreeInputForm.css";
@@ -33,8 +32,7 @@ function BTreeInputForm({ formData, onInputChange, onButtonClick }) {
           ></Tooltipped>
 
           <input
-            type="number"
-            onent
+            type="number"  
             id="bTreeOrder"
             name="bTreeOrder"
             value={formData.bTreeOrder}

@@ -25,6 +25,12 @@ export default function Navbar({ selectedSegment, onSegmentClick }) {
           Info
         </div>
       </div>
+      <img
+        className="navbar-logo"
+        src="../../public/Tree-Visualizer-Logo.svg"
+        alt="Tree Visualizer Logo"
+        width="50px"
+      />
     </nav>
   );
 }

@@ -11,19 +11,21 @@ const Tooltipped = ({ children, tooltipText }) => {
         TransitionComponent={Zoom}
         arrow
       >
-        <span
-          style={{
-            position: "absolute",
-            top: "-15px",
-            right: "-10px",
-            padding: "4px",
-            zIndex: "1",
-            fontSize: "14px",
-          }}
-        >
-          &#8505;
-        </span>
-        {children}
+        <div>
+          <span
+            style={{
+              position: "absolute",
+              top: "-15px",
+              right: "-10px",
+              padding: "4px",
+              zIndex: "1",
+              fontSize: "14px",
+            }}
+          >
+            &#8505;
+          </span>
+          {children}
+        </div>
       </Tooltip>
     </div>
   );

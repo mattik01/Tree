@@ -1,3 +1,7 @@
+.navbar-logo {
+
+}
+
 .Navbar {
     position: fixed;
     top: 0;
@@ -10,6 +14,11 @@
     padding: 10px 30px;
     background-color: #f2f2f2;
     z-index: 9999;
+  }
+
+  .navbar-logo {
+    margin-left: auto;
+    margin-right: 50px;
   }
   
   .logo {
