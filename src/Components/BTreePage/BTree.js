@@ -11,7 +11,10 @@ function arrayOfSize(size) {
     return a;
 }
 
-function BTreeNode(order) {
+function BTreeNode(tree, order) {
+    this._tree = tree
+    this._tree._idCounter++
+    this._id = this._tree._idCounter
     this._order = order
     this._keyCount = 0;
     this._keys = arrayOfSize(this._order);
@@ -159,7 +162,7 @@ BTreeNode.prototype.getChildContaining = function(key) {
 
 BTreeNode.prototype.split = function(key, keyRightChild) {
     var left = this;
-    var right = new BTreeNode(this._order);
+    var right = new BTreeNode(this._tree, this._order);
 
     // temp storage for keys and childs
     var keys = this._keys.slice();
@@ -168,7 +171,6 @@ BTreeNode.prototype.split = function(key, keyRightChild) {
 
     var childs = this._childs.slice();
     childs.push(null);
-
     // find new key position
     var pos = keys.length-1;
     while (pos > 0 && keys[pos-1] > key) {
@@ -421,7 +423,9 @@ BTreeNode.prototype.toString = function(indentOpt) {
 
 BTreeNode.prototype.toTreeData = function() {
     const ret_obj = {
-        name : (this._keys.slice(0, this.keyCount())).map((function(val){return String(val)}))
+        name : {id: this._id,
+                keys: (this._keys.slice(0, this.keyCount())).map((function(val){return String(val)}))
+                }
     }
     if (!this.isLeaf()) {
         ret_obj['children'] = (this._childs.slice(0, this.keyCount() + 1)).map(function(child) {
@@ -432,8 +436,8 @@ BTreeNode.prototype.toTreeData = function() {
     return ret_obj;
 };
 
-BTreeNode.fromSplit = function(split, order) {
-    var node = new BTreeNode(order);
+BTreeNode.fromSplit = function(split, order, tree) {
+    var node = new BTreeNode(tree, order);
 
     node._keyCount = 1;
     node._keys[0] = split.key;
@@ -458,15 +462,16 @@ BTreeNode.prototype.getDepth = function() {
 };
 
 BTreeNode.prototype.import = function(treeData){
-    this._keyCount = treeData.name.length
+    this._id = treeData.name.id
+    this._keyCount = treeData.name.keys.length
     this._keys = this._keys.map(key => null)
     for(let i = 0; i < this._keyCount; i++){
-        this._keys[i] = treeData.name[i]
+        this._keys[i] = treeData.name.keys[i]
     }
     this._childs = this._childs.map(child => null)
     if(treeData.hasOwnProperty("children")){
         for(let i = 0; i < treeData.children.length; i++){
-            this._childs[i] = new BTreeNode(this._order)
+            this._childs[i] = new BTreeNode(this._tree, this._order)
             this._childs[i] = this._childs[i].import(treeData.children[i])
         }
     }
@@ -476,7 +481,8 @@ BTreeNode.prototype.import = function(treeData){
 
 function BTree(order) {
     this._order = order;
-    this._root = new BTreeNode(this._order);
+    this._idCounter = 0
+    this._root = new BTreeNode(this, this._order);
 }
 
 BTree.prototype.isEmpty = function(){
@@ -506,10 +512,10 @@ BTree.prototype.add = function(key) {
     var split = curr.add(key);
     if (!split) return;
 
-    this._root = BTreeNode.fromSplit(split, this._order);
+    this._root = BTreeNode.fromSplit(split, this._order, this);
 };
 
-BTree.prototype.remove = function(key) {
+BTree.prototype.remove = function(key) {s
     var removed = this._root.remove(key);
 
     if (this._root.keyCount() === 0 && this._root._childs[0]) {

@@ -70,8 +70,8 @@ return [0,0]
 //Customized Node rendering
 const renderBTreeNode = ({nodeDatum, toggleNode }) => {
 
-    const keyStrings = nodeDatum.name
-    const [rectWidth, sub_node_width] = widthCalculations(nodeDatum.name);
+    const keyStrings = nodeDatum.name.keys
+    const [rectWidth, sub_node_width] = widthCalculations(nodeDatum.name.keys);
 
 
     // generate key-strings and separator lines elements
@@ -86,7 +86,7 @@ const renderBTreeNode = ({nodeDatum, toggleNode }) => {
         strokeWidth="1" 
         x={xOffset + (sub_node_width / 2 ) - (textWidthCalculations(keyStrings[i]) / 2) } 
         y={rectHeight /1.5}
-        key = {String(nodeDatum.name)+"Text"+String(i)}
+        key = {String(nodeDatum.name.keys)+"Text"+String(i)}
         >
           {keyStrings[i]}
         </text>
@@ -111,7 +111,7 @@ const renderBTreeNode = ({nodeDatum, toggleNode }) => {
       <g>
         <rect width={rectWidth} height={rectHeight} x={-rectWidth / 2} 
             fill = 'white'
-            key = {String(nodeDatum.name)}
+            key = {String(nodeDatum.name.keys)}
             strokeWidth = '2'
         />
         {separator_elements}
@@ -124,14 +124,14 @@ const renderBTreeNode = ({nodeDatum, toggleNode }) => {
   const bTreePathFunc = (linkDatum, orientation) => {
     const { source, target } = linkDatum;
     
-    const [rectWidth, sub_node_width] = widthCalculations(source.data.name);
+    const [rectWidth, sub_node_width] = widthCalculations(source.data.name.keys);
 
     let xOffset =  - rectWidth / 2
     //if target is the nth child, move anchor to the right by n*subnode_width
     const sourceChildrenNames = source.children.map(function(node) {
-      return node.data.name;
+      return node.data.name.keys;
     });
-    const targetIndex = sourceChildrenNames.indexOf(target.data.name);
+    const targetIndex = sourceChildrenNames.indexOf(target.data.name.keys);
     xOffset += sub_node_width * targetIndex
 
     return `M${source.x + xOffset},${source.y + rectHeight}` + //source anchor
