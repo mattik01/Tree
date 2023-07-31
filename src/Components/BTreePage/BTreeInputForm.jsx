@@ -1,18 +1,10 @@
 import React from "react";
 import ImportExportBar from "./ImportExportBar";
-import DraggableIcon from "../../../public/draggable-icon.svg";
+import DraggableIcon from "/draggable-icon.svg";
 import Warning from "../Warning";
 import Tooltipped from "../Tooltipped";
 
 import "./BTreeInputForm.css";
-
-const orderTooltip = () => {
-  return (
-    <div>
-      <p>This is a Tooltip</p>
-    </div>
-  );
-};
 
 function BTreeInputForm({ formData, onInputChange, onButtonClick }) {
   return (
@@ -72,7 +64,7 @@ function BTreeInputForm({ formData, onInputChange, onButtonClick }) {
               </div>
             }
             tooltipText={
-              "Its is recommended to surround keys meant as strings with quotes"
+              "preferably surround keys meant as strings with quotes"
             }
           />
         </div>

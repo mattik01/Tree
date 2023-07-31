@@ -31,11 +31,9 @@ BTreeNode.prototype.isFull = function() {
 
 BTreeNode.prototype.contains = function(key){
     if(this.isLeaf()){
-        console.log("here")
         return this._keys.indexOf(key) != -1
     }
     else{
-        console.log("there")
         for(let i = 0; i < this._keyCount; i++){
             if(key == this._keys[i]){
                 return true
@@ -72,7 +70,6 @@ BTreeNode.prototype.keyCount = function() {
 BTreeNode.prototype.add = function(key) {
     if (this.isLeaf()) {
         if (this.isFull()) {
-            console.log("BTREE NODE FULL")
             return this.split(key, null);
         }
         else {
