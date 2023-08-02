@@ -1,0 +1,57 @@
+.sequence-control-container {
+  width: 100%;
+}
+
+.sequence-control-segment {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 0 auto; /* Center the row horizontally */
+    width: 100%;
+    border-top: 1px solid grey; /* Use the correct order for border properties */
+    padding-top: 10px; /* You can remove "px" for values with zero */
+    
+  }
+
+  .custom-toggle-button {
+    height: 35px !important; /* Set your desired height */
+    width: 85px !important; /* Set your desired width */
+    font-size: 16px !important;
+  }
+
+  .sequence-control-segment .MuiToggleButton-root.Mui-selected {
+    background-color: blue !important; /* Use your desired color here */ 
+    color: white !important; /* Set text color to improve visibility */
+  }
+
+
+.speed-container {
+  height: 30px;
+  padding-top: 10px ;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.step-container {
+  height: 30px;
+  padding-top: 10px ;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.speed-label {
+  margin-right: 10px;
+}
+
+.speed-input {
+  width: 100%;
+}
+

@@ -8,7 +8,8 @@ import BTreePlot from "./BTreePlot";
 import BTreeInputForm from "./BTreeInputForm";
 import generateKeys from "../../utility/GenerateKeys";
 import shuffleArray from "../../utility/ArrayShuffle";
-import { CottageSharp } from "@mui/icons-material";
+import SequenceControl from "./SequenceControl";
+import { AllOut } from "@mui/icons-material";
 
 const INIT_BTREE_ORDER = 3;
 const INIT_BTREE_NKEYS = 10;
@@ -91,11 +92,11 @@ export default function BTreePage() {
     order: btree.getOrder(),
   });
 
-  //---State and Eventhandlers for the BTree Input Form--------------------
+  //----- State for the BTree Input Form  -----
   const [formData, setFormData] = useState({
     bTreeOrder: treeProps.order,
     orderWarning: "",
-    treeEmpty: btree.isEmpty(),
+    treeEmpty: false,
     keyValue: "",
     generateKeyAmount: 10,
     generateKeyOrder: "random",
@@ -107,6 +108,16 @@ export default function BTreePage() {
     importWarning: "",
     importExportDisplay: "none",
     importExportAreaValue: "",
+  });
+
+  //----- State for the Animation Control/Sequencer
+  const [sequencerProps, setSequencerProps] = useState({
+    sequenceMode: "auto",
+    sequenceSpeed: 1.0,
+    doForward: false,
+    doBackwards: false,
+    hasPrevious: false,
+    inSequence: false,
   });
 
   const handleInputChange = (event) => {
@@ -468,18 +479,21 @@ export default function BTreePage() {
     });
   }, []);
 
-  let highlights = {}
+  // allow dragging of components windows may deactivate this, when hovering above their input fields f.e.
+  const [allowDrag, setAllowDrag] = useState(true);
+
+  let highlights = {};
   if (!btree.isEmpty()) {
     // node Highlights
     highlights = {
       nodes: {
         [String(btree._root._id)]: {
           fullHighlight: true,
-          nodeMessage: "finding the smallest",
+          nodeMessage: "at node",
           indexHighlights: [0],
           indexMessages: {
-            0 : "SUPAAAAA LONG"
-          }
+            0: "at i",
+          },
         },
       },
       edges: {
@@ -493,18 +507,36 @@ export default function BTreePage() {
 
   return (
     <div className="btree-page-container">
+      {/* INPUT FORM WINDOW */}
       <Draggable
         bounds="parent" // Set bounds to the calculated boundaries of the plot container
+        disabled={!allowDrag}
       >
         <div className="btree-input-form-container">
           <BTreeInputForm
             formData={formData}
             onInputChange={handleInputChange}
             onButtonClick={handleInputButtonClick}
+            setAllowDrag={setAllowDrag}
           />
         </div>
       </Draggable>
 
+      {/* SEQUENCE CONTROL WINDOW */}
+      <Draggable
+        bounds="parent" // Set bounds to the calculated boundaries of the plot container
+        disabled={!allowDrag}
+      >
+        <div className="btree-sequence-control-container">
+          <SequenceControl
+            sequencerProps={sequencerProps}
+            setSequencerProps={setSequencerProps}
+            setAllowDrag={setAllowDrag}
+          />
+        </div>
+      </Draggable>
+
+      {/* BTREE PLOT */}
       <div className="btree-plot-container" ref={plotContainerRef}>
         {!btree.isEmpty() > 0 && (
           <BTreePlot

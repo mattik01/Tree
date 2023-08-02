@@ -6,7 +6,12 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { BorderColor } from "@mui/icons-material";
 
-const ImportExportBar = ({ formData, onInputChange, onButtonClick }) => {
+const ImportExportBar = ({
+  formData,
+  onInputChange,
+  onButtonClick,
+  setAllowDrag,
+}) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleSnackbarClose = () => {
@@ -58,6 +63,8 @@ const ImportExportBar = ({ formData, onInputChange, onButtonClick }) => {
             </button>
           </div>
           <textarea
+            onMouseEnter={() => setAllowDrag(false)}
+            onMouseLeave={() => setAllowDrag(true)}
             className="multiline-textbox"
             id="importExportAreaValue"
             name="importExportAreaValue"
@@ -97,6 +104,8 @@ const ImportExportBar = ({ formData, onInputChange, onButtonClick }) => {
             </button>
           </div>
           <textarea
+            onMouseEnter={() => setAllowDrag(false)}
+            onMouseLeave={() => setAllowDrag(true)}
             className="multiline-textbox"
             id="importExportAreaValue"
             name="importExportAreaValue"
