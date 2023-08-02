@@ -4,6 +4,9 @@ import Highlight from "./Highlight";
 // how many past frames from previous operations are kept for backwards steps
 const FRAME_BUFFER_SIZE = 50;
 
+// the term Frame intends an object holding a treeData property, and a highlights property,
+// as such, it can be used for rendering a frame within the b-tree plot.
+
 class FrameSequencer {
   constructor(tree, sequencerProps, setSequencerProps) {
     this.tree = tree;
@@ -62,7 +65,7 @@ class FrameSequencer {
 
     if (this.currentFrameIndex >= this.frameBuffer.length) {
       //frames buffer empty -> compute more
-      const isEnd = this.fillFrameBuffer();
+      const isEnd = this[_fillFrameBuffer]();
       if (isEnd) {
         // At End of Sequence
         this.setSequencerProps((prevSequencerProps) => ({
@@ -86,12 +89,12 @@ class FrameSequencer {
     return this.frameBuffer[this.currentFrameIndex];
   }
 
-  fillFrameBuffer() {
+  [_fillFrameBuffer]() {
     if (this.keyQueue.length == 0) {
       return true;
     } else {
       //trim past frames down to N_BUFFER_SIZE
-      this.frameBuffer = this.frameBuffer.slice(- FRAME_BUFFER_SIZE);
+      this.frameBuffer = this.frameBuffer.slice(-FRAME_BUFFER_SIZE);
       this.currentFrameIndex = this.frameBuffer.length;
 
       //prepare tree for producing frames
@@ -112,20 +115,20 @@ class FrameSequencer {
   }
 
   addKeys(keyList) {
-    this.newSequence();
+    this[_newSequence]();
     for (let i = 0; i < keyList.length; i++) {
       this.keyQueue.push(["add", keyList[i]]);
     }
   }
 
   removeKeys(keyList) {
-    this.newSequence();
+    this[_newSequence]();
     for (let i = 0; i < keyList.length; i++) {
       this.keyQueue.push(["remove", keyList[i]]);
     }
   }
 
-  newSequence() {
+  [_newSequence]() {
     this.keyQueue = [];
     this.frameBuffer = [];
     this.currentFrameIndex = 0;
