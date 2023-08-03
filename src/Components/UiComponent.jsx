@@ -8,7 +8,7 @@ const UiComponent = ({ title, children}) => {
       {/* DRAG ICON SEGMENT */}
       <div className="draggable-icon-container">
         <h4>{title}</h4>
-        <img src={DraggableIcon} className="draggable-icon" draggable="false" />
+        <img src={DraggableIcon} className="draggable-icon" draggable={false} />
       </div>
       {children}
     </div>
