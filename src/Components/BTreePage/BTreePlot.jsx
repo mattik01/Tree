@@ -76,201 +76,201 @@ function widthCalculations(keyStrings) {
 
 //Customized Node rendering
 const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
-  const keyStrings = nodeDatum.name.keys;
-  const [rectWidth, sub_node_width] = widthCalculations(keyStrings);
+  if (nodeDatum.name) {
+    const keyStrings = nodeDatum.name.keys;
+    const [rectWidth, sub_node_width] = widthCalculations(keyStrings);
 
-  //read out highlights
-  const id = String(nodeDatum.name.id);
-  let fullHighlight = false;
-  let indexHighlights = [];
-  let nodeMessage = "";
-  let indexMessages = {};
+    //read out highlights
+    const id = String(nodeDatum.name.id);
+    let fullHighlight = false;
+    let indexHighlights = [];
+    let nodeMessage = "";
+    let indexMessages = {};
 
-  if (highlightsGlobal.nodes.hasOwnProperty(id)) {
-    fullHighlight = highlightsGlobal.nodes[id].fullHighlight;
-    indexHighlights = highlightsGlobal.nodes[id].indexHighlights;
-    nodeMessage = highlightsGlobal.nodes[id].nodeMessage;
-    indexMessages = highlightsGlobal.nodes[id].indexMessages;
-  }
+    if (highlightsGlobal.nodes.hasOwnProperty(id)) {
+      fullHighlight = highlightsGlobal.nodes[id].fullHighlight;
+      indexHighlights = highlightsGlobal.nodes[id].indexHighlights;
+      nodeMessage = highlightsGlobal.nodes[id].nodeMessage;
+      indexMessages = highlightsGlobal.nodes[id].indexMessages;
+    }
 
-  const nodeMessageWidth = getTextWidth(nodeMessage, "Courier");
+    const nodeMessageWidth = getTextWidth(nodeMessage, "Courier");
 
-  // generate key-strings and separator lines elements
-  const separator_elements = [];
-  const key_elements = [];
-  const index_message_elements = [];
+    // generate key-strings and separator lines elements
+    const separator_elements = [];
+    const key_elements = [];
+    const index_message_elements = [];
 
-  let xOffset = -rectWidth / 2;
-  for (let i = 0; i < keyStrings.length; i++) {
-    const doTextHighlight = indexHighlights.includes(i);
-    const doSepHighlight = doTextHighlight || indexHighlights.includes(i - 1);
-    const indexMessage = indexMessages.hasOwnProperty(i)
-      ? indexMessages[i]
-      : "";
+    let xOffset = -rectWidth / 2;
+    for (let i = 0; i < keyStrings.length; i++) {
+      const doTextHighlight = indexHighlights.includes(i);
+      const doSepHighlight = doTextHighlight || indexHighlights.includes(i - 1);
+      const indexMessage = indexMessages.hasOwnProperty(i)
+        ? indexMessages[i]
+        : "";
 
-    key_elements.push(
-      <text
-        className={doTextHighlight ? "key-text-highlighted" : "key-text-normal"}
-        x={
-          xOffset +
-          sub_node_width / 2 -
-          textWidthCalculations(keyStrings[i]) / 2
-        }
-        y={rectHeight / 1.5}
-        key={String(nodeDatum.name.keys) + "Text" + String(i)}
-      >
-        {keyStrings[i]}
-      </text>
-    );
+      key_elements.push(
+        <text
+          className={
+            doTextHighlight ? "key-text-highlighted" : "key-text-normal"
+          }
+          x={
+            xOffset +
+            sub_node_width / 2 -
+            textWidthCalculations(keyStrings[i]) / 2
+          }
+          y={rectHeight / 1.5}
+          key={String(nodeDatum.name.keys) + "Text" + String(i)}
+        >
+          {keyStrings[i]}
+        </text>
+      );
 
-    if (i != 0 || doSepHighlight) {
+      if (i != 0 || doSepHighlight) {
+        separator_elements.push(
+          <line
+            key={`sep-${i}`}
+            x1={xOffset}
+            y1={0}
+            x2={xOffset}
+            y2={rectHeight}
+            className={
+              doSepHighlight
+                ? "key-separator-highlighted"
+                : "key-separator-normal"
+            }
+          />
+        );
+      }
+
+      //render lines above and below the key aswell
+      if (doTextHighlight) {
+        separator_elements.push(
+          // Line from the top of the separator to the right
+          <line
+            key={`sep-top-${i}`}
+            x1={xOffset}
+            y1={0}
+            x2={xOffset + sub_node_width} // Adjust the length of the line as needed
+            y2={0}
+            className="key-separator-highlighted"
+          />,
+          // Line from the bottom of the separator to the right
+          <line
+            key={`sep-bottom-${i}`}
+            x1={xOffset}
+            y1={rectHeight}
+            x2={xOffset + sub_node_width} // Adjust the length of the line as needed
+            y2={rectHeight}
+            className="key-separator-highlighted"
+          />
+        );
+      }
+
+      // Add Index Message
+      if (indexMessage != "") {
+        const indexMessageWidth = getTextWidth(indexMessage, "Courier");
+        const indexMessageOffsetX =
+          xOffset + sub_node_width / 2 - (indexMessageWidth + 22) / 2;
+        index_message_elements.push(
+          <svg
+            width={indexMessageWidth + 22}
+            height={rectHeight + 10}
+            xmlns="http://www.w3.org/2000/svg"
+            x={indexMessageOffsetX}
+            y={rectHeight}
+            className="message-bubble"
+          >
+            <rect
+              x="1"
+              y="10"
+              width={indexMessageWidth + 20}
+              height={rectHeight}
+              rx="10"
+            />
+
+            <polygon
+              points={`${(indexMessageWidth + 20) / 2 - 5},${10} ${
+                (indexMessageWidth + 20) / 2 + 5
+              },${10} ${(indexMessageWidth + 20) / 2},
+              ${0}`}
+            />
+
+            <text
+              x="11"
+              y={rectHeight / 1.5 + 10}
+              className="message-bubble-text"
+            >
+              {indexMessage}
+            </text>
+          </svg>
+        );
+      }
+      xOffset += sub_node_width;
+    }
+
+    //push a last separator, if the last element is supposed to be highlighted
+    if (indexHighlights.includes(keyStrings.length - 1)) {
       separator_elements.push(
         <line
-          key={`sep-${i}`}
+          key={`sep-${keyStrings.length}`}
           x1={xOffset}
           y1={0}
           x2={xOffset}
           y2={rectHeight}
-          className={
-            doSepHighlight
-              ? "key-separator-highlighted"
-              : "key-separator-normal"
-          }
-        />
-      );
-    }
-
-    //render lines above and below the key aswell
-    if (doTextHighlight) {
-      separator_elements.push(
-        // Line from the top of the separator to the right
-        <line
-          key={`sep-top-${i}`}
-          x1={xOffset}
-          y1={0}
-          x2={xOffset + sub_node_width} // Adjust the length of the line as needed
-          y2={0}
-          className="key-separator-highlighted"
-        />,
-        // Line from the bottom of the separator to the right
-        <line
-          key={`sep-bottom-${i}`}
-          x1={xOffset}
-          y1={rectHeight}
-          x2={xOffset + sub_node_width} // Adjust the length of the line as needed
-          y2={rectHeight}
           className="key-separator-highlighted"
         />
       );
     }
 
-    // Add Index Message
-    if (indexMessage != "") {
-      const indexMessageWidth = getTextWidth(indexMessage, "Courier");
-      const indexMessageOffsetX = xOffset + sub_node_width / 2 - (indexMessageWidth + 22) / 2;
-      index_message_elements.push(
-        <svg
-          width={indexMessageWidth + 22}
-          height={rectHeight + 10}
-          xmlns="http://www.w3.org/2000/svg"
-          x={indexMessageOffsetX}
-          y={rectHeight}
-          className="message-bubble"
-        >
-          <rect
-            x="1"
-            y="10"
-            width={indexMessageWidth + 20}
-            height={rectHeight}
-            rx="10"
-          />
+    return (
+      <g>
+        {/* NODE  */}
+        <rect
+          width={rectWidth}
+          height={rectHeight}
+          x={-rectWidth / 2}
+          key={String(nodeDatum.name.keys)}
+          className={fullHighlight ? "node-highlighted" : "node-normal"}
+        />
+        {separator_elements}
+        {key_elements}
+        {index_message_elements}
 
-          <polygon
-            points={`${
-               (indexMessageWidth + 20) / 2 - 5
-            },${10} ${
-              (indexMessageWidth + 20) / 2 + 5
-            },${10} ${
-              (indexMessageWidth + 20) / 2},
-              ${0}`}
-          />
-
-          <text
-            x="11"
-            y={rectHeight / 1.5 + 10}
-            className="message-bubble-text"
+        {/* NODE MESSAGE TOOLTIP */}
+        {nodeMessage && (
+          <svg
+            width={nodeMessageWidth + 22}
+            height={rectHeight + 10}
+            xmlns="http://www.w3.org/2000/svg"
+            x={(nodeMessageWidth + 22) / -2}
+            y={-rectHeight - 10}
+            className="message-bubble"
           >
-            {indexMessage}
-          </text>
-        </svg>
-      );
-    }
-    xOffset += sub_node_width;
-  }
+            <rect
+              x="1"
+              y="1"
+              width={nodeMessageWidth + 20}
+              height={rectHeight}
+              rx="10"
+            />
 
-  //push a last separator, if the last element is supposed to be highlighted
-  if (indexHighlights.includes(keyStrings.length - 1)) {
-    separator_elements.push(
-      <line
-        key={`sep-${keyStrings.length}`}
-        x1={xOffset}
-        y1={0}
-        x2={xOffset}
-        y2={rectHeight}
-        className="key-separator-highlighted"
-      />
+            <polygon
+              points={`${(nodeMessageWidth + 20) / 2 - 5},${rectHeight + 1} ${
+                (nodeMessageWidth + 20) / 2 + 5
+              },${rectHeight + 1} ${(nodeMessageWidth + 20) / 2},${
+                rectHeight + 10
+              }`}
+            />
+
+            <text x="11" y={rectHeight / 1.5} className="message-bubble-text">
+              {nodeMessage}
+            </text>
+          </svg>
+        )}
+      </g>
     );
   }
-
-  return (
-    <g>
-      
-      {/* NODE  */}
-      <rect
-        width={rectWidth}
-        height={rectHeight}
-        x={-rectWidth / 2}
-        key={String(nodeDatum.name.keys)}
-        className={fullHighlight ? "node-highlighted" : "node-normal"}
-      />
-      {separator_elements}
-      {key_elements}
-      {index_message_elements}
-
-      {/* NODE MESSAGE TOOLTIP */}
-      {nodeMessage && (
-        <svg
-          width={nodeMessageWidth + 22}
-          height={rectHeight + 10}
-          xmlns="http://www.w3.org/2000/svg"
-          x={(nodeMessageWidth + 22) / -2}
-          y={-rectHeight - 10}
-          className="message-bubble"
-        >
-          <rect
-            x="1"
-            y="1"
-            width={nodeMessageWidth + 20}
-            height={rectHeight}
-            rx="10"
-          />
-
-          <polygon
-            points={`${(nodeMessageWidth + 20) / 2 - 5},${rectHeight + 1} ${
-              (nodeMessageWidth + 20) / 2 + 5
-            },${rectHeight + 1} ${(nodeMessageWidth + 20) / 2},${
-              rectHeight + 10
-            }`}
-          />
-
-          <text x="11" y={rectHeight / 1.5} className="message-bubble-text">
-            {nodeMessage}
-          </text>
-        </svg>
-      )}
-
-    </g>
-  );
 };
 
 //Customizes anchor points of the edges

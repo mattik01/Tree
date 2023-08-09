@@ -3,11 +3,14 @@ import ImportExportBar from "./ImportExportBar";
 import UiComponent from "../UiComponent";
 import Warning from "../Warning";
 import Tooltipped from "../Tooltipped";
+import determineKeyStringType from "../../utility/DetermineKeyType";
 
 import "./BTreeInputForm.css";
 
 function BTreeInputForm({
   formData,
+  treeProps,
+  futureKeys,
   onInputChange,
   onButtonClick,
   setAllowDrag,
@@ -23,16 +26,16 @@ function BTreeInputForm({
               <div className="inline-input">
                 <Tooltipped
                   tooltipText="max number of keys, every node may hold"
-                  children={<label htmlFor="bTreeOrder">tree-order (k):</label>}
+                  children={<label htmlFor="orderInput">tree-order (k):</label>}
                 ></Tooltipped>
 
                 <input
                   onMouseEnter={() => setAllowDrag(false)}
                   onMouseLeave={() => setAllowDrag(true)}
                   type="number"
-                  id="bTreeOrder"
-                  name="bTreeOrder"
-                  value={formData.bTreeOrder}
+                  id="orderInput"
+                  name="orderInput"
+                  value={formData.orderInput}
                   min="3"
                   onChange={onInputChange}
                 />
@@ -52,7 +55,7 @@ function BTreeInputForm({
             {/* INDIVIDUAL KEY SEGMENT */}
             <div className="input-form-segment">
               <div className="inline-input">
-              <label htmlFor="keyValue" className="inline-label">
+              <label htmlFor="keyInput" className="inline-label">
                         key:
                       </label>
                 <Tooltipped
@@ -62,9 +65,9 @@ function BTreeInputForm({
                         onMouseEnter={() => setAllowDrag(false)}
                         onMouseLeave={() => setAllowDrag(true)}
                         type="text"
-                        name="keyValue"
-                        id="keyValue"
-                        value={formData.keyValue}
+                        name="keyInput"
+                        id="keyInput"
+                        value={formData.keyInput}
                         onChange={onInputChange}
                         className="inline-input"
                       />
@@ -115,24 +118,24 @@ function BTreeInputForm({
             {/* GENERATE KEY SEGMENT */}
             <div className="input-form-segment">
               <div className="inline-input">
-                <label htmlFor="generateKeyAmount">key amount:</label>
+                <label htmlFor="generateKeyAmountInput">key amount:</label>
                 <input
                   onMouseEnter={() => setAllowDrag(false)}
                   onMouseLeave={() => setAllowDrag(true)}
                   type="number"
                   min="1"
-                  id="generateKeyAmount"
-                  name="generateKeyAmount"
-                  value={formData.generateKeyAmount}
+                  id="generateKeyAmountInput"
+                  name="generateKeyAmountInput"
+                  value={formData.generateKeyAmountInput}
                   onChange={onInputChange}
                 />
               </div>
               <div className="inline-input">
-                <label htmlFor="generateKeyOrder">key order:</label>
+                <label htmlFor="generateKeyOrderInput">key order:</label>
                 <select
-                  name="generateKeyOrder"
-                  id="generateKeyOrder"
-                  value={formData.generateKeyOrder}
+                  name="generateKeyOrderInput"
+                  id="generateKeyOrderInput"
+                  value={formData.generateKeyOrderInput}
                   onChange={onInputChange}
                 >
                   <option value="random">random</option>
@@ -141,33 +144,33 @@ function BTreeInputForm({
                 </select>
               </div>
               <div className="inline-input">
-                <label htmlFor="generateKeyType">key type:</label>
-
-                {formData.treeEmpty ? (
+                <label htmlFor="generateKeyTypeInput">key type:</label>
+                {futureKeys.length == 0 ? (
                   <select
-                    name="generateKeyType"
-                    id="generateKeyType"
-                    value={formData.generateKeyType}
+                    name="generateKeyTypeInput"
+                    id="generateKeyTypeInput"
+                    value={formData.generateKeyTypeInput}
                     onChange={onInputChange}
                   >
                     <option value="number">numbers</option>
                     <option value="string">strings</option>
                   </select>
                 ) : (
+                   // disabled type selector when tree/queue alreay has keys in it 
                   <Tooltipped
                     children={
                       <select
-                        name="generateKeyType"
-                        id="generateKeyType"
-                        value={formData.generateKeyType}
+                        name="generateKeyTypeInput"
+                        id="generateKeyTypeInput"
+                        value={determineKeyStringType(futureKeys[futureKeys.length-1])}
                         onChange={onInputChange}
-                        disabled="true"
+                        disabled={true}
                       >
                         <option value="number">numbers</option>
                         <option value="string">strings</option>
                       </select>
                     }
-                    tooltipText={"Key type always needs to match existing keys"}
+                    tooltipText={"Key type always needs to match keys in tree and qeue"}
                   />
                 )}
               </div>
@@ -183,9 +186,9 @@ function BTreeInputForm({
                   onClose={() => onButtonClick("closeGenerateWarning")}
                 />
               )}
-              {formData.generateRange && (
+              {formData.generateRangeInfo && (
                 <Warning
-                  message={formData.generateRange}
+                  message={formData.generateRangeInfo}
                   severity={"success"}
                   onClose={() => onButtonClick("closeGenerateRange")}
                 />

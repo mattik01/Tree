@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-
 import { json, tree } from "d3";
+import Highlight from "./Highlight";
 
 function arrayOfSize(size) {
     var a = Array(size);
@@ -477,6 +477,8 @@ BTreeNode.prototype.import = function(treeData){
 
 
 function BTree(order) {
+    this._sequenceMode = false
+    this._frameBufferRef = null
     this._order = order;
     this._idCounter = 0
     this._root = new BTreeNode(this, this._order);
@@ -502,8 +504,17 @@ BTree.prototype.getDepth = function(){
     return this._root.getDepth()
 }
 
-
 BTree.prototype.add = function(key) {
+    if(this._sequenceMode){
+        const insertMessage = new Highlight()
+        insertMessage.addNodeHighlight(this._root._id,false,`Inserting ${key}`, [], [])
+        
+        this._frameBufferRef.push({
+            treeData : this.toTreeData(),
+            highlights: insertMessage
+        })
+    }
+
     var curr = this._root
 
     var split = curr.add(key);

@@ -10,7 +10,13 @@
     width: 100%;
     border-top: 1px solid grey; /* Use the correct order for border properties */
     padding-top: 10px; /* You can remove "px" for values with zero */
-    
+  }
+
+  .sequence-display-segment {
+    margin: 0px, auto, 0px, auto; /* Center the row horizontally */
+    width: 100%;
+    border-top: 1px solid grey; /* Use the correct order for border properties */
+    padding-top: 5px; /* You can remove "px" for values with zero */
   }
 
   .custom-toggle-button {
@@ -31,6 +37,7 @@
   width: 80%;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -42,7 +49,8 @@
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-display: flex;
+  margin-bottom: 10px;
+  display: flex;
   align-items: center;
   justify-content: space-between;
 }
@@ -53,5 +61,9 @@ display: flex;
 
 .speed-input {
   width: 100%;
+}
+
+.next-key-text {
+  color: blue;
 }
 

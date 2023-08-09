@@ -1,38 +1,37 @@
 import { HighQuality } from "@mui/icons-material";
 import Highlight from "./Highlight";
 
-// how many past frames from previous operations are kept for backwards steps
 const FRAME_BUFFER_SIZE = 50;
 
-// the term Frame intends an object holding a treeData property, and a highlights property,
-// as such, it can be used for rendering a frame within the b-tree plot.
-
 class FrameSequencer {
-  constructor(tree, sequencerProps, setSequencerProps) {
+  constructor(tree, setSequencerProps) {
     this.tree = tree;
-    this.sequencerProps = sequencerProps;
     this.setSequencerProps = setSequencerProps;
 
-    this.keyQueue = [];
     this.frameBuffer = [];
     this.currentFrameIndex = 0;
   }
 
-  getFinalFrame() {
-    //instantly perform all queued operations -> just compute the last frame
+  getFinalFrame(sequencerProps) {
     this.tree.sequenceMode = false;
-    for (let i = 0; i < this.keyQueue.length; i++) {
-      if (this.keyQueue[i][0] == "add") {
-        this.tree.add(this.keyQueue[i][1]);
+
+
+    for (let i = 0; i < sequencerProps.keyQueue.length; i++) {
+      if (sequencerProps.keyQueue[i][0] === "add") {
+        this.tree.add(sequencerProps.keyQueue[i][1]);
       }
-      if (this.keyQueue[i][0] == "remove") {
-        this.tree.remove(this.keyQueue[i][1]);
+      if (sequencerProps.keyQueue[i][0] === "remove") {
+        this.tree.remove(sequencerProps.keyQueue[i][1]);
       }
     }
+
     this.setSequencerProps((prevSequencerProps) => ({
       ...prevSequencerProps,
+      doForward: false,
+      doBackward: false,
       hasPrevious: false,
       inSequence: false,
+      keyQueue: []
     }));
 
     return {
@@ -41,36 +40,34 @@ class FrameSequencer {
     };
   }
 
-  getNextFrame() {
-    //backwards step -> get last frame
+  getNextFrame(sequencerProps) {
     if (
-      this.sequencerProps.sequenceMode == "step" &&
-      this.sequencerProps.doBackward == true
+      sequencerProps.sequenceMode === "step" &&
+      sequencerProps.doBackward === true
     ) {
       if (this.currentFrameIndex > 0) {
         this.currentFrameIndex--;
         this.setSequencerProps((prevSequencerProps) => ({
           ...prevSequencerProps,
-          hasPrevious: this.currentFrameIndex > 0,
+          doForward: false,
           doBackward: false,
+          hasPrevious: this.currentFrameIndex > 0,
         }));
         return this.frameBuffer[this.currentFrameIndex];
       }
     }
 
-    //forward step -> return the next frame
-    if (this.frameBuffer.length != 0) {
+    if (this.frameBuffer.length !== 0) {
       this.currentFrameIndex++;
     }
 
     if (this.currentFrameIndex >= this.frameBuffer.length) {
-      //frames buffer empty -> compute more
-      const isEnd = this[_fillFrameBuffer]();
+      const isEnd = this.fillFrameBuffer(sequencerProps.keyQueue);
       if (isEnd) {
-        // At End of Sequence
         this.setSequencerProps((prevSequencerProps) => ({
           ...prevSequencerProps,
           doForward: false,
+          doBackward: false,
           inSequence: false,
         }));
         return {
@@ -79,62 +76,65 @@ class FrameSequencer {
         };
       }
     }
-    // Not end of Sequence -> return next frame from frameBuffer
+
     this.setSequencerProps((prevSequencerProps) => ({
       ...prevSequencerProps,
       doForward: false,
+      doBackward: false,
       hasPrevious: true,
       inSequence: true,
     }));
     return this.frameBuffer[this.currentFrameIndex];
   }
 
-  [_fillFrameBuffer]() {
-    if (this.keyQueue.length == 0) {
+  fillFrameBuffer(keyQueue) {
+    if (keyQueue.length === 0) {
       return true;
     } else {
-      //trim past frames down to N_BUFFER_SIZE
       this.frameBuffer = this.frameBuffer.slice(-FRAME_BUFFER_SIZE);
       this.currentFrameIndex = this.frameBuffer.length;
 
-      //prepare tree for producing frames
-      this.tree.sequenceMode = true;
-      this.tree._frameBuffer = this.frameBuffer;
+      this.tree._sequenceMode = true;
+      this.tree._frameBufferRef = this.frameBuffer;
 
-      //Compute frames of the next Operation
-      if (this.keyQueue[0][0] == "add") {
-        this.tree.add(this.keyQueue[0][1]);
+      if (keyQueue[0][0] === "add") {
+        this.tree.add(keyQueue[0][1]);
       }
-      if (this.keyQueue[0][0] == "remove") {
-        this.tree.remove(this.keyQueue[0][1]);
+      if (keyQueue[0][0] === "remove") {
+        this.tree.remove(keyQueue[0][1]);
       }
-      //pop the first element from the queue
-      this.keyQueue.shift();
+
+      keyQueue.shift();
+
+      this.setSequencerProps((prevSequencerProps) => ({
+        ...prevSequencerProps,
+        keyQueue: keyQueue,
+      }));
+
     }
     return false;
   }
 
   addKeys(keyList) {
-    this[_newSequence]();
-    for (let i = 0; i < keyList.length; i++) {
-      this.keyQueue.push(["add", keyList[i]]);
-    }
-  }
-
-  removeKeys(keyList) {
-    this[_newSequence]();
-    for (let i = 0; i < keyList.length; i++) {
-      this.keyQueue.push(["remove", keyList[i]]);
-    }
-  }
-
-  [_newSequence]() {
-    this.keyQueue = [];
-    this.frameBuffer = [];
-    this.currentFrameIndex = 0;
     this.setSequencerProps((prevSequencerProps) => ({
       ...prevSequencerProps,
-      hasPrevious: false,
+      keyQueue: [...prevSequencerProps.keyQueue, ...keyList.map(key => ["add", key])],
+    }));
+    this.newSequence();
+  }
+  
+  removeKeys(keyList) {
+    this.setSequencerProps((prevSequencerProps) => ({
+      ...prevSequencerProps,
+      keyQueue: [...prevSequencerProps.keyQueue, ...keyList.map(key => ["remove", key])],
+    }));
+    this.newSequence();
+  }
+
+  newSequence() {
+    this.setSequencerProps((prevSequencerProps) => ({
+      ...prevSequencerProps,
+      hasPrevious: this.currentFrameIndex > 0,
       inSequence: true,
     }));
   }
