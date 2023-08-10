@@ -86,12 +86,16 @@ const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
     let indexHighlights = [];
     let nodeMessage = "";
     let indexMessages = {};
+    let separatorHighlights = []
+    let separatorMessages = {}
 
     if (highlightsGlobal.nodes.hasOwnProperty(id)) {
       fullHighlight = highlightsGlobal.nodes[id].fullHighlight;
       indexHighlights = highlightsGlobal.nodes[id].indexHighlights;
       nodeMessage = highlightsGlobal.nodes[id].nodeMessage;
       indexMessages = highlightsGlobal.nodes[id].indexMessages;
+      separatorHighlights = highlightsGlobal.nodes[id].separatorHighlights
+      separatorMessages = highlightsGlobal.nodes[id].separatorMessages
     }
 
     const nodeMessageWidth = getTextWidth(nodeMessage, "Courier");
@@ -104,10 +108,13 @@ const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
     let xOffset = -rectWidth / 2;
     for (let i = 0; i < keyStrings.length; i++) {
       const doTextHighlight = indexHighlights.includes(i);
-      const doSepHighlight = doTextHighlight || indexHighlights.includes(i - 1);
+      const doSepHighlight = doTextHighlight || indexHighlights.includes(i - 1)
       const indexMessage = indexMessages.hasOwnProperty(i)
         ? indexMessages[i]
         : "";
+      const separatorMessage = separatorMessages.hasOwnProperty(i)
+      ? separatorMessages[i]
+      : "";
 
       key_elements.push(
         <text
@@ -126,7 +133,7 @@ const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
         </text>
       );
 
-      if (i != 0 || doSepHighlight) {
+      if (i != 0 || doSepHighlight || separatorHighlights.includes(i)) {
         separator_elements.push(
           <line
             key={`sep-${i}`}
@@ -135,7 +142,7 @@ const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
             x2={xOffset}
             y2={rectHeight}
             className={
-              doSepHighlight
+              doSepHighlight || separatorHighlights.includes(i)
                 ? "key-separator-highlighted"
                 : "key-separator-normal"
             }
@@ -177,7 +184,7 @@ const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
             width={indexMessageWidth + 22}
             height={rectHeight + 10}
             xmlns="http://www.w3.org/2000/svg"
-            x={indexMessageOffsetX}
+            x={indexMessageOffsetX + 1}
             y={rectHeight}
             className="message-bubble"
           >
@@ -206,11 +213,50 @@ const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
           </svg>
         );
       }
+
+      // Add Separator Message
+      if (separatorMessage != "") {
+        const separatorMessageWidth = getTextWidth(separatorMessage, "Courier");
+        const separatorMessageOffsetX = xOffset - (separatorMessageWidth + 22) / 2;
+        index_message_elements.push(
+          <svg
+            width={separatorMessageWidth + 22}
+            height={rectHeight + 10}
+            xmlns="http://www.w3.org/2000/svg"
+            x={separatorMessageOffsetX + 1}
+            y={rectHeight}
+            className="message-bubble"
+          >
+            <rect
+              x="1"
+              y="10"
+              width={separatorMessageWidth + 20}
+              height={rectHeight}
+              rx="10"
+            />
+
+            <polygon
+              points={`${(separatorMessageWidth + 20) / 2 - 5},${10} ${
+                (separatorMessageWidth + 20) / 2 + 5
+              },${10} ${(separatorMessageWidth + 20) / 2},
+              ${0}`}
+            />
+
+            <text
+              x="11"
+              y={rectHeight / 1.5 + 10}
+              className="message-bubble-text"
+            >
+              {separatorMessage}
+            </text>
+          </svg>
+        );
+      }
       xOffset += sub_node_width;
     }
 
     //push a last separator, if the last element is supposed to be highlighted
-    if (indexHighlights.includes(keyStrings.length - 1)) {
+    if (indexHighlights.includes(keyStrings.length - 1) || separatorHighlights.includes(keyStrings.length)) {
       separator_elements.push(
         <line
           key={`sep-${keyStrings.length}`}
@@ -220,6 +266,47 @@ const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
           y2={rectHeight}
           className="key-separator-highlighted"
         />
+      );
+    }
+
+     // push a last separator Message if specified
+     if (separatorMessages.hasOwnProperty(keyStrings.length)) {
+      const separatorMessage = separatorMessages[keyStrings.length]
+     
+      const separatorMessageWidth = getTextWidth(separatorMessage, "Courier");
+      const separatorMessageOffsetX = xOffset - (separatorMessageWidth + 22) / 2;
+      index_message_elements.push(
+        <svg
+          width={separatorMessageWidth + 22}
+          height={rectHeight + 10}
+          xmlns="http://www.w3.org/2000/svg"
+          x={separatorMessageOffsetX + 1}
+          y={rectHeight}
+          className="message-bubble"
+        >
+          <rect
+            x="1"
+            y="10"
+            width={separatorMessageWidth + 20}
+            height={rectHeight}
+            rx="10"
+          />
+
+          <polygon
+            points={`${(separatorMessageWidth + 20) / 2 - 5},${10} ${
+              (separatorMessageWidth + 20) / 2 + 5
+            },${10} ${(separatorMessageWidth + 20) / 2},
+            ${0}`}
+          />
+
+          <text
+            x="11"
+            y={rectHeight / 1.5 + 10}
+            className="message-bubble-text"
+          >
+            {separatorMessage}
+          </text>
+        </svg>
       );
     }
 

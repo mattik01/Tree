@@ -16,14 +16,15 @@ import generateKeys from "../../utility/GenerateKeys";
 import shuffleArray from "../../utility/ArrayShuffle";
 import FrameSequencer from "./FrameSequencer";
 import Highlight from "./Highlight";
+import { NetworkWifiSharp } from "@mui/icons-material";
 
-const INIT_BTREE_ORDER = 3;
+const INIT_BTREE_MAX_KEYS = 3;
 const INIT_BTREE_NKEYS = 10;
 
 // default amount of time waited for each step in auto sequence mode
 const DEFAULT_DELAY_AUTO_MODE = 2;
 
-let btree = new BTree(INIT_BTREE_ORDER);
+let btree = new BTree(INIT_BTREE_MAX_KEYS);
 let frameSequencer = undefined;
 
 export default function BTreePage() {
@@ -44,7 +45,7 @@ export default function BTreePage() {
 
   // State for Tree Properties
   const [treeProps, setTreeProps] = useState({
-    order: btree.getOrder(),
+    maxKeys: btree.getMaxKeys(),
     isEmpty: btree.isEmpty(),
   });
 
@@ -62,7 +63,7 @@ export default function BTreePage() {
 
   // State for InputForm
   const [formData, setFormData] = useState({
-    orderInput: treeProps.order,
+    orderInput: treeProps.maxKeys +1,
     orderWarning: "",
     keyInput: "",
     keyWarning: "",
@@ -82,7 +83,7 @@ export default function BTreePage() {
 
   // ---------- EFFECTS ----------
 
-  // init and cleanup effect
+  // effect for inititalizing a random tree, and clean up for unmounting the component
   useEffect(() => {
     //after the component ismounted, initialize a random tree
     const { generatedKeys, keyRange } = generateKeys(
@@ -105,7 +106,7 @@ export default function BTreePage() {
 
     // This is the cleanup function, runs when the component unmounts
     return () => {
-      btree = new BTree(INIT_BTREE_ORDER);
+      btree = new BTree(INIT_BTREE_MAX_KEYS);
       frameSequencer = undefined;
     };
   }, []);
@@ -216,7 +217,7 @@ export default function BTreePage() {
   function simpleTreeFrameUpdate() {
     setTreeFrame({
       treeData: btree.toTreeData(),
-      highlights: new Highlight(),
+      highlights: new Highlight()
     });
   }
 
@@ -281,20 +282,20 @@ export default function BTreePage() {
   const handleInputButtonClick = (action) => {
     switch (action) {
       case "orderSet":
-        const newOrder = parseInt(formData.orderInput, 10);
+        const newMaxKeys = parseInt(formData.orderInput -1, 10);
 
-        if (isNaN(newOrder) || newOrder < 3) {
+        if (isNaN(newMaxKeys) || newMaxKeys < 3) {
           setFormData((prevFormData) => ({
             ...prevFormData,
-            orderWarning: "The order needs to be an integer >= 3",
+            orderWarning: "The order needs to be an integer >= 4",
           }));
         } else {
-          if (newOrder != btree.getOrder()) {
+          if (newMaxKeys != btree.getMaxKeys()) {
             let existingKeys = btree.getKeys();
-            btree = new BTree(newOrder);
+            btree = new BTree(newMaxKeys);
             frameSequencer = new FrameSequencer(btree, setSequencerProps);
 
-            //randomize existing key array for non sorted input order
+            //randomize existing key array for non sorted inputs
             existingKeys = shuffleArray(existingKeys);
             for (let i = 0; i < existingKeys.length; i++) {
               btree.add(existingKeys[i]);
@@ -460,7 +461,7 @@ export default function BTreePage() {
         break;
 
       case "reset":
-        btree = new BTree(btree.getOrder());
+        btree = new BTree(btree.getMaxKeys());
         restartFrameSequencer();
 
         // Update FormData

@@ -44,7 +44,6 @@ const SequenceControl = ({
       title="Sequence Control"
       children={
         <div className="sequence-control-container">
-          
           {/* MODE SELECT SEGMENT */}
           <div className="sequence-control-segment">
             <div className="sequence-mode-selection">
@@ -52,7 +51,7 @@ const SequenceControl = ({
                 size="medium"
                 value={sequencerProps.sequenceMode}
                 onChange={handleModeChange}
-                exclusive= {true}
+                exclusive={true}
                 aria-label="sequence-mode-select"
               >
                 <ToggleButton
@@ -140,7 +139,11 @@ const SequenceControl = ({
                       {entry[1]}
                     </React.Fragment>
                   ))}
-                  {sequencerProps.keyQueue.length > 5 && <span>, ...</span>}
+                  {sequencerProps.keyQueue.length > 5 && (
+                    <span>
+                      , ... ({sequencerProps.keyQueue.length - 5})
+                    </span>
+                  )}
                 </div>
               )}
             </div>

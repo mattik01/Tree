@@ -19,17 +19,23 @@
 }
 
 .link__highlighted {
-  stroke: #f49404;
+  stroke: #f49404 ;
   stroke-width: 3;
-  animation: link-pulse 1s ease infinite;
+  animation: link-pulse 2s ease infinite;
 }
 
 @keyframes link-pulse {
   0% {
     stroke: #f49404;
   }
+  20% {
+    stroke: #f49404;
+  }
   50% {
     stroke: gold;
+  }
+  80% {
+    stroke: #f49404;
   }
   100% {
     stroke: #f49404;
@@ -51,7 +57,7 @@
   fill: white;
   stroke-width: 4;
   stroke: #f49404;
-  animation: link-pulse 1s ease infinite;
+  animation: link-pulse 2s ease infinite;
 }
 
 .message-bubble {

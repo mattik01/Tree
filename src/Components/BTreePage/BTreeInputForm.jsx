@@ -25,8 +25,8 @@ function BTreeInputForm({
             <div className="input-form-segment">
               <div className="inline-input">
                 <Tooltipped
-                  tooltipText="max number of keys, every node may hold"
-                  children={<label htmlFor="orderInput">tree-order (k):</label>}
+                  tooltipText="max number of children for nodes"
+                  children={<label htmlFor="orderInput">tree-order (p):</label>}
                 ></Tooltipped>
 
                 <input
@@ -36,7 +36,7 @@ function BTreeInputForm({
                   id="orderInput"
                   name="orderInput"
                   value={formData.orderInput}
-                  min="3"
+                  min="4"
                   onChange={onInputChange}
                 />
               </div>
