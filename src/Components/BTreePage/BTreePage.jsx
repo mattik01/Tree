@@ -18,6 +18,8 @@ import FrameSequencer from "./FrameSequencer";
 import Highlight from "./Highlight";
 import { NetworkWifiSharp } from "@mui/icons-material";
 
+// ---------- GLOBAL VARIABLES ----------
+
 const INIT_BTREE_MAX_KEYS = 3;
 const INIT_BTREE_NKEYS = 10;
 
@@ -25,7 +27,10 @@ const INIT_BTREE_NKEYS = 10;
 const DEFAULT_DELAY_AUTO_MODE = 2;
 
 let btree = new BTree(INIT_BTREE_MAX_KEYS);
-let frameSequencer = undefined;
+let frameSequencer
+
+//when the frameSequencer runs in automode, the Interval referance is stored in here.
+let delayedFrameInterval
 
 export default function BTreePage() {
   // ---------- STATE VARIABLES ----------
@@ -121,7 +126,6 @@ export default function BTreePage() {
 
   // effect, that operates the frameSequencer
   useEffect(() => {
-    let delayedFrame;
 
     if (sequencerProps.inSequence) {
       switch (sequencerProps.sequenceMode) {
@@ -130,18 +134,11 @@ export default function BTreePage() {
           break;
 
         case "auto":
-          //first frame directly
-          setTreeFrame(frameSequencer.getNextFrame(sequencerProps));
 
-          //nested timeout loop, creating a dynamic interval
-          let delay =
-            DEFAULT_DELAY_AUTO_MODE * sequencerProps.sequenceSpeed * 1000;
-          delayedFrame = setTimeout(function setDelayedFrame() {
-            setTreeFrame(frameSequencer.getNextFrame(sequencerProps));
-            delay =
-              DEFAULT_DELAY_AUTO_MODE * sequencerProps.sequenceSpeed * 1000;
-            delayedFrame = setTimeout(setDelayedFrame, delay);
-          }, delay);
+          let delay = DEFAULT_DELAY_AUTO_MODE * sequencerProps.sequenceSpeed * 1000;
+          delayedFrameInterval = setInterval(
+            () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
+          ,delay)
           break;
 
         case "step":
@@ -154,7 +151,8 @@ export default function BTreePage() {
 
     // Cleanup on unmount/dependency change
     return () => {
-      clearTimeout(delayedFrame);
+      //clearTimeout(delayedFrame);
+      clearInterval(delayedFrameInterval)
     };
   }, [
     // dependencies
@@ -162,35 +160,18 @@ export default function BTreePage() {
     sequencerProps.sequenceMode,
     sequencerProps.doForward,
     sequencerProps.doBackward,
-    sequencerProps.sequenceSpeedModified, //flag triggers effect rerun to make new speed visible
   ]);
 
-  // effect, that resets the FrameSequencer Operator effect, and makes speed change visible to it
+  // effect, that adjusts the delayedFrameInterval, whenever the sequenceSpeed is modified
   useEffect(() => {
-    let delayedSpeedFlag;
-    let delay = 2000;
-
-    //blink the
-    setSequencerProps((prevProps) => ({
-      ...prevProps,
-      sequenceSpeedModified: true,
-    }));
-
-    delayedSpeedFlag = setTimeout(() => {
-      setSequencerProps((prevProps) => ({
-        ...prevProps,
-        sequenceSpeedModified: false,
-      }));
-    }, delay);
-
-    // Cleanup on unmount/dependency change
-    return () => {
-      clearTimeout(delayedSpeedFlag);
-    };
-  }, [
-    //dependencies
-    sequencerProps.sequenceSpeed,
-  ]);
+    if(sequencerProps.inSequence && sequencerProps.sequenceMode == "auto"){
+     clearInterval(delayedFrameInterval)
+     let delay = DEFAULT_DELAY_AUTO_MODE * sequencerProps.sequenceSpeed * 1000;
+          delayedFrameInterval = setInterval(
+            () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
+          ,delay)
+    }
+  }, [sequencerProps.sequenceSpeed]);
 
   // effect that keeps the futureKeys sequence up to date
   useEffect(() => {
@@ -589,9 +570,9 @@ export default function BTreePage() {
     }
   };
 
-  // ---------- BTree Page JSX ----------
-
   const highlights = new Highlight();
+
+  // ---------- JSX ----------
 
   return (
     <div className="btree-page-container">
