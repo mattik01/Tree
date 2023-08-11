@@ -2,6 +2,7 @@ import { Tree } from "react-d3-tree";
 import React, { useState, useEffect } from "react";
 
 import "./BTreePlot.css";
+import { tree } from "d3";
 
 // ---------- GLOBAL VARIABLES ----------
 
@@ -15,13 +16,10 @@ let nodeDict = {};
 //avoid duiplicate calculations
 let textWidthDict = {};
 
+let biggestNodeWidth = 0;
+
 export default function BTreePlot({ treeData, highlights, plotProps }) {
   // ---------- STATE VARIABLES ----------
-
-  //State, so that the Tree rerenders if we get a new biggestWidth
-  const [biggestWidth, setBiggestWidth] = useState(0);
-
-
 
   // ---------- EFFECTS ----------
 
@@ -34,13 +32,21 @@ export default function BTreePlot({ treeData, highlights, plotProps }) {
     };
   }, []);
 
-  // effect for resetting the biggest width, every time treeData changes, since the biggest node could have been removed
-  useEffect(() => {
-    setBiggestWidth(0)
-    return () => { };
-  }, [treeData]);
-
   // ---------- FUNCTIONS ----------
+
+  function setBiggestNodeWith(treeData) {
+    if (treeData.name.keys) {
+      let [rectWidth, sub_node_width] = widthCalculations(treeData.name.keys);
+      if (rectWidth > biggestNodeWidth) {
+        biggestNodeWidth = rectWidth;
+      }
+    }
+    if (treeData.hasOwnProperty("children")) {
+      for (let i = 0; i < treeData.children.length; i++) {
+        setBiggestNodeWith(treeData.children[i]);
+      }
+    }
+  }
 
   function getTextWidth(text, font) {
     const span = document.createElement("span");
@@ -81,9 +87,6 @@ export default function BTreePlot({ treeData, highlights, plotProps }) {
       } else {
         rectWidth = nodeDict[keyStrings].rectWidth;
         sub_node_width = nodeDict[keyStrings].sub_node_width;
-      }
-      if (rectWidth > biggestWidth) {
-        setBiggestWidth(rectWidth);
       }
       return [rectWidth, sub_node_width];
     }
@@ -417,22 +420,24 @@ export default function BTreePlot({ treeData, highlights, plotProps }) {
     return "link__normal";
   };
 
+  biggestNodeWidth = 0;
+  setBiggestNodeWith(treeData);
+
   // ---------- JSX ----------
 
   return (
-      <Tree
-        data={treeData}
-        orientation="vertical"
-        collapsible={false}
-        renderCustomNodeElement={renderBTreeNode}
-        pathFunc={bTreePathFunc}
-        pathClassFunc={getDynamicPathClass}
-        nodeSize={{ x: biggestWidth + 10, y: rectHeight * 3 }}
-        scaleExtent={{ max: 5, min: 0.05 }}
-        separation={{ nonSiblings: 1, siblings: 1 }}
-        translate={{ x: plotProps.plotWidth / 2, y: plotProps.plotHeight / 4 }}
-        zoom={1.5}
-        />
+    <Tree
+      data={treeData}
+      orientation="vertical"
+      collapsible={false}
+      renderCustomNodeElement={renderBTreeNode}
+      pathFunc={bTreePathFunc}
+      pathClassFunc={getDynamicPathClass}
+      nodeSize={{ x: biggestNodeWidth + 10, y: rectHeight * 3 }}
+      scaleExtent={{ max: 5, min: 0.05 }}
+      separation={{ nonSiblings: 1, siblings: 1 }}
+      translate={{ x: plotProps.plotWidth / 2, y: plotProps.plotHeight / 4 }}
+      zoom={1.5}
+    />
   );
-
 }
