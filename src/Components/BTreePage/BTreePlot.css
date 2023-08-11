@@ -1,0 +1,74 @@
+.link__normal {
+  stroke-width: 1;
+}
+
+.key-text-normal {
+  fill: black !important;
+  stroke: black;
+  stroke-width: 1;
+}
+
+.key-separator-normal {
+  stroke: black;
+  stroke-width: 1;
+}
+
+.node-normal {
+  fill: white;
+  stroke-width: 2;
+}
+
+.link__highlighted {
+  stroke: #f49404 ;
+  stroke-width: 3;
+  animation: link-pulse 2s ease infinite;
+}
+
+@keyframes link-pulse {
+  0% {
+    stroke: #f49404;
+  }
+  20% {
+    stroke: #f49404;
+  }
+  50% {
+    stroke: gold;
+  }
+  80% {
+    stroke: #f49404;
+  }
+  100% {
+    stroke: #f49404;
+  }
+}
+
+.key-text-highlighted {
+  fill: blue !important;
+  stroke: blue;
+  stroke-width: 1;
+}
+
+.key-separator-highlighted {
+  stroke: blue !important;
+  stroke-width: 2;
+}
+
+.node-highlighted {
+  fill: white;
+  stroke-width: 4;
+  stroke: #f49404;
+  animation: link-pulse 2s ease infinite;
+}
+
+.message-bubble {
+  fill: #043464;
+  fill-opacity: 0.8;
+  stroke-width: 0.01;
+}
+
+.message-bubble-text {
+  fill: white; /* Text color */
+  stroke: white; /* Text outline color */
+  stroke-width: 0.3; /* Text outline width */
+  fill-opacity: 1 !important;
+}

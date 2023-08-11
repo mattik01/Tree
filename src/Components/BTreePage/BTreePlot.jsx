@@ -1,22 +1,27 @@
+import { Tree } from "react-d3-tree";
+import React, { useState, useEffect } from "react";
 
-import { Tree } from 'react-d3-tree';
-import React, { useState, useEffect} from 'react';
+import "./BTreePlot.css";
 
-
-const extraRectWidth = 10
+const extraRectWidth = 10;
 const rectHeight = 30; // Height of the rectangle in pixels
 
-
 //keeps track of the widest node width
-let setBiggestWidthState = undefined
-let biggestWidthGlobal = 0
+let setBiggestWidthState = undefined;
+let biggestWidthGlobal = 0;
 
-//fill it with Node information as soon as available, to avoid 
+//will contain information about how to highlight nodes and edges
+let highlightsGlobal = {
+  nodes: {},
+  edges: {},
+};
+
+//fill it with Node information as soon as available, to avoid
 //duplicate computations, Node Names serve as keys
-let nodeDict = {}
+let nodeDict = {};
 
 //avoid duiplicate calculations
-let textWidthDict = {}
+let textWidthDict = {};
 
 function getTextWidth(text, font) {
   const span = document.createElement("span");
@@ -30,150 +35,400 @@ function getTextWidth(text, font) {
   return width;
 }
 
-function textWidthCalculations(text){ 
+function textWidthCalculations(text) {
   if (!textWidthDict.hasOwnProperty(text)) {
-      textWidthDict[text] = getTextWidth(text, "Courier")
+    textWidthDict[text] = getTextWidth(text, "Courier");
   }
-  return textWidthDict[text]
+  return textWidthDict[text];
 }
 
 //returns node_with and subnode with for a node key
-function widthCalculations(keyStrings){
-  if(keyStrings){
+function widthCalculations(keyStrings) {
+  if (keyStrings) {
     // fill or use nodeDict to avoid duplicate Information
-    let rectWidth, sub_node_width
+    let rectWidth, sub_node_width;
     if (!nodeDict.hasOwnProperty(keyStrings)) {
-      const longestKeyWidth = Math.max(...keyStrings.map(keyString => textWidthCalculations(keyString)));
-      rectWidth = longestKeyWidth * keyStrings.length + (extraRectWidth * keyStrings.length)
-      sub_node_width = rectWidth / keyStrings.length
+      const longestKeyWidth = Math.max(
+        ...keyStrings.map((keyString) => textWidthCalculations(keyString))
+      );
+      rectWidth =
+        longestKeyWidth * keyStrings.length +
+        extraRectWidth * keyStrings.length;
+      sub_node_width = rectWidth / keyStrings.length;
       nodeDict[keyStrings] = {
         rectWidth: rectWidth,
-        sub_node_width: sub_node_width
+        sub_node_width: sub_node_width,
       };
-      if(rectWidth > biggestWidthGlobal){
-        if(setBiggestWidthState != undefined){
-            setBiggestWidthState(rectWidth)
+      if (rectWidth > biggestWidthGlobal) {
+        if (setBiggestWidthState != undefined) {
+          setBiggestWidthState(rectWidth);
         }
-        biggestWidthGlobal = rectWidth
+        biggestWidthGlobal = rectWidth;
       }
+    } else {
+      rectWidth = nodeDict[keyStrings].rectWidth;
+      sub_node_width = nodeDict[keyStrings].sub_node_width;
     }
-    else{
-      rectWidth = nodeDict[keyStrings].rectWidth
-      sub_node_width = nodeDict[keyStrings].sub_node_width
-    }
-    return [rectWidth, sub_node_width]
+    return [rectWidth, sub_node_width];
   }
-return [0,0]
+  return [0, 0];
 }
 
-
 //Customized Node rendering
-const renderBTreeNode = ({nodeDatum, toggleNode }) => {
+const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
+  if (nodeDatum.name) {
+    const keyStrings = nodeDatum.name.keys;
+    const [rectWidth, sub_node_width] = widthCalculations(keyStrings);
 
-    const keyStrings = nodeDatum.name
-    const [rectWidth, sub_node_width] = widthCalculations(nodeDatum.name);
+    //read out highlights
+    const id = String(nodeDatum.name.id);
+    let fullHighlight = false;
+    let indexHighlights = [];
+    let nodeMessage = "";
+    let indexMessages = {};
+    let separatorHighlights = []
+    let separatorMessages = {}
 
+    if (highlightsGlobal.nodes.hasOwnProperty(id)) {
+      fullHighlight = highlightsGlobal.nodes[id].fullHighlight;
+      indexHighlights = highlightsGlobal.nodes[id].indexHighlights;
+      nodeMessage = highlightsGlobal.nodes[id].nodeMessage;
+      indexMessages = highlightsGlobal.nodes[id].indexMessages;
+      separatorHighlights = highlightsGlobal.nodes[id].separatorHighlights
+      separatorMessages = highlightsGlobal.nodes[id].separatorMessages
+    }
+
+    const nodeMessageWidth = getTextWidth(nodeMessage, "Courier");
 
     // generate key-strings and separator lines elements
-    const separator_elements = []
-    const key_elements = []
-    
-    let xOffset = -rectWidth / 2 
-    for (let i in keyStrings) {
-        key_elements.push(
-        <text 
-        fill="black" 
-        strokeWidth="1" 
-        x={xOffset + (sub_node_width / 2 ) - (textWidthCalculations(keyStrings[i]) / 2) } 
-        y={rectHeight /1.5}
-        key = {String(nodeDatum.name)+"Text"+String(i)}
+    const separator_elements = [];
+    const key_elements = [];
+    const index_message_elements = [];
+
+    let xOffset = -rectWidth / 2;
+    for (let i = 0; i < keyStrings.length; i++) {
+      const doTextHighlight = indexHighlights.includes(i);
+      const doSepHighlight = doTextHighlight || indexHighlights.includes(i - 1)
+      const indexMessage = indexMessages.hasOwnProperty(i)
+        ? indexMessages[i]
+        : "";
+      const separatorMessage = separatorMessages.hasOwnProperty(i)
+      ? separatorMessages[i]
+      : "";
+
+      key_elements.push(
+        <text
+          className={
+            doTextHighlight ? "key-text-highlighted" : "key-text-normal"
+          }
+          x={
+            xOffset +
+            sub_node_width / 2 -
+            textWidthCalculations(keyStrings[i]) / 2
+          }
+          y={rectHeight / 1.5}
+          key={String(nodeDatum.name.keys) + "Text" + String(i)}
         >
           {keyStrings[i]}
         </text>
-        )
+      );
 
-        if (i != 0){
-            separator_elements.push(
-                <line
-                key={`sep-${i}`}
-                x1={xOffset}
-                y1={0}
-                x2={xOffset}
-                y2={rectHeight}
-                stroke="black"
-                />
-            )
-        }
-          xOffset += sub_node_width
+      if (i != 0 || doSepHighlight || separatorHighlights.includes(i)) {
+        separator_elements.push(
+          <line
+            key={`sep-${i}`}
+            x1={xOffset}
+            y1={0}
+            x2={xOffset}
+            y2={rectHeight}
+            className={
+              doSepHighlight || separatorHighlights.includes(i)
+                ? "key-separator-highlighted"
+                : "key-separator-normal"
+            }
+          />
+        );
       }
-  
+
+      //render lines above and below the key aswell
+      if (doTextHighlight) {
+        separator_elements.push(
+          // Line from the top of the separator to the right
+          <line
+            key={`sep-top-${i}`}
+            x1={xOffset}
+            y1={0}
+            x2={xOffset + sub_node_width} // Adjust the length of the line as needed
+            y2={0}
+            className="key-separator-highlighted"
+          />,
+          // Line from the bottom of the separator to the right
+          <line
+            key={`sep-bottom-${i}`}
+            x1={xOffset}
+            y1={rectHeight}
+            x2={xOffset + sub_node_width} // Adjust the length of the line as needed
+            y2={rectHeight}
+            className="key-separator-highlighted"
+          />
+        );
+      }
+
+      // Add Index Message
+      if (indexMessage != "") {
+        const indexMessageWidth = getTextWidth(indexMessage, "Courier");
+        const indexMessageOffsetX =
+          xOffset + sub_node_width / 2 - (indexMessageWidth + 22) / 2;
+        index_message_elements.push(
+          <svg
+            width={indexMessageWidth + 22}
+            height={rectHeight + 10}
+            xmlns="http://www.w3.org/2000/svg"
+            x={indexMessageOffsetX + 1}
+            y={rectHeight}
+            className="message-bubble"
+          >
+            <rect
+              x="1"
+              y="10"
+              width={indexMessageWidth + 20}
+              height={rectHeight}
+              rx="10"
+            />
+
+            <polygon
+              points={`${(indexMessageWidth + 20) / 2 - 5},${10} ${
+                (indexMessageWidth + 20) / 2 + 5
+              },${10} ${(indexMessageWidth + 20) / 2},
+              ${0}`}
+            />
+
+            <text
+              x="11"
+              y={rectHeight / 1.5 + 10}
+              className="message-bubble-text"
+            >
+              {indexMessage}
+            </text>
+          </svg>
+        );
+      }
+
+      // Add Separator Message
+      if (separatorMessage != "") {
+        const separatorMessageWidth = getTextWidth(separatorMessage, "Courier");
+        const separatorMessageOffsetX = xOffset - (separatorMessageWidth + 22) / 2;
+        index_message_elements.push(
+          <svg
+            width={separatorMessageWidth + 22}
+            height={rectHeight + 10}
+            xmlns="http://www.w3.org/2000/svg"
+            x={separatorMessageOffsetX + 1}
+            y={rectHeight}
+            className="message-bubble"
+          >
+            <rect
+              x="1"
+              y="10"
+              width={separatorMessageWidth + 20}
+              height={rectHeight}
+              rx="10"
+            />
+
+            <polygon
+              points={`${(separatorMessageWidth + 20) / 2 - 5},${10} ${
+                (separatorMessageWidth + 20) / 2 + 5
+              },${10} ${(separatorMessageWidth + 20) / 2},
+              ${0}`}
+            />
+
+            <text
+              x="11"
+              y={rectHeight / 1.5 + 10}
+              className="message-bubble-text"
+            >
+              {separatorMessage}
+            </text>
+          </svg>
+        );
+      }
+      xOffset += sub_node_width;
+    }
+
+    //push a last separator, if the last element is supposed to be highlighted
+    if (indexHighlights.includes(keyStrings.length - 1) || separatorHighlights.includes(keyStrings.length)) {
+      separator_elements.push(
+        <line
+          key={`sep-${keyStrings.length}`}
+          x1={xOffset}
+          y1={0}
+          x2={xOffset}
+          y2={rectHeight}
+          className="key-separator-highlighted"
+        />
+      );
+    }
+
+     // push a last separator Message if specified
+     if (separatorMessages.hasOwnProperty(keyStrings.length)) {
+      const separatorMessage = separatorMessages[keyStrings.length]
+     
+      const separatorMessageWidth = getTextWidth(separatorMessage, "Courier");
+      const separatorMessageOffsetX = xOffset - (separatorMessageWidth + 22) / 2;
+      index_message_elements.push(
+        <svg
+          width={separatorMessageWidth + 22}
+          height={rectHeight + 10}
+          xmlns="http://www.w3.org/2000/svg"
+          x={separatorMessageOffsetX + 1}
+          y={rectHeight}
+          className="message-bubble"
+        >
+          <rect
+            x="1"
+            y="10"
+            width={separatorMessageWidth + 20}
+            height={rectHeight}
+            rx="10"
+          />
+
+          <polygon
+            points={`${(separatorMessageWidth + 20) / 2 - 5},${10} ${
+              (separatorMessageWidth + 20) / 2 + 5
+            },${10} ${(separatorMessageWidth + 20) / 2},
+            ${0}`}
+          />
+
+          <text
+            x="11"
+            y={rectHeight / 1.5 + 10}
+            className="message-bubble-text"
+          >
+            {separatorMessage}
+          </text>
+        </svg>
+      );
+    }
+
     return (
       <g>
-        <rect width={rectWidth} height={rectHeight} x={-rectWidth / 2} 
-            fill = 'white'
-            key = {String(nodeDatum.name)}
-            strokeWidth = '2'
+        {/* NODE  */}
+        <rect
+          width={rectWidth}
+          height={rectHeight}
+          x={-rectWidth / 2}
+          key={String(nodeDatum.name.keys)}
+          className={fullHighlight ? "node-highlighted" : "node-normal"}
         />
         {separator_elements}
         {key_elements}
+        {index_message_elements}
+
+        {/* NODE MESSAGE TOOLTIP */}
+        {nodeMessage && (
+          <svg
+            width={nodeMessageWidth + 22}
+            height={rectHeight + 10}
+            xmlns="http://www.w3.org/2000/svg"
+            x={(nodeMessageWidth + 22) / -2}
+            y={-rectHeight - 10}
+            className="message-bubble"
+          >
+            <rect
+              x="1"
+              y="1"
+              width={nodeMessageWidth + 20}
+              height={rectHeight}
+              rx="10"
+            />
+
+            <polygon
+              points={`${(nodeMessageWidth + 20) / 2 - 5},${rectHeight + 1} ${
+                (nodeMessageWidth + 20) / 2 + 5
+              },${rectHeight + 1} ${(nodeMessageWidth + 20) / 2},${
+                rectHeight + 10
+              }`}
+            />
+
+            <text x="11" y={rectHeight / 1.5} className="message-bubble-text">
+              {nodeMessage}
+            </text>
+          </svg>
+        )}
       </g>
     );
-  };
-
-  //Customizes anchor points of the lines
-  const bTreePathFunc = (linkDatum, orientation) => {
-    const { source, target } = linkDatum;
-    
-    const [rectWidth, sub_node_width] = widthCalculations(source.data.name);
-
-    let xOffset =  - rectWidth / 2
-    //if target is the nth child, move anchor to the right by n*subnode_width
-    const sourceChildrenNames = source.children.map(function(node) {
-      return node.data.name;
-    });
-    const targetIndex = sourceChildrenNames.indexOf(target.data.name);
-    xOffset += sub_node_width * targetIndex
-
-    return `M${source.x + xOffset},${source.y + rectHeight}` + //source anchor
-           `L${target.x},${target.y}`; //target anchor
+  }
 };
 
-export default function BTreePlot({treeData, treeProps, plotProps}) {
+//Customizes anchor points of the edges
+const bTreePathFunc = ({ source, target }, orientation) => {
+  const [rectWidth, sub_node_width] = widthCalculations(source.data.name.keys);
 
-    //cleanup for global variables
-    useEffect(() => {
-      // This is the cleanup function, runs when the component unmounts
-      return () => {
-        setBiggestWidthState = undefined
-        biggestWidthGlobal = 0
-        nodeDict = {}
-        textWidthDict = {}
-      };
-    }, []);
+  let xOffset = -rectWidth / 2;
+  //if target is the nth child, move anchor to the right by n*subnode_width
+  const sourceChildrenNames = source.children.map(function (node) {
+    return node.data.name.keys;
+  });
+  const targetIndex = sourceChildrenNames.indexOf(target.data.name.keys);
+  xOffset += sub_node_width * targetIndex;
 
-    //State, so that the Tree rerenders if we get a new biggestWidth
-    const [biggestWidth, setBiggestWidth] = useState(0);
+  return (
+    `M${source.x + xOffset},${source.y + rectHeight}` + //source anchor
+    `L${target.x},${target.y}`
+  ); //target anchor
+};
 
-    //setting the state as global variables for the Node Render Function to use
-    setBiggestWidthState = setBiggestWidth
-    biggestWidthGlobal = 0
-    
-    const nodeSize = {x: biggestWidth + 10, y: rectHeight * 3}
-
-    return (
-        <Tree
-          data={treeData}
-          orientation='vertical'
-          collapsible={false}
-          renderCustomNodeElement={renderBTreeNode}
-          pathFunc={bTreePathFunc}
-          nodeSize={nodeSize}
-          scaleExtent={{max : 5, min :0.05}}
-          separation={{nonSiblings: 1, siblings:1}}
-          translate={{x: plotProps.plotWidth / 2, y: plotProps.plotHeight/4}}
-          zoom={1.5}
-        />
-    );
+//Customizes styling of links dynmaically
+const getDynamicPathClass = ({ source, target }, orientation) => {
+  const edgeId = String(source.data.name.id) + String(target.data.name.id);
+  if (highlightsGlobal.edges.hasOwnProperty(edgeId)) {
+    if (highlightsGlobal.edges[edgeId].fullHighlight == true) {
+      return "link__highlighted";
+    }
   }
 
+  return "link__normal";
+};
 
+export default function BTreePlot({ treeData, highlights, plotProps }) {
+  //cleanup for global variables
+  useEffect(() => {
+    // This is the cleanup function, runs when the component unmounts
+    return () => {
+      setBiggestWidthState = undefined;
+      biggestWidthGlobal = 0;
+      nodeDict = {};
+      textWidthDict = {};
+      highlights = {
+        nodes: {},
+        edges: {},
+      };
+    };
+  }, []);
+
+  //State, so that the Tree rerenders if we get a new biggestWidth
+  const [biggestWidth, setBiggestWidth] = useState(0);
+
+  //setting the state as global variables for the Node Render Functions to use
+  setBiggestWidthState = setBiggestWidth;
+  biggestWidthGlobal = 0;
+  highlightsGlobal = highlights;
+
+  const nodeSize = { x: biggestWidth + 10, y: rectHeight * 3 };
+
+  return (
+    <Tree
+      data={treeData}
+      orientation="vertical"
+      collapsible={false}
+      renderCustomNodeElement={renderBTreeNode}
+      pathFunc={bTreePathFunc}
+      pathClassFunc={getDynamicPathClass}
+      nodeSize={nodeSize}
+      scaleExtent={{ max: 5, min: 0.05 }}
+      separation={{ nonSiblings: 1, siblings: 1 }}
+      translate={{ x: plotProps.plotWidth / 2, y: plotProps.plotHeight / 4 }}
+      zoom={1.5}
+    />
+  );
+}

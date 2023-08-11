@@ -6,7 +6,12 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { BorderColor } from "@mui/icons-material";
 
-const ImportExportBar = ({ formData, onInputChange, onButtonClick }) => {
+const ImportExportBar = ({
+  formData,
+  onInputChange,
+  onButtonClick,
+  setAllowDrag,
+}) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleSnackbarClose = () => {
@@ -26,7 +31,7 @@ const ImportExportBar = ({ formData, onInputChange, onButtonClick }) => {
           style={{
             backgroundColor:
               formData.importExportDisplay == "import" &&
-              formData.importExportAreaValue != ""
+              formData.importExportTextAreaValue != ""
                 ? "#8CC63E"
                 : "white",
           }}
@@ -52,16 +57,18 @@ const ImportExportBar = ({ formData, onInputChange, onButtonClick }) => {
             <div>import:</div> {/* Import label */}
             <button
               className="close-button"
-              onClick={() => onButtonClick("close")}
+              onClick={() => onButtonClick("closeImportExportArea")}
             >
               &times;
             </button>
           </div>
           <textarea
+            onMouseEnter={() => setAllowDrag(false)}
+            onMouseLeave={() => setAllowDrag(true)}
             className="multiline-textbox"
-            id="importExportAreaValue"
-            name="importExportAreaValue"
-            value={formData.importExportAreaValue}
+            id="importExportTextAreaValue"
+            name="importExportTextAreaValue"
+            value={formData.importExportTextAreaValue}
             onChange={onInputChange}
             placeholder="Paste tree data here"
             rows={6} // Set the initial number of rows
@@ -75,7 +82,7 @@ const ImportExportBar = ({ formData, onInputChange, onButtonClick }) => {
           <div className="multiline-bar">
             <div>export:</div> {/* Export label */}
             <CopyToClipboard
-              text={formData.importExportAreaValue}
+              text={formData.importExportTextAreaValue}
               onCopy={() => setIsCopied(true)}
             >
               <button type="button">copy</button>
@@ -91,16 +98,18 @@ const ImportExportBar = ({ formData, onInputChange, onButtonClick }) => {
             </Snackbar>
             <button
               className="close-button"
-              onClick={() => onButtonClick("close")}
+              onClick={() => onButtonClick("closeImportExportArea")}
             >
               &times;
             </button>
           </div>
           <textarea
+            onMouseEnter={() => setAllowDrag(false)}
+            onMouseLeave={() => setAllowDrag(true)}
             className="multiline-textbox"
-            id="importExportAreaValue"
-            name="importExportAreaValue"
-            value={formData.importExportAreaValue}
+            id="importExportTextAreaValue"
+            name="importExportTextAreaValue"
+            value={formData.importExportTextAreaValue}
             onChange={onInputChange}
             readOnly
             rows={6} // Set the initial number of rows

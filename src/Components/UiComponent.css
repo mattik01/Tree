@@ -1,0 +1,28 @@
+.ui-component {
+  background-color: rgba(242,242,242,0.8); 
+  border: grey solid 1px;
+  border-radius: 5px;
+  width: 100%;
+  padding: 10px;
+  cursor: grab;
+}
+
+.draggable-icon-container {
+  display: flex;
+  justify-content: space-between; /* Distribute the elements with space between them */
+  align-items: center; /* Vertically center the child elements */
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 20px;
+  margin-bottom: 10px;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.draggable-icon {
+  width: 18px; /* Adjust the size of the icon as needed */
+}

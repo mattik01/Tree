@@ -29,15 +29,19 @@ body {
 /* Styles for .btree-input-form-container */
 .btree-input-form-container {
   position: absolute;
-  top: 30px; /* Adjust the top position to add space from the top */
-  left: 30px; /* Adjust the left position to add space from the left */
-  background-color: rgba(242, 242, 242, 0.8); /* Use rgba() to set a translucent background color */
-  border : grey solid 1px;
-  border-radius: 5px;
+  top: 30px; 
+  left: 30px; 
   width: 100%;
   max-width: 270px;
-  padding: 10px;
-  box-sizing: border-box;
-  cursor: grab;
+  box-sizing: border-box
+}
+
+.btree-sequence-control-container {
+  position: absolute;
+  top: 30px; /* Adjust the top position to add space from the top */
+  right: 30px; /* Adjust the left position to add space from the left */
+  width: 100%;
+  max-width: 250px;
+  box-sizing: border-box
 }
 
