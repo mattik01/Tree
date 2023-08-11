@@ -135,7 +135,7 @@ export default function BTreePage() {
 
         case "auto":
 
-          let delay = DEFAULT_DELAY_AUTO_MODE * sequencerProps.sequenceSpeed * 1000;
+          let delay = DEFAULT_DELAY_AUTO_MODE *  (2-sequencerProps.sequenceSpeed) * 1000;
           delayedFrameInterval = setInterval(
             () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
           ,delay)
@@ -166,7 +166,7 @@ export default function BTreePage() {
   useEffect(() => {
     if(sequencerProps.inSequence && sequencerProps.sequenceMode == "auto"){
      clearInterval(delayedFrameInterval)
-     let delay = DEFAULT_DELAY_AUTO_MODE * sequencerProps.sequenceSpeed * 1000;
+     let delay = DEFAULT_DELAY_AUTO_MODE *  (2-sequencerProps.sequenceSpeed) * 1000;
           delayedFrameInterval = setInterval(
             () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
           ,delay)
