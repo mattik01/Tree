@@ -23,9 +23,6 @@ import { NetworkWifiSharp } from "@mui/icons-material";
 const INIT_BTREE_MAX_KEYS = 3;
 const INIT_BTREE_NKEYS = 10;
 
-// default amount of time waited for each step in auto sequence mode
-const DEFAULT_DELAY_AUTO_MODE = 2;
-
 let btree = new BTree(INIT_BTREE_MAX_KEYS);
 let frameSequencer
 
@@ -57,7 +54,7 @@ export default function BTreePage() {
   //State for Sequence Control and Frame Sequencer
   const [sequencerProps, setSequencerProps] = useState({
     sequenceMode: "auto",
-    sequenceSpeed: 1.0,
+    sequenceSpeed: 2.0,
     sequenceSpeedModified: false,
     doForward: false,
     doBackward: false,
@@ -135,7 +132,7 @@ export default function BTreePage() {
 
         case "auto":
 
-          let delay = DEFAULT_DELAY_AUTO_MODE *  (2-sequencerProps.sequenceSpeed) * 1000;
+          let delay = sequencerProps.sequenceSpeed * 1000;
           delayedFrameInterval = setInterval(
             () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
           ,delay)
@@ -166,7 +163,7 @@ export default function BTreePage() {
   useEffect(() => {
     if(sequencerProps.inSequence && sequencerProps.sequenceMode == "auto"){
      clearInterval(delayedFrameInterval)
-     let delay = DEFAULT_DELAY_AUTO_MODE *  (2-sequencerProps.sequenceSpeed) * 1000;
+     let delay = sequencerProps.sequenceSpeed * 1000;
           delayedFrameInterval = setInterval(
             () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
           ,delay)
