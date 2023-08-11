@@ -5,6 +5,7 @@
   width: 100%;
   padding: 10px;
   cursor: grab;
+  z-index: 10;
 }
 
 .draggable-icon-container {
