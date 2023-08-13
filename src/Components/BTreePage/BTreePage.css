@@ -10,12 +10,12 @@ body {
 
 /* Styles for .btree-container */
 .btree-page-container {
+  padding : 0;
   position: relative;
   display: flex;
   flex-direction: column;
   margin-top: 70px; /* Set a 50px margin at the top */
-  height: calc(100vh - 70px); /* Calculate the height to fill the remaining screen space after considering the top margin */
-  border-bottom: 3px solid #ccc;
+  height: calc(100vh - 76px); /* Calculate the height to fill the remaining screen space after considering the top margin */
 }
 
 /* Styles for .btree-plot-container */
@@ -23,7 +23,6 @@ body {
   width: 100%;
   flex: 1;
   background-color: white; /* Set the background color for the plot container */
-  border-bottom: 3px solid #ccc;
 }
 
 /* Styles for .btree-input-form-container */
@@ -39,9 +38,18 @@ body {
 .btree-sequence-control-container {
   position: absolute;
   top: 30px; /* Adjust the top position to add space from the top */
-  right: 30px; /* Adjust the left position to add space from the left */
+  right: 50px; /* Adjust the left position to add space from the left */
   width: 100%;
   max-width: 250px;
+  box-sizing: border-box
+}
+
+.btree-tree-properties-container {
+  position: absolute;
+  bottom: 30px; /* Adjust the top position to add space from the top */
+  right: 50px; /* Adjust the left position to add space from the left */
+  width: 100%;
+  max-width: 200px;
   box-sizing: border-box
 }
 

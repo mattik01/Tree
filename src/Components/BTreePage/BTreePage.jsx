@@ -8,25 +8,25 @@ import Draggable from "react-draggable";
 import BTreePlot from "./BTreePlot";
 import BTreeInputForm from "./BTreeInputForm";
 import SequenceControl from "./SequenceControl";
+import TreeProperties from "./BTreeProperties";
 
 // scripts
 import BTree from "./BTree";
 import determineKeyStringType from "../../utility/DetermineKeyType";
 import generateKeys from "../../utility/GenerateKeys";
 import shuffleArray from "../../utility/ArrayShuffle";
+import { countNodes, countKeys, countHeight} from "../../utility/InfoFromTreeData";
 import FrameSequencer from "./FrameSequencer";
 import Highlight from "./Highlight";
-import { NetworkWifiSharp } from "@mui/icons-material";
+import { count } from "d3";
+
 
 // ---------- GLOBAL VARIABLES ----------
 
 const INIT_BTREE_MAX_KEYS = 3;
 const INIT_BTREE_NKEYS = 10;
 
-// default amount of time waited for each step in auto sequence mode
-const DEFAULT_DELAY_AUTO_MODE = 2;
-
-let btree = new BTree(INIT_BTREE_MAX_KEYS);
+let btree = new BTree(INIT_BTREE_MAX_KEYS, null);
 let frameSequencer
 
 //when the frameSequencer runs in automode, the Interval referance is stored in here.
@@ -49,15 +49,26 @@ export default function BTreePage() {
   const [plotProps, setPlotProps] = useState({ plotWidth: 0, plotHeight: 0 });
 
   // State for Tree Properties
+  let maxKeys = btree.getMaxKeys()
+  let nNodes =  btree.getNodes().length
+  let nKeys = btree.getKeys().length
   const [treeProps, setTreeProps] = useState({
-    maxKeys: btree.getMaxKeys(),
     isEmpty: btree.isEmpty(),
+    height: countHeight(treeFrame.treeData),
+    maxKeys: maxKeys,
+    nNodes: nNodes,
+    nKeys: nKeys,
+    fillingDegree: nNodes*maxKeys != 0 ? nKeys / (nNodes * maxKeys) : 0,
+    splits: 0,
+    merges: 0,
+    smallRotations: 0,
+    bigRotations: 0,
   });
 
   //State for Sequence Control and Frame Sequencer
   const [sequencerProps, setSequencerProps] = useState({
     sequenceMode: "auto",
-    sequenceSpeed: 1.0,
+    sequenceSpeed: 2.0,
     sequenceSpeedModified: false,
     doForward: false,
     doBackward: false,
@@ -103,6 +114,15 @@ export default function BTreePage() {
       btree.add(generatedKeys[i]);
     }
 
+    // Reset B-Tree Balancing Count Operations
+    setTreeProps(prevTreeProps => ({
+      ...prevTreeProps,
+      splits: 0,
+      merges: 0,
+      smallRotations: 0,
+      bigRotations: 0,
+    }));
+
     // Render new Tree
     simpleTreeFrameUpdate();
 
@@ -111,7 +131,7 @@ export default function BTreePage() {
 
     // This is the cleanup function, runs when the component unmounts
     return () => {
-      btree = new BTree(INIT_BTREE_MAX_KEYS);
+      btree = new BTree(INIT_BTREE_MAX_KEYS, setTreeProps);
       frameSequencer = undefined;
     };
   }, []);
@@ -135,7 +155,7 @@ export default function BTreePage() {
 
         case "auto":
 
-          let delay = DEFAULT_DELAY_AUTO_MODE *  (2-sequencerProps.sequenceSpeed) * 1000;
+          let delay = 4000 - sequencerProps.sequenceSpeed * 1000;
           delayedFrameInterval = setInterval(
             () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
           ,delay)
@@ -166,7 +186,7 @@ export default function BTreePage() {
   useEffect(() => {
     if(sequencerProps.inSequence && sequencerProps.sequenceMode == "auto"){
      clearInterval(delayedFrameInterval)
-     let delay = DEFAULT_DELAY_AUTO_MODE *  (2-sequencerProps.sequenceSpeed) * 1000;
+     let delay = 4000 - sequencerProps.sequenceSpeed * 1000;
           delayedFrameInterval = setInterval(
             () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
           ,delay)
@@ -182,16 +202,23 @@ export default function BTreePage() {
   useEffect(() => {
     // Run the update function when treeFrame changes
     simpleTreePropsUpdate();
-  }, [treeFrame]);
+  }, [treeFrame.treeData]);
 
   // ---------- FUNTIONS ----------
 
   // Update TreeProps
   function simpleTreePropsUpdate() {
+    let maxKeys = btree.getMaxKeys()
+    let nNodes =  countNodes(treeFrame.treeData)
+    let nKeys = countKeys(treeFrame.treeData)
     setTreeProps((prevTreeProps) => ({
       ...prevTreeProps,
-      treeDepth: btree.getDepth(),
+      height: countHeight(treeFrame.treeData),
       isEmpty: btree.isEmpty(),
+      maxKeys: maxKeys,
+      nNodes: nNodes,
+      nKeys: nKeys,
+      fillingDegree: nNodes*maxKeys != 0 ? nKeys / (nNodes * maxKeys) : 0,
     }));
   }
 
@@ -273,7 +300,7 @@ export default function BTreePage() {
         } else {
           if (newMaxKeys != btree.getMaxKeys()) {
             let existingKeys = btree.getKeys();
-            btree = new BTree(newMaxKeys);
+            btree = new BTree(newMaxKeys, setTreeProps);
             frameSequencer = new FrameSequencer(btree, setSequencerProps);
 
             //randomize existing key array for non sorted inputs
@@ -442,7 +469,7 @@ export default function BTreePage() {
         break;
 
       case "reset":
-        btree = new BTree(btree.getMaxKeys());
+        btree = new BTree(btree.getMaxKeys(), setTreeProps);
         restartFrameSequencer();
 
         // Update FormData
@@ -454,6 +481,15 @@ export default function BTreePage() {
           generateRangeInfo: "",
           importWarning: "",
           importExportTextAreaValue: "",
+        }));
+
+        // Reset B-Tree Balancing Operation counts
+        setTreeProps(prevTreeProps => ({
+          ...prevTreeProps,
+          splits: 0,
+          merges: 0,
+          smallRotations: 0,
+          bigRotations: 0,
         }));
 
         // Render new Tree
@@ -603,6 +639,17 @@ export default function BTreePage() {
             sequencerProps={sequencerProps}
             setSequencerProps={setSequencerProps}
             setAllowDrag={setAllowDrag}
+          />
+        </div>
+      </Draggable>
+
+      {/* TREE PROPERTIES WINDOW */}
+      <Draggable
+        bounds="parent" // Set bounds to the calculated boundaries of the plot container
+      >
+        <div className="btree-tree-properties-container">
+          <TreeProperties
+            treeProps={treeProps}
           />
         </div>
       </Draggable>
