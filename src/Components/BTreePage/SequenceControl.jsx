@@ -9,6 +9,7 @@ const SequenceControl = ({
   sequencerProps,
   setSequencerProps,
   setAllowDrag,
+  toggleUiComponentDisplay,
 }) => {
   const handleModeChange = (event, newMode) => {
     setSequencerProps((prevProps) => ({
@@ -35,6 +36,7 @@ const SequenceControl = ({
 
   return (
     <UiComponent
+    toggleWindow={() => toggleUiComponentDisplay("sequenceControl")}
       title="Sequence Control"
       children={
         <div className="sequence-control-container">

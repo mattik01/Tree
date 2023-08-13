@@ -2,7 +2,7 @@ import React from "react";
 import UiComponent from "../UiComponent";
 import "./BTreeProperties.css" 
 
-const TreeProperties = ({ treeProps }) => {
+const TreeProperties = ({ treeProps, toggleUiComponentDisplay}) => {
   const propertyRows = [
     { label: "Height", value: treeProps.height },
     { label: "Nodes", value: treeProps.nNodes },
@@ -18,7 +18,7 @@ const TreeProperties = ({ treeProps }) => {
   const secondSegmentRows = propertyRows.slice(4);
 
   return (
-    <UiComponent title="B-Tree Properties">
+    <UiComponent title="B-Tree Properties" toggleWindow={() => toggleUiComponentDisplay("treeProperties")}>
       <div>
         <div className="btree-properties-segment">
           {firstSegmentRows.map((row, index) => (

@@ -68,9 +68,9 @@ input {
   /* Add styles for the "Close" button inside the grey bar */
   .close-button {
     padding: 0px;
-    margin-left: auto;
+    margin: 0px;
     background-color: transparent;
-    color: #f44336;
+    color: black;
     border: none;
     font-size: 24px;
     cursor: pointer;

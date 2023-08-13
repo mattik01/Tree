@@ -9,6 +9,7 @@ import BTreePlot from "./BTreePlot";
 import BTreeInputForm from "./BTreeInputForm";
 import SequenceControl from "./SequenceControl";
 import TreeProperties from "./BTreeProperties";
+import DisplayComponentsBar from "./DisplayComponentsBar";
 
 // scripts
 import BTree from "./BTree";
@@ -18,8 +19,6 @@ import shuffleArray from "../../utility/ArrayShuffle";
 import { countNodes, countKeys, countHeight} from "../../utility/InfoFromTreeData";
 import FrameSequencer from "./FrameSequencer";
 import Highlight from "./Highlight";
-import { count } from "d3";
-
 
 // ---------- GLOBAL VARIABLES ----------
 
@@ -47,6 +46,10 @@ export default function BTreePage() {
   // canvas size of the page, so the tree can be rendered at the correct position
   const plotContainerRef = useRef(null);
   const [plotProps, setPlotProps] = useState({ plotWidth: 0, plotHeight: 0 });
+
+  // State for Displaying UI Components
+  const [displayUiComponents, setDisplayUiComponents] = React.useState(() => ['inputForm', 'sequenceControl']);
+
 
   // State for Tree Properties
   let maxKeys = btree.getMaxKeys()
@@ -279,6 +282,21 @@ export default function BTreePage() {
     return keyType;
   }
 
+  function toggleUiComponentDisplay(componentName) {
+    setDisplayUiComponents(prevDisplayUiComponents => {
+      const displayList = [...prevDisplayUiComponents]; // Create a copy of the array
+  
+      const toggleIndex = displayList.indexOf(componentName);
+      if (toggleIndex === -1) {
+        displayList.push(componentName); // Add if not present
+      } else {
+        displayList.splice(toggleIndex, 1); // Remove if present
+      }
+  
+      return displayList; // Update the state
+    });
+  }
+  
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
     setFormData((prevFormData) => ({
@@ -612,12 +630,20 @@ export default function BTreePage() {
 
   return (
     <div className="btree-page-container">
+
+      {/* TOGGLE DISPLAY BAR */}
+      <DisplayComponentsBar
+        displayUiComponents={displayUiComponents}
+        setDisplayUiComponents={setDisplayUiComponents}
+      />
+
       {/* INPUT FORM WINDOW */}
       <Draggable
         bounds="parent" // Set bounds to the calculated boundaries of the plot container
         disabled={!allowDrag}
       >
         <div className="btree-input-form-container">
+        {displayUiComponents.includes("inputForm") &&
           <BTreeInputForm
             formData={formData}
             treeProps={treeProps}
@@ -625,9 +651,13 @@ export default function BTreePage() {
             onInputChange={handleInputChange}
             onButtonClick={handleInputButtonClick}
             setAllowDrag={setAllowDrag}
+            toggleUiComponentDisplay={toggleUiComponentDisplay}
           />
+        }
         </div>
+        
       </Draggable>
+      
 
       {/* SEQUENCE CONTROL WINDOW */}
       <Draggable
@@ -635,11 +665,15 @@ export default function BTreePage() {
         disabled={!allowDrag}
       >
         <div className="btree-sequence-control-container">
+        {displayUiComponents.includes("sequenceControl") &&
           <SequenceControl
             sequencerProps={sequencerProps}
             setSequencerProps={setSequencerProps}
             setAllowDrag={setAllowDrag}
+            toggleUiComponentDisplay={toggleUiComponentDisplay}
+
           />
+        }
         </div>
       </Draggable>
 
@@ -648,9 +682,12 @@ export default function BTreePage() {
         bounds="parent" // Set bounds to the calculated boundaries of the plot container
       >
         <div className="btree-tree-properties-container">
+        {displayUiComponents.includes("treeProperties") &&
           <TreeProperties
             treeProps={treeProps}
+            toggleUiComponentDisplay={toggleUiComponentDisplay}
           />
+        }
         </div>
       </Draggable>
 

@@ -9,14 +9,15 @@ import "./BTreeInputForm.css";
 
 function BTreeInputForm({
   formData,
-  treeProps,
   futureKeys,
   onInputChange,
   onButtonClick,
   setAllowDrag,
+  toggleUiComponentDisplay,
 }) {
   return (
     <UiComponent
+      toggleWindow={() => toggleUiComponentDisplay("inputForm")}
       title={"Modify B-Tree"}
       children={
         <div>
