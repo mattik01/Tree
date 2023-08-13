@@ -65,9 +65,11 @@ const InfoPage = () => {
           <li>Info/Explanation Section for the B-Tree (medium arduous)</li>
           <li>Add some small animations for UI component changes</li>
           <li>Give the Website some color</li>
-          <li>Compact Mode Display for the B-Tree (very arduous)</li>
+          <li>Message Log Window (well made)</li>
+          <li>clickable nodes, (maybe for delete)</li>
           <li>Optional Range for all key generation (low arduous)</li>
-          <li>Add some smooth animations for UI component changes</li>
+          <li>Compact Mode Display for the B-Tree (very arduous)</li>
+          <li>Follow action mode for animations</li>
         </ul>
       </div>
     </div>
