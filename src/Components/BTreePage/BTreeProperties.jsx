@@ -1,6 +1,6 @@
 import React from "react";
 import UiComponent from "../UiComponent";
-import "./BTreeProperties.css"
+import "./BTreeProperties.css" 
 
 const TreeProperties = ({ treeProps }) => {
   const propertyRows = [
@@ -14,20 +14,30 @@ const TreeProperties = ({ treeProps }) => {
     { label: "Big Rotations", value: treeProps.bigRotations },
   ];
 
+  const firstSegmentRows = propertyRows.slice(0, 4);
+  const secondSegmentRows = propertyRows.slice(4);
+
   return (
-    <UiComponent
-      title="B-Tree Properties"
-      children={
+    <UiComponent title="B-Tree Properties">
+      <div>
         <div className="btree-properties-segment">
-          {propertyRows.map((row, index) => (
+          {firstSegmentRows.map((row, index) => (
             <div key={index} style={{ display: "flex", justifyContent: "space-between" }}>
               <span>{row.label}:</span>
               <span>{row.value}</span>
             </div>
           ))}
         </div>
-      }
-    />
+        <div className="btree-balancing-segment">
+          {secondSegmentRows.map((row, index) => (
+            <div key={index} style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>{row.label}:</span>
+              <span>{row.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </UiComponent>
   );
 };
 
