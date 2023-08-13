@@ -3,13 +3,7 @@ import UiComponent from "../UiComponent";
 import "./SequenceControl.css";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import FormatAlignLeftIcon from "@mui/icons-material/FormatAlignLeft";
-import FormatAlignCenterIcon from "@mui/icons-material/FormatAlignCenter";
-import FormatAlignRightIcon from "@mui/icons-material/FormatAlignRight";
-import FormatAlignJustifyIcon from "@mui/icons-material/FormatAlignJustify";
-import Stack from "@mui/material/Stack";
-import { drag } from "d3";
-import Draggable from "react-draggable";
+
 
 const SequenceControl = ({
   sequencerProps,

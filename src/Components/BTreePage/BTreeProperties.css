@@ -1,0 +1,5 @@
+.btree-properties-segment {
+    
+    border-top: 1px solid grey; /* Use the correct order for border properties */
+    padding-top: 10px; /* You can remove "px" for values with zero */
+  }
