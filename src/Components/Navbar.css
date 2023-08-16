@@ -1,6 +1,4 @@
-.navbar-logo {
 
-}
 
 .Navbar {
     position: fixed;
@@ -12,7 +10,7 @@
     align-items: center;
     justify-content: start;
     padding: 10px 30px;
-    background-color: #f2f2f2;
+    background-color: #e6ebf0;
     z-index: 9999;
   }
 
@@ -21,9 +19,9 @@
     margin-right: 50px;
   }
   
-  .logo {
+  .title{
     font-weight: bold;
-    font-size: 18px;
+    font-size: 20px;
     margin-right: 20px;
   }
   
@@ -34,14 +32,20 @@
   .segment {
     padding: 10px 20px;
     cursor: pointer;
+
   }
   
   .segment:hover {
-    background-color: #e0e0e0;
+    background-color: #b4c2d1;
   }
   
   .segment.selected {
-    background-color: #a0a0a0;
+    background-color: #365d83;
     color: #fff;
+  }
+
+  .segment-text{
+    font-size: 16px;
+    font-weight: 600;
   }
   

@@ -1,0 +1,81 @@
+.import-export-container {
+  display: flex;
+  flex-direction: column; /* Arrange children vertically */
+  align-items: stretch; /* Stretch children to the full width */
+  width: 92%; /* Ensure the container takes up the full width */
+}
+
+  .import-input-form-button {
+    width: 75px;
+    border: 2px solid #70757a !important;
+    margin: 5px 5px !important;
+    padding: 0px 10px !important;  
+  }
+
+  .reset-input-form-button{
+    width: 75px;
+    background-color: white !important;
+    border: 2px solid #70757a !important;
+    margin: 5px 5px !important;
+    padding: 0px 10px !important; 
+  }
+
+  /* Add styles for the "Close" button inside the grey bar */
+  .import-export-close-button {
+    margin-left: auto;
+    padding: 0px;
+    margin: 0px;
+    margin-left: auto;
+    background-color: transparent;
+    color: red;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .button-row {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .multiline-textbox {
+    margin: 0px auto;
+    resize: none; /* This makes the textarea resizable */
+    overflow: auto; /* This adds scrollbars when content overflows */
+    padding: 10px;
+    resize: vertical;
+    font-size: 16px;
+    border: 1px solid #70757a;
+    border-radius: 0px;
+  }
+
+  .multiline-container{
+    margin: 0px auto;
+    padding: 0px;
+  }
+  
+  /* Add desired styles for the grey bar */
+  .multiline-bar {
+    height: 35px;
+    border: 1px solid #70757a;
+    margin: 0px auto;
+    margin-top: 5px;
+    background-color: white;
+    display: flex;
+    flex-direction: row; 
+    justify-content: start;
+    align-items: center;
+    padding: 0px 10px;
+   
+  }
+
+  .multiline-bar-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-right: 5px;
+  }
+  

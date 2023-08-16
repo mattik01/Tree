@@ -1,117 +1,72 @@
 
 input {
-  width: 50px;
-  padding: 5px;
-  border: 1px solid #aaa;
+  width: 40px;
+  padding: 3px 6px;
+  border: 1px solid #70757a;
   border-radius: 4px;
 }
 
-
-
 .input-form-segment {
   width: 100%;
-  border-top: grey solid 1px;
+  border-top: #70757a solid 1px;
   display: flex; /* Use flexbox to create a flex container */
   flex-direction: column; /* Arrange the child elements in a column */
   align-items: center; /* Center the child elements horizontally */
   padding: 5px 0px;
 }
 
-/* Apply margin to all elements inside an input-form-segment */
-.input-form-segment *{
-  margin : 3px;
-}
-
-
-
-.draggable-icon-container {
-  display: flex;
-  justify-content: space-between; /* Distribute the elements with space between them */
-  align-items: center; /* Vertically center the child elements */
-  top: 0;
-  right: 0;
+.bottom-input-form-segment {
   width: 100%;
-  height: 20px;
-  margin-bottom: 10px;
-  -webkit-user-drag: none;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+  border-top: #70757a solid 1px;
+  display: flex; /* Use flexbox to create a flex container */
+  flex-direction: column; /* Arrange the child elements in a column */
+  align-items: center; /* Center the child elements horizontally */
+  padding: 5px 0px 0px 0px;
 }
 
-.draggable-icon {
-  width: 18px; /* Adjust the size of the icon as needed */
+
+
+  .input-form-button {
+    background-color: white !important;
+    border: 1px solid #70757a !important;
+    margin: 5px 5px !important;
+    padding: 0px 10px !important;
+  }
+
+  .icon-button{
+    background-color: white !important;
+    border-radius: 0px !important;
+    padding: 0px !important;
+    border: 1px solid #70757a !important;
+    border-radius: 5px !important;
+    height: 23px;
+    width: 23px;
+  }
+
+  .input-form-button-fixed-medium {
+    background-color: white !important;
+    border: 1px solid #70757a !important;
+    width: 70px !important;
+    margin: 5px 5px !important;
+    padding: 0px 10px !important;
+  }
+  
+  .line {
+    padding: 3px 0px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+  }
+
+.line > :not(:last-child) {
+  margin-right: 10px; /* Adjust the margin value as needed */
 }
 
-.multiline {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  /* Add desired styles for the grey bar */
-  .multiline-bar {
-    height: 40px;
-    border: 1px solid #ccc;
-    margin-top: 10px;
-    background-color: white;
-    display: flex;
-    flex-direction: row; 
-    justify-content: start;
-    align-items: center;
-    padding: 0px 10px;
-    margin-bottom: 0px;
-  }
-  
-  
-  /* Add styles for the "Close" button inside the grey bar */
-  .close-button {
-    padding: 0px;
-    margin-left: auto;
-    background-color: transparent;
-    color: #f44336;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
-  .multiline-textbox {
-    margin-top: 0px;
-    resize: none; /* This makes the textarea resizable */
-    overflow: auto; /* This adds scrollbars when content overflows */
-    padding: 10px;
-    resize: vertical;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  
-  .inline-input {
-    display: inline-block;
-  }
+.input-form-checkbox{
+  margin: 0px;
+  padding: 0px;
+}
 
-  .button-row {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .inline-label {
-    display: inline-block;
-    margin-right: 5px;
-  }
-  
-  .checkbox-label {
-    margin-left: 10px;
-  }
-  
-  .warning-text {
-    color: red;
-  }
-  
-  .success-text {
-    color: green;
-  }
+.plus-minus-buttons > :not(:last-child) {
+  margin-right: 5px;
+}

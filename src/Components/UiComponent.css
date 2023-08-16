@@ -1,6 +1,6 @@
 .ui-component {
-  background-color: rgba(242,242,242,0.8); 
-  border: grey solid 1px;
+  background-color: rgba(230,235,240,0.7); 
+  border: #70757a solid 1px;
   border-radius: 5px;
   width: 100%;
   padding: 10px;
@@ -8,22 +8,31 @@
   z-index: 10;
 }
 
+.ui-close-button {
+  padding: 0px;
+  background-color: transparent;
+  color: black;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
 .draggable-icon-container {
   display: flex;
-  justify-content: space-between; /* Distribute the elements with space between them */
-  align-items: center; /* Vertically center the child elements */
+  justify-content: space-between;
+  align-items: center;
   top: 0;
   right: 0;
   width: 100%;
   height: 20px;
   margin-bottom: 10px;
-  -webkit-user-drag: none;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
 }
 
+.ui-title {
+  flex-grow: 1; /* Allow the title to take up the available space */
+  text-align: center; /* Center the title text */
+  margin: 0; /* Remove default margin to avoid spacing issues */
+}
 .draggable-icon {
-  width: 18px; /* Adjust the size of the icon as needed */
+  width: 18px !important; /* Adjust the size of the icon as needed */
 }

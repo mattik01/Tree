@@ -3,12 +3,15 @@ import UiComponent from "../UiComponent";
 import "./SequenceControl.css";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 
 
 const SequenceControl = ({
   sequencerProps,
   setSequencerProps,
   setAllowDrag,
+  toggleUiComponentDisplay,
 }) => {
   const handleModeChange = (event, newMode) => {
     setSequencerProps((prevProps) => ({
@@ -35,6 +38,7 @@ const SequenceControl = ({
 
   return (
     <UiComponent
+    toggleWindow={() => toggleUiComponentDisplay("sequenceControl")}
       title="Sequence Control"
       children={
         <div className="sequence-control-container">
@@ -94,25 +98,32 @@ const SequenceControl = ({
           )}
           {sequencerProps.sequenceMode === "step" && (
             <div className="step-container">
-              <button
-                className="direction-button"
-                onClick={() => handleDirectionChange("backward")}
-                disabled={!sequencerProps.hasPrevious}
+              <Button 
+              variant="outlined"
+              color="grey"
+              size="large"
+              className="direction-button"
+              onClick={() => handleDirectionChange("backward")}
+              disabled={!sequencerProps.hasPrevious}
               >
-                Backward ⬅️
-              </button>
-              <button
-                className="direction-button"
-                onClick={() => handleDirectionChange("forward")}
-                disabled={!sequencerProps.inSequence}
+              Backward ⬅️
+              </Button>
+
+              <Button 
+              variant="outlined"
+              color="grey"
+              size="large"
+              className="direction-button"
+              onClick={() => handleDirectionChange("forward")}
+              disabled={!sequencerProps.inSequence}
               >
-                ➡️ Forward
-              </button>
+              ➡️ Forward
+              </Button>
             </div>
           )}
 
           {/* SEQUENCE DISPLAY SEGMENT */}
-          {sequencerProps.keyQueue && (
+          {sequencerProps.keyQueue.length != 0 && (
             <div className="sequence-display-segment">
               {sequencerProps.keyQueue.length > 0 && (
                 <div>

@@ -8,7 +8,7 @@ export default function Navbar({ selectedSegment, onSegmentClick }) {
 
   return (
     <nav className="Navbar">
-      <div className="logo">Tree Visualizer</div>
+      <div className="title">Tree Visualizer</div>
       <div className="segments">
         <div
           className={`segment ${
@@ -16,13 +16,13 @@ export default function Navbar({ selectedSegment, onSegmentClick }) {
           }`}
           onClick={() => handleSegmentClick("B-Tree")}
         >
-          B-Tree
+          <span className="segment-text">B-TREE</span>
         </div>
         <div
           className={`segment ${selectedSegment === "Info" ? "selected" : ""}`}
           onClick={() => handleSegmentClick("Info")}
         >
-          Info
+         <span className="segment-text">INFO</span>
         </div>
       </div>
       <img

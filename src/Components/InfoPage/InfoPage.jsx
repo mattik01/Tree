@@ -59,17 +59,17 @@ const InfoPage = () => {
       <div className="upcoming-section">
         <ul>
           <li>
-            Step-by-step "animated" walkthrough of B-Tree all operations (very
+            Step-by-step "animated" walkthrough of B-Tree of the delete (very
             very arduous)
           </li>
-          <li>
-            Window displaying some interesting tree properties (medium to low
-            arduous)
-          </li>
           <li>Info/Explanation Section for the B-Tree (medium arduous)</li>
-          <li>Compact Mode Display for the B-Tree (very arduous)</li>
+          <li>Add some small animations for UI component changes</li>
+          <li>Give the Website some color</li>
+          <li>Message Log Window (well made)</li>
+          <li>clickable nodes, (maybe for delete)</li>
           <li>Optional Range for all key generation (low arduous)</li>
-          <li>Minimizable UI components (? arduous)</li>
+          <li>Compact Mode Display for the B-Tree (very arduous)</li>
+          <li>Follow action mode for animations</li>
         </ul>
       </div>
     </div>
