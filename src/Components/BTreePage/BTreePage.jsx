@@ -16,7 +16,11 @@ import BTree from "./BTree";
 import determineKeyStringType from "../../utility/DetermineKeyType";
 import generateKeys from "../../utility/GenerateKeys";
 import shuffleArray from "../../utility/ArrayShuffle";
-import { countNodes, countKeys, countHeight} from "../../utility/InfoFromTreeData";
+import {
+  countNodes,
+  countKeys,
+  countHeight,
+} from "../../utility/InfoFromTreeData";
 import FrameSequencer from "./FrameSequencer";
 import Highlight from "./Highlight";
 
@@ -26,10 +30,10 @@ const INIT_BTREE_MAX_KEYS = 3;
 const INIT_BTREE_NKEYS = 10;
 
 let btree = new BTree(INIT_BTREE_MAX_KEYS, null);
-let frameSequencer
+let frameSequencer;
 
 //when the frameSequencer runs in automode, the Interval referance is stored in here.
-let delayedFrameInterval
+let delayedFrameInterval;
 
 export default function BTreePage() {
   // ---------- STATE VARIABLES ----------
@@ -48,20 +52,22 @@ export default function BTreePage() {
   const [plotProps, setPlotProps] = useState({ plotWidth: 0, plotHeight: 0 });
 
   // State for Displaying UI Components
-  const [displayUiComponents, setDisplayUiComponents] = React.useState(() => ['inputForm', 'sequenceControl']);
-
+  const [displayUiComponents, setDisplayUiComponents] = React.useState(() => [
+    "inputForm",
+    "sequenceControl",
+  ]);
 
   // State for Tree Properties
-  let maxKeys = btree.getMaxKeys()
-  let nNodes =  btree.getNodes().length
-  let nKeys = btree.getKeys().length
+  let maxKeys = btree.getMaxKeys();
+  let nNodes = btree.getNodes().length;
+  let nKeys = btree.getKeys().length;
   const [treeProps, setTreeProps] = useState({
     isEmpty: btree.isEmpty(),
     height: countHeight(treeFrame.treeData),
     maxKeys: maxKeys,
     nNodes: nNodes,
     nKeys: nKeys,
-    fillingDegree: nNodes*maxKeys != 0 ? nKeys / (nNodes * maxKeys) : 0,
+    fillingDegree: nNodes * maxKeys != 0 ? nKeys / (nNodes * maxKeys) : 0,
     splits: 0,
     merges: 0,
     smallRotations: 0,
@@ -82,7 +88,7 @@ export default function BTreePage() {
 
   // State for InputForm
   const [formData, setFormData] = useState({
-    orderInput: treeProps.maxKeys +1,
+    orderInput: treeProps.maxKeys + 1,
     orderWarning: "",
     keyInput: "",
     keyWarning: "",
@@ -118,7 +124,7 @@ export default function BTreePage() {
     }
 
     // Reset B-Tree Balancing Count Operations
-    setTreeProps(prevTreeProps => ({
+    setTreeProps((prevTreeProps) => ({
       ...prevTreeProps,
       splits: 0,
       merges: 0,
@@ -149,7 +155,6 @@ export default function BTreePage() {
 
   // effect, that operates the frameSequencer
   useEffect(() => {
-
     if (sequencerProps.inSequence) {
       switch (sequencerProps.sequenceMode) {
         case "instant":
@@ -157,11 +162,11 @@ export default function BTreePage() {
           break;
 
         case "auto":
-
           let delay = 4000 - sequencerProps.sequenceSpeed * 1000;
           delayedFrameInterval = setInterval(
-            () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
-          ,delay)
+            () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps)),
+            delay
+          );
           break;
 
         case "step":
@@ -175,7 +180,7 @@ export default function BTreePage() {
     // Cleanup on unmount/dependency change
     return () => {
       //clearTimeout(delayedFrame);
-      clearInterval(delayedFrameInterval)
+      clearInterval(delayedFrameInterval);
     };
   }, [
     // dependencies
@@ -187,12 +192,13 @@ export default function BTreePage() {
 
   // effect, that adjusts the delayedFrameInterval, whenever the sequenceSpeed is modified
   useEffect(() => {
-    if(sequencerProps.inSequence && sequencerProps.sequenceMode == "auto"){
-     clearInterval(delayedFrameInterval)
-     let delay = 4000 - sequencerProps.sequenceSpeed * 1000;
-          delayedFrameInterval = setInterval(
-            () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps))
-          ,delay)
+    if (sequencerProps.inSequence && sequencerProps.sequenceMode == "auto") {
+      clearInterval(delayedFrameInterval);
+      let delay = 4000 - sequencerProps.sequenceSpeed * 1000;
+      delayedFrameInterval = setInterval(
+        () => setTreeFrame(frameSequencer.getNextFrame(sequencerProps)),
+        delay
+      );
     }
   }, [sequencerProps.sequenceSpeed]);
 
@@ -207,13 +213,24 @@ export default function BTreePage() {
     simpleTreePropsUpdate();
   }, [treeFrame.treeData]);
 
+  // effect, that keeps the export data up to date, if it is displayed
+  useEffect(() => {
+    setTreeProps((prevFormData) => ({
+      ...prevFormData,
+      importExportTextAreaValue:
+        prevFormData.importExportDisplay == "export" && !btree.isEmpty()
+          ? btree.export()
+          : "",
+    }));
+  }, [treeFrame.treeData, formData.importExportDisplay]);
+
   // ---------- FUNTIONS ----------
 
   // Update TreeProps
   function simpleTreePropsUpdate() {
-    let maxKeys = btree.getMaxKeys()
-    let nNodes =  countNodes(treeFrame.treeData)
-    let nKeys = countKeys(treeFrame.treeData)
+    let maxKeys = btree.getMaxKeys();
+    let nNodes = countNodes(treeFrame.treeData);
+    let nKeys = countKeys(treeFrame.treeData);
     setTreeProps((prevTreeProps) => ({
       ...prevTreeProps,
       height: countHeight(treeFrame.treeData),
@@ -221,14 +238,14 @@ export default function BTreePage() {
       maxKeys: maxKeys,
       nNodes: nNodes,
       nKeys: nKeys,
-      fillingDegree: nNodes*maxKeys != 0 ? nKeys / (nNodes * maxKeys) : 0,
+      fillingDegree: nNodes * maxKeys != 0 ? nKeys / (nNodes * maxKeys) : 0,
     }));
   }
 
   function simpleTreeFrameUpdate() {
     setTreeFrame({
       treeData: btree.toTreeData(),
-      highlights: new Highlight()
+      highlights: new Highlight(),
     });
   }
 
@@ -267,7 +284,9 @@ export default function BTreePage() {
     const keyType = determineKeyStringType(keyString);
     if (futureKeys.length > 0) {
       // just check the first Key, whole tree should match that type
-      if (keyType != determineKeyStringType(futureKeys[futureKeys.length -1])) {
+      if (
+        keyType != determineKeyStringType(futureKeys[futureKeys.length - 1])
+      ) {
         return "type mismatch";
       }
     }
@@ -283,20 +302,20 @@ export default function BTreePage() {
   }
 
   function toggleUiComponentDisplay(componentName) {
-    setDisplayUiComponents(prevDisplayUiComponents => {
+    setDisplayUiComponents((prevDisplayUiComponents) => {
       const displayList = [...prevDisplayUiComponents]; // Create a copy of the array
-  
+
       const toggleIndex = displayList.indexOf(componentName);
       if (toggleIndex === -1) {
         displayList.push(componentName); // Add if not present
       } else {
         displayList.splice(toggleIndex, 1); // Remove if present
       }
-  
+
       return displayList; // Update the state
     });
   }
-  
+
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
     setFormData((prevFormData) => ({
@@ -308,7 +327,7 @@ export default function BTreePage() {
   const handleInputButtonClick = (action) => {
     switch (action) {
       case "orderSet":
-        const newMaxKeys = parseInt(formData.orderInput -1, 10);
+        const newMaxKeys = parseInt(formData.orderInput - 1, 10);
 
         if (isNaN(newMaxKeys) || newMaxKeys < 3) {
           setFormData((prevFormData) => ({
@@ -383,12 +402,8 @@ export default function BTreePage() {
               keyWarning: "",
               generateKeyTypeInput:
                 futureKeys.length > 0
-                  ? determineKeyStringType(futureKeys[futureKeys.length -1])
+                  ? determineKeyStringType(futureKeys[futureKeys.length - 1])
                   : "number",
-              importExportTextAreaValue:
-                prevFormData.importExportDisplay == "export" && !btree.isEmpty()
-                  ? btree.export()
-                  : "",
             }));
             break;
         }
@@ -414,22 +429,18 @@ export default function BTreePage() {
           // UpdateFormData
           setFormData((prevFormData) => ({
             ...prevFormData,
-            generateKeyTypeInput: futureKeys.length > 0
-            ? determineKeyStringType(futureKeys[futureKeys.length -1])
-            : "number",
+            generateKeyTypeInput:
+              futureKeys.length > 0
+                ? determineKeyStringType(futureKeys[futureKeys.length - 1])
+                : "number",
             keyInput: "",
             keyWarning: "",
-            importExportTextAreaValue:
-              prevFormData.importExportDisplay == "export" && !btree.isEmpty()
-                ? btree.export()
-                : "",
           }));
           break;
         }
         break;
 
       case "generateGo":
-
         //validate n
         let n = parseInt(formData.generateKeyAmountInput, 10);
         if (isNaN(n) || n < 1 || !Number.isInteger(n)) {
@@ -454,7 +465,9 @@ export default function BTreePage() {
             generatedKeys = keys;
             range = keyRange;
           } else {
-            const type = determineKeyStringType(futureKeys[futureKeys.length -1]);
+            const type = determineKeyStringType(
+              futureKeys[futureKeys.length - 1]
+            );
             keyType = type;
             const { generatedKeys: keys, range: keyRange } = generateKeys(
               n,
@@ -476,12 +489,8 @@ export default function BTreePage() {
             generateRangeInfo: `Generated ${n} ${keyType} keys between ${range[0]} and ${range[1]}`,
             generateKeyTypeInput:
               futureKeys.length > 0
-                ? determineKeyStringType(futureKeys[futureKeys.length -1])
+                ? determineKeyStringType(futureKeys[futureKeys.length - 1])
                 : "number",
-            importExportTextAreaValue:
-              prevFormData.importExportDisplay == "export" && !btree.isEmpty()
-                ? btree.export()
-                : "",
           }));
         }
         break;
@@ -502,7 +511,7 @@ export default function BTreePage() {
         }));
 
         // Reset B-Tree Balancing Operation counts
-        setTreeProps(prevTreeProps => ({
+        setTreeProps((prevTreeProps) => ({
           ...prevTreeProps,
           splits: 0,
           merges: 0,
@@ -547,7 +556,7 @@ export default function BTreePage() {
               importWarning: "",
               generateKeyTypeInput:
                 futureKeys.length > 0
-                  ? determineKeyStringType(futureKeys[futureKeys.length -1])
+                  ? determineKeyStringType(futureKeys[futureKeys.length - 1])
                   : "number",
             }));
 
@@ -630,76 +639,74 @@ export default function BTreePage() {
 
   return (
     <div className="btree-page-container">
-
       {/* TOGGLE DISPLAY BAR */}
       <DisplayComponentsBar
         displayUiComponents={displayUiComponents}
         setDisplayUiComponents={setDisplayUiComponents}
       />
 
-      {/* INPUT FORM WINDOW */}
-      <Draggable
-        bounds="parent" // Set bounds to the calculated boundaries of the plot container
-        disabled={!allowDrag}
-      >
-        <div className="btree-input-form-container">
-        {displayUiComponents.includes("inputForm") &&
-          <BTreeInputForm
-            formData={formData}
-            treeProps={treeProps}
-            futureKeys={futureKeys}
-            onInputChange={handleInputChange}
-            onButtonClick={handleInputButtonClick}
-            setAllowDrag={setAllowDrag}
-            toggleUiComponentDisplay={toggleUiComponentDisplay}
-          />
-        }
+      <div className="btree-canvas-container">
+        {/* INPUT FORM WINDOW */}
+        <Draggable
+          bounds="parent" // Set bounds to the calculated boundaries of the plot container
+          disabled={!allowDrag}
+        >
+          <div className="btree-input-form-container">
+            {displayUiComponents.includes("inputForm") && (
+              <BTreeInputForm
+                formData={formData}
+                treeProps={treeProps}
+                futureKeys={futureKeys}
+                onInputChange={handleInputChange}
+                onButtonClick={handleInputButtonClick}
+                setAllowDrag={setAllowDrag}
+                toggleUiComponentDisplay={toggleUiComponentDisplay}
+              />
+            )}
+          </div>
+        </Draggable>
+
+        {/* SEQUENCE CONTROL WINDOW */}
+        <Draggable
+          bounds="parent" // Set bounds to the calculated boundaries of the plot container
+          disabled={!allowDrag}
+        >
+          <div className="btree-sequence-control-container">
+            {displayUiComponents.includes("sequenceControl") && (
+              <SequenceControl
+                sequencerProps={sequencerProps}
+                setSequencerProps={setSequencerProps}
+                setAllowDrag={setAllowDrag}
+                toggleUiComponentDisplay={toggleUiComponentDisplay}
+              />
+            )}
+          </div>
+        </Draggable>
+
+        {/* TREE PROPERTIES WINDOW */}
+        <Draggable
+          bounds="parent" // Set bounds to the calculated boundaries of the plot container
+        >
+          <div className="btree-tree-properties-container">
+            {displayUiComponents.includes("treeProperties") && (
+              <TreeProperties
+                treeProps={treeProps}
+                toggleUiComponentDisplay={toggleUiComponentDisplay}
+              />
+            )}
+          </div>
+        </Draggable>
+
+        {/* BTREE PLOT */}
+        <div className="btree-plot-container" ref={plotContainerRef}>
+          {!btree.isEmpty() > 0 && (
+            <BTreePlot
+              treeData={treeFrame.treeData}
+              highlights={treeFrame.highlights}
+              plotProps={plotProps}
+            />
+          )}
         </div>
-        
-      </Draggable>
-      
-
-      {/* SEQUENCE CONTROL WINDOW */}
-      <Draggable
-        bounds="parent" // Set bounds to the calculated boundaries of the plot container
-        disabled={!allowDrag}
-      >
-        <div className="btree-sequence-control-container">
-        {displayUiComponents.includes("sequenceControl") &&
-          <SequenceControl
-            sequencerProps={sequencerProps}
-            setSequencerProps={setSequencerProps}
-            setAllowDrag={setAllowDrag}
-            toggleUiComponentDisplay={toggleUiComponentDisplay}
-
-          />
-        }
-        </div>
-      </Draggable>
-
-      {/* TREE PROPERTIES WINDOW */}
-      <Draggable
-        bounds="parent" // Set bounds to the calculated boundaries of the plot container
-      >
-        <div className="btree-tree-properties-container">
-        {displayUiComponents.includes("treeProperties") &&
-          <TreeProperties
-            treeProps={treeProps}
-            toggleUiComponentDisplay={toggleUiComponentDisplay}
-          />
-        }
-        </div>
-      </Draggable>
-
-      {/* BTREE PLOT */}
-      <div className="btree-plot-container" ref={plotContainerRef}>
-        {!btree.isEmpty() > 0 && (
-          <BTreePlot
-            treeData={treeFrame.treeData}
-            highlights={treeFrame.highlights}
-            plotProps={plotProps}
-          />
-        )}
       </div>
     </div>
   );

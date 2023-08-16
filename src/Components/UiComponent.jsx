@@ -1,6 +1,7 @@
 import React from 'react';
 import './UiComponent.css';
-import DraggableIcon from './draggable-icon.svg';
+
+import DraggableIcon from '/draggable-icon.png';
 
 const UiComponent = ({ title, children, toggleWindow }) => {
   return (

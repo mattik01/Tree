@@ -4,7 +4,9 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import Warning from "../Warning";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import { BorderColor } from "@mui/icons-material";
+import Button from "@mui/material/Button";
+
+import "./ImportExportBar.css";
 
 const ImportExportBar = ({
   formData,
@@ -19,29 +21,48 @@ const ImportExportBar = ({
   };
 
   return (
-    <div>
+    <div className="import-export-container">
       {/* BUTTON ROW SECTION */}
       <div className="button-row">
-        <button type="button" onClick={() => onButtonClick("reset")}>
+        <Button
+          variant="contained"
+          size="medium"
+          color="white"
+          className="reset-input-form-button"
+          onClick={() => onButtonClick("reset")}
+          disableElevation
+        >
           reset
-        </button>
-        <button
-          type="button"
+        </Button>
+
+        <Button
+          variant="contained"
+          size="medium"
+          color={
+            formData.importExportDisplay === "import" &&
+            formData.importExportTextAreaValue !== ""
+              ? "success"
+              : "white"
+          }
+          className="import-input-form-button"
           onClick={() => onButtonClick("import")}
-          style={{
-            backgroundColor:
-              formData.importExportDisplay == "import" &&
-              formData.importExportTextAreaValue != ""
-                ? "#8CC63E"
-                : "white",
-          }}
+          disableElevation
         >
           import
-        </button>
-        <button type="button" onClick={() => onButtonClick("export")}>
+        </Button>
+
+        <Button
+          variant="contained"
+          size="medium"
+          color="white"
+          className="reset-input-form-button"
+          onClick={() => onButtonClick("export")}
+          disableElevation
+        >
           export
-        </button>
+        </Button>
       </div>
+
       {formData.importWarning && (
         <Warning
           message={formData.importWarning}
@@ -52,11 +73,11 @@ const ImportExportBar = ({
 
       {/* IMPORT TEXT AREA*/}
       {formData.importExportDisplay == "import" && (
-        <div className="multiline">
+        <div className="multiline-container">
           <div className="multiline-bar">
-            <div>import:</div> {/* Import label */}
+            <span className="multiline-bar-title">IMPORT</span> {/* Import label */}
             <button
-              className="close-button"
+              className="import-export-close-button"
               onClick={() => onButtonClick("closeImportExportArea")}
             >
               &times;
@@ -76,16 +97,24 @@ const ImportExportBar = ({
         </div>
       )}
 
-      {/* Export TEXT AREA*/}
+      {/* Export TEXT AREA */}
       {formData.importExportDisplay == "export" && (
-        <div className="multiline">
+        <div className="multiline-container">
           <div className="multiline-bar">
-            <div>export:</div> {/* Export label */}
+          <span className="multiline-bar-title">EXPORT</span>  {/* Export label */}
             <CopyToClipboard
               text={formData.importExportTextAreaValue}
               onCopy={() => setIsCopied(true)}
             >
-              <button type="button">copy</button>
+              <Button
+                  variant="contained"
+                  size="small"
+                  color="grey"
+                  className="input-form-button"
+                  disableElevation
+                >
+                  copy
+                </Button>
             </CopyToClipboard>
             <Snackbar
               open={isCopied}
@@ -97,7 +126,7 @@ const ImportExportBar = ({
               </MuiAlert>
             </Snackbar>
             <button
-              className="close-button"
+              className="import-export-close-button"
               onClick={() => onButtonClick("closeImportExportArea")}
             >
               &times;

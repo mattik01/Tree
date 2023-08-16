@@ -15,11 +15,12 @@ const Tooltipped = ({ children, tooltipText }) => {
           <span
             style={{
               position: "absolute",
-              top: "-15px",
-              right: "-10px",
+              top: "-14px",
+              right: "-11px",
               padding: "4px",
               zIndex: "1",
               fontSize: "14px",
+              color: "grey"
             }}
           >
             &#8505;

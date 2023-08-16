@@ -4,6 +4,10 @@ import UiComponent from "../UiComponent";
 import Warning from "../Warning";
 import Tooltipped from "../Tooltipped";
 import determineKeyStringType from "../../utility/DetermineKeyType";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import IconButton from "@mui/material/IconButton";
 
 import "./BTreeInputForm.css";
 
@@ -24,7 +28,7 @@ function BTreeInputForm({
           <form>
             {/* ORDER SEGMENT */}
             <div className="input-form-segment">
-              <div className="inline-input">
+              <div className="line">
                 <Tooltipped
                   tooltipText="max number of children for nodes"
                   children={<label htmlFor="orderInput">tree-order (p):</label>}
@@ -41,24 +45,37 @@ function BTreeInputForm({
                   onChange={onInputChange}
                 />
               </div>
-              <button type="button" onClick={() => onButtonClick("orderSet")}>
-                set
-              </button>
-              {formData.orderWarning && (
+
+              <div className="line">
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="lightBlue"
+                  className="input-form-button"
+                  onClick={() => onButtonClick("orderSet")}
+                  disableElevation
+                >
+                  set
+                </Button>
+              </div>
+            </div>
+
+            {formData.orderWarning && (
+              <div className="line">
                 <Warning
                   message={formData.orderWarning}
                   severity={"error"}
                   onClose={() => onButtonClick("closeOrderWarning")}
                 />
-              )}
-            </div>
+              </div>
+            )}
 
             {/* INDIVIDUAL KEY SEGMENT */}
             <div className="input-form-segment">
-              <div className="inline-input">
-              <label htmlFor="keyInput" className="inline-label">
-                        key:
-                      </label>
+              <div className="line">
+                <label htmlFor="keyInput" className="inline-label">
+                  key:
+                </label>
                 <Tooltipped
                   children={
                     <div>
@@ -78,47 +95,58 @@ function BTreeInputForm({
                     "preferably surround keys meant as strings with quotes"
                   }
                 />
+                <div className="plus-minus-buttons">
+                  <IconButton
+                    color="green"
+                    className="icon-button"
+                    variant="outlined"
+                    //className="input-form-button-fixed-medium"
+                    onClick={() => onButtonClick("keyAdd")}
+                    disableElevation
+                  >
+                    <AddIcon />
+                  </IconButton>
+                  <IconButton
+                    color="red"
+                    className="icon-button"
+                    variant="contained"
+                    //className="input-form-button-fixed-medium"
+                    onClick={() => onButtonClick("keyRemove")}
+                    disableElevation
+                  >
+                    <RemoveIcon />
+                  </IconButton>
+                </div>
               </div>
-              <div className="inline-input">
-                <button type="button" onClick={() => onButtonClick("keyAdd")}>
-                  add
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onButtonClick("keyRemove")}
-                >
-                  remove
-                </button>
+              <div className="line">
+                <label htmlFor="allowDuplicates" className="checkbox-label">
+                  <input
+                    className="input-form-checkbox"
+                    onMouseEnter={() => setAllowDrag(false)}
+                    onMouseLeave={() => setAllowDrag(true)}
+                    type="checkbox"
+                    name="allowDuplicates"
+                    id="allowDuplicates"
+                    checked={formData.allowDuplicates}
+                    onChange={onInputChange}
+                  />
+                  Allow Duplicates
+                </label>
               </div>
-              <Tooltipped
-                children={
-                  <label htmlFor="allowDuplicates" className="checkbox-label">
-                    <input
-                      onMouseEnter={() => setAllowDrag(false)}
-                      onMouseLeave={() => setAllowDrag(true)}
-                      type="checkbox"
-                      name="allowDuplicates"
-                      id="allowDuplicates"
-                      checked={formData.allowDuplicates}
-                      onChange={onInputChange}
-                    />
-                    Allow Duplicates
-                  </label>
-                }
-                tooltipText={"applies to the key generator aswell"}
-              />
               {formData.keyWarning && (
-                <Warning
-                  message={formData.keyWarning}
-                  severity={"error"}
-                  onClose={() => onButtonClick("closeKeyWarning")}
-                />
+                <div className="line">
+                  <Warning
+                    message={formData.keyWarning}
+                    severity={"error"}
+                    onClose={() => onButtonClick("closeKeyWarning")}
+                  />
+                </div>
               )}
             </div>
 
             {/* GENERATE KEY SEGMENT */}
             <div className="input-form-segment">
-              <div className="inline-input">
+              <div className="line">
                 <label htmlFor="generateKeyAmountInput">key amount:</label>
                 <input
                   onMouseEnter={() => setAllowDrag(false)}
@@ -131,7 +159,7 @@ function BTreeInputForm({
                   onChange={onInputChange}
                 />
               </div>
-              <div className="inline-input">
+              <div className="line">
                 <label htmlFor="generateKeyOrderInput">key order:</label>
                 <select
                   name="generateKeyOrderInput"
@@ -144,7 +172,7 @@ function BTreeInputForm({
                   <option value="desc">descending</option>
                 </select>
               </div>
-              <div className="inline-input">
+              <div className="line">
                 <label htmlFor="generateKeyTypeInput">key type:</label>
                 {futureKeys.length == 0 ? (
                   <select
@@ -157,13 +185,15 @@ function BTreeInputForm({
                     <option value="string">strings</option>
                   </select>
                 ) : (
-                   // disabled type selector when tree/queue alreay has keys in it 
+                  // disabled type selector when tree/queue alreay has keys in it
                   <Tooltipped
                     children={
                       <select
                         name="generateKeyTypeInput"
                         id="generateKeyTypeInput"
-                        value={determineKeyStringType(futureKeys[futureKeys.length-1])}
+                        value={determineKeyStringType(
+                          futureKeys[futureKeys.length - 1]
+                        )}
                         onChange={onInputChange}
                         disabled={true}
                       >
@@ -171,33 +201,49 @@ function BTreeInputForm({
                         <option value="string">strings</option>
                       </select>
                     }
-                    tooltipText={"Key type always needs to match keys in tree and qeue"}
+                    tooltipText={
+                      "Key type always needs to match keys in tree and qeue"
+                    }
                   />
                 )}
               </div>
 
-              <button type="button" onClick={() => onButtonClick("generateGo")}>
-                generate keys
-              </button>
+              <div className="line">
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="grey"
+                  className="input-form-button"
+                  onClick={() => onButtonClick("generateGo")}
+                  disableElevation
+                >
+                  generate keys
+                </Button>
+              </div>
 
               {formData.generateWarning && (
-                <Warning
-                  message={formData.generateWarning}
-                  severity={"error"}
-                  onClose={() => onButtonClick("closeGenerateWarning")}
-                />
+                <div className="line">
+                  <Warning
+                    message={formData.generateWarning}
+                    severity={"error"}
+                    onClose={() => onButtonClick("closeGenerateWarning")}
+                  />
+                </div>
               )}
+
               {formData.generateRangeInfo && (
-                <Warning
-                  message={formData.generateRangeInfo}
-                  severity={"success"}
-                  onClose={() => onButtonClick("closeGenerateRange")}
-                />
+                <div className="line">
+                  <Warning
+                    message={formData.generateRangeInfo}
+                    severity={"success"}
+                    onClose={() => onButtonClick("closeGenerateRange")}
+                  />
+                </div>
               )}
             </div>
 
             {/* IMPORT/EXPORT SEGMENT */}
-            <div className="input-form-segment">
+            <div className="bottom-input-form-segment">
               <ImportExportBar
                 formData={formData}
                 onInputChange={onInputChange}
