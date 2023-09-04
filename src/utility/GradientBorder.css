@@ -1,0 +1,74 @@
+body {
+	margin: 60px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	grid-gap: 60px;
+}
+
+.border {
+	font-size: 1.6rem;
+	display: grid;
+	place-items: center;
+	min-height: 200px;
+	border: 8px solid;
+	padding: 1rem;
+}
+
+.full {
+	border-image: linear-gradient(45deg, #f49404 #043464) 1;
+}
+
+.sides {
+	border-image: linear-gradient(to right, #1d4874,lightgrey,#f49404) 1 0;
+	border-width: 6px;
+	padding: 0px;
+	margin: 0px;
+}
+.sides-2 {
+	border-image: linear-gradient(to bottom, turquoise, greenyellow) 0 1;
+}
+
+.linear-repeating {
+	border-width: 5px;
+	border-image: repeating-linear-gradient(45deg, turquoise, pink 4%) 1;
+}
+
+.radial-repeating {
+	border-width: 20px;
+	border-image: repeating-radial-gradient(
+			circle at 10px,
+			turquoise,
+			pink 2px,
+			greenyellow 4px,
+			pink 2px
+		)
+		1;
+}
+
+/* border radius example is drawn from this pen: https://codepen.io/shshaw/pen/MqMZGR
+I've added a few comments on why we're using certain properties
+*/
+
+.full-withradius {
+	position: relative;
+	background: #fff;
+
+	/*The background extends to the outside edge of the padding. No background is drawn beneath the border.*/
+	background-clip: padding-box;
+
+	border: solid 8px transparent;
+	border-radius: 0.8rem;
+
+	&:before {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: -1;
+		margin: -8px; /* same as border width */
+		border-radius: inherit; /* inherit container box's radius */
+		background: linear-gradient(to left, turquoise, greenyellow);
+	}
+}

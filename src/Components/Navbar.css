@@ -1,51 +1,50 @@
-
-
 .Navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    padding: 10px 30px;
-    background-color: #e6ebf0;
-    z-index: 9999;
-  }
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 10px 40px;
+  background-color: #e6ebf0;
+  z-index: 99999;
+  box-shadow: 0 2px 6px grey; /* Add the box shadow */
 
-  .navbar-logo {
-    margin-left: auto;
-    margin-right: 50px;
-  }
-  
-  .title{
-    font-weight: bold;
-    font-size: 20px;
-    margin-right: 20px;
-  }
-  
-  .segments {
-    display: flex;
-  }
-  
-  .segment {
-    padding: 10px 20px;
-    cursor: pointer;
+  box-sizing: border-box;
+}
 
-  }
-  
-  .segment:hover {
-    background-color: #b4c2d1;
-  }
-  
-  .segment.selected {
-    background-color: #365d83;
-    color: #fff;
-  }
+.navbar-logo {
+  margin-left: auto;
+  margin-right: 00px;
+}
 
-  .segment-text{
-    font-size: 16px;
-    font-weight: 600;
-  }
-  
+.title {
+  font-weight: bold;
+  font-size: 20px;
+  margin-right: 20px;
+}
+
+.segments {
+  display: flex;
+}
+
+.segment {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.segment:hover {
+  background-color: #b4c2d1;
+}
+
+.segment.selected {
+  background-color: #365d83;
+  color: #fff;
+}
+
+.segment-text {
+  font-size: 16px;
+  font-weight: 600;
+}

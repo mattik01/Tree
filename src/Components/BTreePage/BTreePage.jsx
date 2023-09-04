@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import "./BTreePage.css";
+import "../../utility/GradientBorder.css";
 
 // libraries
 import Draggable from "react-draggable";
+import Button from "@mui/material/Button";
+import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
+import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 
 // components
 import BTreePlot from "./BTreePlot";
@@ -10,19 +14,24 @@ import BTreeInputForm from "./BTreeInputForm";
 import SequenceControl from "./SequenceControl";
 import TreeProperties from "./BTreeProperties";
 import DisplayComponentsBar from "./DisplayComponentsBar";
+import BTreeInfo from "./BTreeInfo";
 
 // scripts
 import BTree from "./BTree";
 import determineKeyStringType from "../../utility/DetermineKeyType";
 import generateKeys from "../../utility/GenerateKeys";
 import shuffleArray from "../../utility/ArrayShuffle";
+import FrameSequencer from "./FrameSequencer";
+import Highlight from "./Highlight";
 import {
   countNodes,
   countKeys,
   countHeight,
 } from "../../utility/InfoFromTreeData";
-import FrameSequencer from "./FrameSequencer";
-import Highlight from "./Highlight";
+import {
+  scrollToTop,
+  scrollDownOneScreen,
+} from "../../utility/WindowScrolling";
 
 // ---------- GLOBAL VARIABLES ----------
 
@@ -644,7 +653,6 @@ export default function BTreePage() {
         displayUiComponents={displayUiComponents}
         setDisplayUiComponents={setDisplayUiComponents}
       />
-
       <div className="btree-canvas-container">
         {/* INPUT FORM WINDOW */}
         <Draggable
@@ -705,6 +713,71 @@ export default function BTreePage() {
               highlights={treeFrame.highlights}
               plotProps={plotProps}
             />
+          )}
+        </div>
+
+        {/* BTREE SHOW INFO BUTTON */}
+        <div className="btree-show-info-button-container">
+          <Button
+            className="btree-info-button"
+            variant="text"
+            size="large"
+            color="blue"
+            startIcon={<KeyboardDoubleArrowDownIcon />}
+            endIcon={<KeyboardDoubleArrowDownIcon />}
+            onClick={() => {
+              setDisplayUiComponents((prevDisplayUiComponents) => {
+                const displayList = [...prevDisplayUiComponents]; // Create a copy of the array
+                const toggleIndex = displayList.indexOf("treeInfo");
+                if (toggleIndex === -1) {
+                  displayList.push("treeInfo"); // Add if not present
+                }
+                return displayList; // Update the state
+              });
+              setTimeout(() => {
+                // Zoom down one full screen height
+                scrollDownOneScreen();
+              }, 100); // 100 milliseconds = 0.1 seconds
+            }}
+          >
+            show B-Tree Info
+          </Button>
+        </div>
+
+        {/* BTREE INFO */}
+        <div className="btree-info-container">
+          {displayUiComponents.includes("treeInfo") && (
+            <div class="sides border">
+              {/* BTREE HIDE INFO BUTTON */}
+              <div className="btree-hide-info-button-container">
+                <Button
+                  className="btree-info-button"
+                  variant="text"
+                  size="large"
+                  color="orange"
+                  startIcon={<KeyboardDoubleArrowUpIcon />}
+                  endIcon={<KeyboardDoubleArrowUpIcon />}
+                  onClick={() => {
+                    scrollToTop();
+
+                    setTimeout(() => {
+                      setDisplayUiComponents((prevDisplayUiComponents) => {
+                        const displayList = [...prevDisplayUiComponents];
+                        const toggleIndex = displayList.indexOf("treeInfo");
+                        if (toggleIndex !== -1) {
+                          displayList.splice(toggleIndex, 1);
+                        }
+                        return displayList;
+                      });
+                    }, 500); // Delay of 0.5 seconds (500 milliseconds)
+                  }}
+                >
+                  hide B-Tree Info
+                </Button>
+              </div>
+
+              <BTreeInfo />
+            </div>
           )}
         </div>
       </div>

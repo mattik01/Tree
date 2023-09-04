@@ -13,7 +13,7 @@ const DisplayComponentsBar = ({
   };
 
   return (
-    <div className="navbar">
+    <div className="toggle-navbar">
       <ToggleButtonGroup
         size="medium"
         value={displayUiComponents}

@@ -5,30 +5,36 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh; /* Set the body height to occupy the full viewport height */
+  
 }
 
 
 /* Styles for .btree-container */
 .btree-page-container {
+  border-bottom: 6px solid #1d4874; 
+  margin-bottom: 0;
+  width: 100%;
   padding : 0;
   position: relative;
   display: flex;
   flex-direction: column;
-  margin-top: 70px; /* Set a 50px margin at the top */
-  height: calc(100vh - 76px); /* Calculate the height to fill the remaining screen space after considering the top margin */
+}
+
+.display-toggle-container{
+  width: 100%;
 }
 
 .btree-canvas-container {
+  width: 100%;
   padding : 0;
-  position: relative;
   display: flex;
   flex-direction: column;
-  margin-top: 0px; /* Set a 50px margin at the top */
   height: calc(100vh - 76px); /* Calculate the height to fill the remaining screen space after considering the top margin */
 }
 
 /* Styles for .btree-plot-container */
 .btree-plot-container {
+  margin-top: 0px;
   width: 100%;
   flex: 1;
   background-color: white; /* Set the background color for the plot container */
@@ -64,5 +70,53 @@ body {
   box-sizing: border-box;
   z-index: 1;
 }
+
+.btree-info-container {
+  position: absolute;
+  margin: 0;
+  margin-top: calc(100vh - 76px);
+  width: 100%;
+  padding: 0;
+  background-color: #fef6eb;
+}
+
+.btree-show-info-button-container {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  margin: auto; /* Center horizontally */
+  width: 100%;
+  max-width: 230px;
+  box-sizing: border-box;
+  z-index: 1;
+  /* Other container styles */
+}
+
+.btree-info-button {
+  font-weight: 700 !important;
+}
+
+.btree-hide-info-button-container {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  right: 0;
+  margin: auto; /* Center horizontally */
+  width: 100%;
+  max-width: 230px;
+  box-sizing: border-box;
+  z-index: 1;
+  /* Other container styles */
+}
+
+.btree-info-button {
+  width: 230px !important;
+  font-weight: 700 !important;
+}
+
+
+
+
 
 
