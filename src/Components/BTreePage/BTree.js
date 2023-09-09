@@ -15,6 +15,11 @@ function pushTreeFrame(tree, highlight) {
     tree._frameBufferRef.push({
       treeData: tree.toTreeData(),
       highlights: highlight,
+
+      splits: tree._splitCounter,
+      merges: tree._mergeCounter,
+      smallRotations: tree._smallRotationCounter,
+      bigRotations: tree._bigRotationCounter,
     });
   }
 }
@@ -24,6 +29,11 @@ function pushTreeFrameCustomData(tree, highlight, treeData) {
     tree._frameBufferRef.push({
       treeData: treeData,
       highlights: highlight,
+
+      splits: tree._splitCounter,
+      merges: tree._mergeCounter,
+      smallRotations: tree._smallRotationCounter,
+      bigRotations: tree._bigRotationCounter,
     });
   }
 }
@@ -301,12 +311,13 @@ BTreeNode.prototype.split = function (key, keyRightChild, treeDataSnapshot, pare
         this._keyCount--
         }
   
-  this._tree.registerSplit()
 
   // split into two childs and key
   var medianIndex = Math.floor(keys.length / 2);
   var medianKey = keys[medianIndex];
   var i;
+
+  this._tree._splitCounter++;
 
         // FRAME SEGEMENT //
         if(this._tree._sequenceMode){
@@ -797,6 +808,18 @@ function BTree(maxKeys, setTreeProps) {
   this._maxKeys = maxKeys;
   this._idCounter = 0;
   this._root = new BTreeNode(this, this._maxKeys);
+
+  this._splitCounter = 0;
+  this._mergeCounter = 0;
+  this._smallRotationCounter = 0;
+  this._bigRotationCounter = 0;
+}
+
+BTree.prototype.resetCounters = function(){
+  this._splitCounter = 0;
+  this._mergeCounter = 0;
+  this._smallRotationCounter = 0;
+  this._bigRotationCounter = 0;
 }
 
 BTree.prototype.isEmpty = function () {
@@ -882,42 +905,5 @@ BTree.prototype.export = function () {
     treeData: this.toTreeData(),
   });
 };
-
-BTree.prototype.registerSplit = function() {
-  if(this._setTreeProps){
-    this._setTreeProps(prevTreeProps => ({
-      ...prevTreeProps,
-      splits: prevTreeProps.splits + 1
-    }));
-  }
-};
-
-BTree.prototype.registerMerge = function() {
-  if(this._setTreeProps){
-    this._setTreeProps(prevTreeProps => ({
-      ...prevTreeProps,
-      merges: prevTreeProps.merges + 1
-    }));
-  }
-}
-
-BTree.prototype.registerSmallRotation = function() {
-  if(this._setTreeProps){
-    this._setTreeProps(prevTreeProps => ({
-      ...prevTreeProps,
-      smallRotations: prevTreeProps.smallRotations + 1
-    }));
-  }
-}
-
-BTree.prototype.registerBigRotation = function() {
-  if(this._setTreeProps){
-    this._setTreeProps(prevTreeProps => ({
-      ...prevTreeProps,
-      bigRotations: prevTreeProps.bigRotations + 1
-    }));
-  }
-}
-
 
 export default BTree;

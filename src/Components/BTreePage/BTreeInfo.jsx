@@ -127,7 +127,7 @@ const BTreeInfo = () => {
 
         <div className="info-section-segment-text">
           <p>
-            The B-Tree is widely used in real-world applications, especially in
+            The B-Tree is/was widely used in real-world applications, especially in
             file and database systems. Even more common are variations of the
             B-Tree, improving the original concept in different ways.
           </p>
