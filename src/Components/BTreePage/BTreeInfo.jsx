@@ -337,11 +337,10 @@ const BTreeInfo = () => {
               </li>
               <ol>
                 <li>
-                  Locate the biggest key of the left sub-tree or the smallest of the right
-                  sub-tree.
+                  Locate the predecessor, i.e. the biggest key of the left sub-tree, by moving down to the leaf level always through the rightmost child. The last key of that node is what you are looking for.
                 </li>
                 <li>
-                  Remove it from its node and use it as a replacement for
+                  Remove the predecessor from its node and use it as a replacement for
                   the to-be-deleted key.
                 </li>
                 <li>
@@ -402,8 +401,8 @@ const BTreeInfo = () => {
                   </li>
                   <li>
                     If the siblings were not leaves, the rotation sibling will
-                    leave a parentless subtree, at the position where its key
-                    was removed. That subtree needs to be appended to the
+                    leave a parentless sub-tree, at the position where its key
+                    was removed. That sub-tree needs to be appended to the
                     underflow node, at the position where it gained its new key,
                     as the outermost child.
                   </li>
