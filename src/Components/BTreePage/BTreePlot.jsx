@@ -437,7 +437,7 @@ export default function BTreePlot({ treeData, highlights, plotProps }) {
       scaleExtent={{ max: 5, min: 0.05 }}
       separation={{ nonSiblings: 1, siblings: 1 }}
       translate={{ x: plotProps.plotWidth / 2, y: plotProps.plotHeight / 4 }}
-      zoom={1.5}
+      zoom={1.25}
     />
   );
 }

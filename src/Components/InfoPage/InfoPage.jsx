@@ -60,12 +60,14 @@ const InfoPage = () => {
         <ul>
           <li>
             Step-by-step "animated" walkthrough of B-Tree of the delete (very
-            very arduous)
+            very arduous) (work in progress)
           </li>
-          <li>Info/Explanation Section for the B-Tree (medium arduous)</li>
+          <li>See Example button in Info Segment</li>
+          <li>__________________________________________</li>
+          <li>Below, Low prio ↓↓↓</li>
           <li>Add some small animations for UI component changes</li>
-          <li>Give the Website some color</li>
-          <li>Message Log Window (well made)</li>
+
+          <li>Rebalance Log Window (well made)</li>
           <li>clickable nodes, (maybe for delete)</li>
           <li>Optional Range for all key generation (low arduous)</li>
           <li>Compact Mode Display for the B-Tree (very arduous)</li>

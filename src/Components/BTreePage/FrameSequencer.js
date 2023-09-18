@@ -15,7 +15,6 @@ class FrameSequencer {
   getFinalFrame(sequencerProps) {
     this.tree.sequenceMode = false;
 
-
     for (let i = 0; i < sequencerProps.keyQueue.length; i++) {
       if (sequencerProps.keyQueue[i][0] === "add") {
         this.tree.add(sequencerProps.keyQueue[i][1]);
@@ -31,12 +30,17 @@ class FrameSequencer {
       doBackward: false,
       hasPrevious: false,
       inSequence: false,
-      keyQueue: []
+      keyQueue: [],
     }));
 
     return {
       treeData: this.tree.toTreeData(),
       highlights: new Highlight(),
+
+      splits: this.tree._splitCounter,
+      merges: this.tree._mergeCounter,
+      smallRotations: this.tree._smallRotationCounter,
+      bigRotations: this.tree._bigRotationCounter,
     };
   }
 
@@ -73,6 +77,11 @@ class FrameSequencer {
         return {
           treeData: this.tree.toTreeData(),
           highlights: new Highlight(),
+
+          splits: this.tree._splitCounter,
+          merges: this.tree._mergeCounter,
+          smallRotations: this.tree._smallRotationCounter,
+          bigRotations: this.tree._bigRotationCounter,
         };
       }
     }
@@ -110,7 +119,6 @@ class FrameSequencer {
         ...prevSequencerProps,
         keyQueue: keyQueue,
       }));
-
     }
     return false;
   }
@@ -118,15 +126,21 @@ class FrameSequencer {
   addKeys(keyList) {
     this.setSequencerProps((prevSequencerProps) => ({
       ...prevSequencerProps,
-      keyQueue: [...prevSequencerProps.keyQueue, ...keyList.map(key => ["add", key])],
+      keyQueue: [
+        ...prevSequencerProps.keyQueue,
+        ...keyList.map((key) => ["add", key]),
+      ],
     }));
     this.newSequence();
   }
-  
+
   removeKeys(keyList) {
     this.setSequencerProps((prevSequencerProps) => ({
       ...prevSequencerProps,
-      keyQueue: [...prevSequencerProps.keyQueue, ...keyList.map(key => ["remove", key])],
+      keyQueue: [
+        ...prevSequencerProps.keyQueue,
+        ...keyList.map((key) => ["remove", key]),
+      ],
     }));
     this.newSequence();
   }
