@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import Highlight from "./Highlight";
-import _ from 'lodash';
+import _ from "lodash";
 
 function arrayOfSize(size) {
   var a = Array(size);
@@ -191,45 +191,12 @@ BTreeNode.prototype.insertKey = function (key) {
 BTreeNode.prototype.insertSplit = function (split) {
   // splited child
   var child = split.left;
-  let subTreeHighlightAt = split.subTreeHighlightAt;
 
   var pos = this._keyCount;
   while (pos > 0 && this._childs[pos] !== child) {
-    // FRAME SEGMENT //
-    if (this._tree._sequenceMode) {
-      let highlight = new Highlight();
-      highlight.addNodeIndexHighlight(child._id, 0, "");
-      highlight.addNodeSeparatorHighlight(this._id, pos, `${split.key} ?`);
-      if (subTreeHighlightAt) {
-        highlight.addHighlightedSubtree(
-          subTreeHighlightAt,
-          [0],
-          split.treeDataSnapshot
-            ? split.treeDataSnapshot
-            : this._tree.toTreeData()
-        );
-      }
-      pushTreeFrameCustomData(this._tree, highlight, split.treeDataSnapshot);
-    }
-
     this._keys[pos] = this._keys[pos - 1];
     this._childs[pos + 1] = this._childs[pos];
     pos--;
-  }
-  // FRAME SEGMENT //
-  if (this._tree._sequenceMode) {
-    let highlight = new Highlight();
-    highlight.addNodeSeparatorHighlight(this._id, pos, `${split.key} ✓`);
-    if (subTreeHighlightAt) {
-      highlight.addHighlightedSubtree(
-        subTreeHighlightAt,
-        [0],
-        split.treeDataSnapshot
-          ? split.treeDataSnapshot
-          : this._tree.toTreeData()
-      );
-    }
-    pushTreeFrameCustomData(this._tree, highlight, split.treeDataSnapshot);
   }
 
   this._keys[pos] = split.key;
@@ -295,6 +262,7 @@ BTreeNode.prototype.split = function (
 
   // FRAME SEGEMENT //
   if (this._tree._sequenceMode) {
+    if(!subTreeHighlightAt){
     let highlight = new Highlight();
     highlight.addNodeHighlight(this._id, false, "Finding position");
     highlight.addNodeSeparatorHighlight(
@@ -302,19 +270,14 @@ BTreeNode.prototype.split = function (
       pos,
       `${key} ${keys[pos - 1] > key ? " ?" : " ✓"}`
     );
-    if (subTreeHighlightAt) {
-      highlight.addHighlightedSubtree(
-        subTreeHighlightAt,
-        [0],
-        treeDataSnapshot ? treeDataSnapshot : this._tree.toTreeData()
-      );
-    }
+    
     pushTreeFrameCustomData(
       this._tree,
       highlight,
       treeDataSnapshot ? treeDataSnapshot : this._tree.toTreeData()
     );
   }
+}
 
   while (pos > 0 && keys[pos - 1] > key) {
     keys[pos] = keys[pos - 1];
@@ -323,6 +286,7 @@ BTreeNode.prototype.split = function (
 
     // FRAME SEGEMENT //
     if (this._tree._sequenceMode) {
+      if(!subTreeHighlightAt){
       let highlight = new Highlight();
       highlight.addNodeHighlight(this._id, false, "Finding position");
       highlight.addNodeSeparatorHighlight(
@@ -330,19 +294,13 @@ BTreeNode.prototype.split = function (
         pos,
         `${key} ${keys[pos - 1] > key ? " ?" : " ✓"}`
       );
-      if (subTreeHighlightAt) {
-        highlight.addHighlightedSubtree(
-          subTreeHighlightAt,
-          [0],
-          treeDataSnapshot ? treeDataSnapshot : this._tree.toTreeData()
-        );
-      }
       pushTreeFrameCustomData(
         this._tree,
         highlight,
         treeDataSnapshot ? treeDataSnapshot : this._tree.toTreeData()
       );
     }
+  }
   }
 
   keys[pos] = key;
@@ -420,7 +378,8 @@ BTreeNode.prototype.split = function (
     right._keyCount += 1;
   }
   right._childs[keys.length - medianIndex - 1] = childs[keys.length];
-  // FRAME SEGMENT //
+
+  // FRAME SEGEMENT //
   treeDataSnapshot = this._tree.toTreeData();
   let tempID = this._tree._idCounter + 10;
   if (this._tree._sequenceMode) {
@@ -428,12 +387,10 @@ BTreeNode.prototype.split = function (
     let previousKeyCount = this._keyCount;
     let previousChilds = this._childs;
     let previousID = this._id;
-
     let leftCopy = new BTreeNode(this._tree, this._maxKeys);
     leftCopy._keyCount = this._keyCount;
     leftCopy._keys = this._keys.slice();
     leftCopy._childs = this._childs;
-
     this._id = tempID;
     this._keyCount = 1;
     this._keys = this._keys.map((x) => null);
@@ -441,16 +398,13 @@ BTreeNode.prototype.split = function (
     this._childs = this._childs.map((x) => null);
     this._childs[0] = leftCopy;
     this._childs[1] = right;
-
     treeDataSnapshot = this._tree.toTreeData();
-
     let highlight = new Highlight();
     highlight.addNodeIndexHighlight(this._id, 0, "");
     highlight.addNodeHighlight(this._id, true, "");
     highlight.addNodeHighlight(this._childs[0]._id, true, "");
     highlight.addNodeHighlight(this._childs[1]._id, true, "");
     pushTreeFrameCustomData(this._tree, highlight, treeDataSnapshot);
-
     highlight = new Highlight();
     highlight.addNodeHighlight(
       this._id,
@@ -460,15 +414,15 @@ BTreeNode.prototype.split = function (
     this._tree._root != this
       ? highlight.addHighlightedSubtree(this._id, [0], treeDataSnapshot)
       : highlight.addNodeIndexHighlight(this._id, 0, "");
-
     pushTreeFrameCustomData(this._tree, highlight, treeDataSnapshot);
-
     if (parent) {
+      let separatorIndex = parent._childs.indexOf(this);
       highlight = new Highlight();
       this._tree._root != this
         ? highlight.addHighlightedSubtree(this._id, [0], treeDataSnapshot)
         : highlight.addNodeIndexHighlight(this._id, 0, "");
       highlight.addNodeHighlight(parent._id, true, "");
+      highlight.addNodeSeparatorHighlight(parent._id, separatorIndex, "");
       highlight.addEdgeHighlightFromNodeId(parent._id, tempID, true);
       pushTreeFrameCustomData(this._tree, highlight, treeDataSnapshot);
     }
@@ -507,122 +461,145 @@ BTreeNode.prototype.remove = function (key) {
       }
       let childIndex = this._childs.indexOf(child);
 
-          // FRAME SEGMENT //
-          if (this._tree._sequenceMode) {
-          for (let i = this._keyCount * 2; i >= Math.max(childIndex * 2, 0); i--) {
-            if (!((this._keyCount * 2 - i) % 2 === 0)) {
-              // highlight keyslot
-              let highlight = new Highlight();
-              highlight.addNodeHighlight(this._id, false, `Finding Key`);
-              highlight.addNodeIndexHighlight(
-                this._id,
-                (i - 1) / 2,
-                `${key} ?`
-              );
-              pushTreeFrame(this._tree, highlight);
-            } else {
-              // highlight separator
-              let highlight = new Highlight();
-              highlight.addNodeHighlight(this._id, false, `Finding Key`);
-              highlight.addNodeSeparatorHighlight(
-                this._id,
-                i / 2,
-                `${
-                  i != 0 * 2 ? String(this._keys[i / 2 - 1]) + " < " : ""
-                }${key}${
-                  i != this._keyCount * 2 ? " < " + String(this._keys[i / 2]) : ""
-                }${childIndex == i / 2 ? " ✓" : " ?"}  `
-              );
-              pushTreeFrame(this._tree, highlight);
-            }
+      // FRAME SEGMENT //
+      if (this._tree._sequenceMode) {
+        for (
+          let i = this._keyCount * 2;
+          i >= Math.max(childIndex * 2, 0);
+          i--
+        ) {
+          if (!((this._keyCount * 2 - i) % 2 === 0)) {
+            // highlight keyslot
+            let highlight = new Highlight();
+            highlight.addNodeHighlight(this._id, false, `Finding Key`);
+            highlight.addNodeIndexHighlight(this._id, (i - 1) / 2, `${key} ?`);
+            pushTreeFrame(this._tree, highlight);
+          } else {
+            // highlight separator
+            let highlight = new Highlight();
+            highlight.addNodeHighlight(this._id, false, `Finding Key`);
+            highlight.addNodeSeparatorHighlight(
+              this._id,
+              i / 2,
+              `${
+                i != 0 * 2 ? String(this._keys[i / 2 - 1]) + " < " : ""
+              }${key}${
+                i != this._keyCount * 2 ? " < " + String(this._keys[i / 2]) : ""
+              }${childIndex == i / 2 ? " ✓" : " ?"}  `
+            );
+            pushTreeFrame(this._tree, highlight);
           }
-          let highlight = new Highlight();
-          highlight.addEdgeHighlightFromNodeId(
-            this._id,
-            this._childs[childIndex]._id,
-            true
-          );
-          highlight.addNodeHighlight(this._childs[childIndex]._id, true, "");
-          pushTreeFrame(this._tree, highlight);
-          }
-
+        }
+        let highlight = new Highlight();
+        highlight.addEdgeHighlightFromNodeId(
+          this._id,
+          this._childs[childIndex]._id,
+          true
+        );
+        highlight.addNodeHighlight(this._childs[childIndex]._id, true, "");
+        pushTreeFrame(this._tree, highlight);
+      }
 
       var result = child.remove(key);
       this.rebalance(childIndex);
       return result;
-
-      
     } else {
       // Internal Node remove
 
-          // FRAME SEGMENT //
-          if (this._tree._sequenceMode) {
-            for (let i = this._keyCount * 2; i >= Math.max(keyIndex* 2 + 1, 1); i--) {
-              if (!((this._keyCount * 2 - i) % 2 === 0)) {
-                // highlight keyslot
-                let highlight = new Highlight();
-                highlight.addNodeHighlight(this._id, false, `Finding Key`);
-                highlight.addNodeIndexHighlight(
-                  this._id,
-                  (i - 1) / 2,
-                  `${key}${keyIndex*2 + 1 == i ? " ✓" : " ?"}`
-                );
-                pushTreeFrame(this._tree, highlight);
-              } else {
-                // highlight separator
-                let highlight = new Highlight();
-                highlight.addNodeHighlight(this._id, false, `Finding Key`);
-                highlight.addNodeSeparatorHighlight(
-                  this._id,
-                  i / 2,
-                  `${
-                    i != 0 * 2 ? String(this._keys[i / 2 - 1]) + " < " : ""
-                  }${key}${
-                    i != this._keyCount * 2 ? " < " + String(this._keys[i / 2]) : ""
-                  } ?`
-                );
-                pushTreeFrame(this._tree, highlight);
-              }
-            }
+      // FRAME SEGMENT //
+      if (this._tree._sequenceMode) {
+        for (
+          let i = this._keyCount * 2;
+          i >= Math.max(keyIndex * 2 + 1, 1);
+          i--
+        ) {
+          if (!((this._keyCount * 2 - i) % 2 === 0)) {
+            // highlight keyslot
             let highlight = new Highlight();
-            highlight.addNodeHighlight(this._id, false, "");
-            highlight.addNodeIndexHighlight(this._id, keyIndex, `Replace Key with Predecessor`)
+            highlight.addNodeHighlight(this._id, false, `Finding Key`);
+            highlight.addNodeIndexHighlight(
+              this._id,
+              (i - 1) / 2,
+              `${key}${keyIndex * 2 + 1 == i ? " ✓" : " ?"}`
+            );
             pushTreeFrame(this._tree, highlight);
-
-            highlight = new Highlight();
-            highlight.addNodeIndexHighlight(this._id, keyIndex, "")
-            highlight.addEdgeHighlightFromNodeId(this._id,this._childs[keyIndex]._id, true)
-            highlight.addNodeHighlight(this._childs[keyIndex]._id, true, "")
-            pushTreeFrame(this._tree, highlight);
-
-            highlight = new Highlight();
-            highlight.addNodeIndexHighlight(this._id, keyIndex, "")
-            highlight.addNodeHighlight(this._childs[keyIndex]._id, false, `Find Predecessor`)
+          } else {
+            // highlight separator
+            let highlight = new Highlight();
+            highlight.addNodeHighlight(this._id, false, `Finding Key`);
+            highlight.addNodeSeparatorHighlight(
+              this._id,
+              i / 2,
+              `${
+                i != 0 * 2 ? String(this._keys[i / 2 - 1]) + " < " : ""
+              }${key}${
+                i != this._keyCount * 2 ? " < " + String(this._keys[i / 2]) : ""
+              } ?`
+            );
             pushTreeFrame(this._tree, highlight);
           }
+        }
+        let highlight = new Highlight();
+        highlight.addNodeHighlight(this._id, false, "");
+        highlight.addNodeIndexHighlight(
+          this._id,
+          keyIndex,
+          `Replace Key with Predecessor`
+        );
+        pushTreeFrame(this._tree, highlight);
+
+        highlight = new Highlight();
+        highlight.addNodeIndexHighlight(this._id, keyIndex, "");
+        highlight.addEdgeHighlightFromNodeId(
+          this._id,
+          this._childs[keyIndex]._id,
+          true
+        );
+        highlight.addNodeHighlight(this._childs[keyIndex]._id, true, "");
+        pushTreeFrame(this._tree, highlight);
+
+        highlight = new Highlight();
+        highlight.addNodeIndexHighlight(this._id, keyIndex, "");
+        highlight.addNodeHighlight(
+          this._childs[keyIndex]._id,
+          false,
+          `Find Predecessor`
+        );
+        pushTreeFrame(this._tree, highlight);
+      }
 
       let highlightSnapshot = new Highlight();
 
-          // FRAME SEGMENT //
-          if (this._tree._sequenceMode) {
-            highlightSnapshot.addNodeIndexHighlight(this._id, keyIndex, "")
-          }
+      // FRAME SEGMENT //
+      if (this._tree._sequenceMode) {
+        highlightSnapshot.addNodeIndexHighlight(this._id, keyIndex, "");
+      }
 
       // replace key with max key from left child
       child = this._childs[keyIndex];
-      let {maxKey, node} = child.extractMax(highlightSnapshot);
+      let { maxKey, node } = child.extractMax(highlightSnapshot);
 
-          // FRAME FRAGMENT //
-          let highlight = new Highlight();
-          highlight.addNodeIndexHighlight(this._id, keyIndex, `Replace with ${maxKey}`)
-          highlight.addNodeHighlight(this._id,true, "")
-          highlight.addNodeIndexHighlight(node._id, node._keyCount -1, `Remove ${maxKey}`)
-          highlight.addNodeHighlight(node._id,true, "")
-          pushTreeFrame(this._tree, highlight);
-        
-      this._keys[keyIndex] = maxKey
+      // FRAME FRAGMENT //
+      if (this._tree._sequenceMode) {
+        let highlight = new Highlight();
+        highlight.addNodeIndexHighlight(
+          this._id,
+          keyIndex,
+          `Replace with ${maxKey}`
+        );
+        highlight.addNodeHighlight(this._id, true, "");
+        highlight.addNodeIndexHighlight(
+          node._id,
+          node._keyCount - 1,
+          `Remove ${maxKey}`
+        );
+        highlight.addNodeHighlight(node._id, true, "");
+        pushTreeFrame(this._tree, highlight);
+      }
+
+      this._keys[keyIndex] = maxKey;
       child.removeMax();
-      
+
       this.rebalance(keyIndex);
 
       return true;
@@ -650,36 +627,38 @@ BTreeNode.prototype.rebalance = function (childIndex) {
 
   // TRY MERGING
 
-  if((childIndex > 0 && this._childs[childIndex -1]._keyCount == minKeys) || 
-    (childIndex < this._keyCount && this._childs[childIndex + 1]._keyCount == minKeys)){
-    if(childIndex > 0 && this._childs[childIndex -1]._keyCount == minKeys){
+  if (
+    (childIndex > 0 && this._childs[childIndex - 1]._keyCount == minKeys) ||
+    (childIndex < this._keyCount &&
+      this._childs[childIndex + 1]._keyCount == minKeys)
+  ) {
+    if (childIndex > 0 && this._childs[childIndex - 1]._keyCount == minKeys) {
       // left merge
 
-          // FRAME SEGMENT //
-          if (this._tree._sequenceMode) {
-            let highlight = new Highlight();
-            highlight.addNodeHighlight(child._id, true, "Merge with left Sibling");
-            highlight.addNodeHighlight(this._childs[childIndex-1]._id,true, "")
-            pushTreeFrame(this._tree, highlight);
-          }
+      // FRAME SEGMENT //
+      if (this._tree._sequenceMode) {
+        let highlight = new Highlight();
+        highlight.addNodeHighlight(child._id, true, "Merge with left Sibling");
+        highlight.addNodeHighlight(this._childs[childIndex - 1]._id, true, "");
+        pushTreeFrame(this._tree, highlight);
+      }
 
       childIndex -= 1;
-    }
-    else{
-          // FRAME SEGMENT //
-          if (this._tree._sequenceMode) {
-            let highlight = new Highlight();
-            highlight.addNodeHighlight(child._id, true, "Merge with right Sibling");
-            highlight.addNodeHighlight(this._childs[childIndex + 1]._id,true, "")
-            pushTreeFrame(this._tree, highlight);
-          }
+    } else {
+      // FRAME SEGMENT //
+      if (this._tree._sequenceMode) {
+        let highlight = new Highlight();
+        highlight.addNodeHighlight(child._id, true, "Merge with right Sibling");
+        highlight.addNodeHighlight(this._childs[childIndex + 1]._id, true, "");
+        pushTreeFrame(this._tree, highlight);
+      }
     }
 
     //performing the merge
     // childIndex will point to the *left* node of two merged nodes
-    let leftKeyCount = this._childs[childIndex]._keyCount
+    let leftKeyCount = this._childs[childIndex]._keyCount;
     var merged = this.mergeChilds(childIndex);
-  
+
     for (var i = childIndex; i < this._keyCount - 1; i += 1) {
       this._keys[i] = this._keys[i + 1];
     }
@@ -689,41 +668,57 @@ BTreeNode.prototype.rebalance = function (childIndex) {
     this._keyCount--;
     this._childs[childIndex] = merged;
 
-    this._tree._mergeCounter++
+    this._tree._mergeCounter++;
 
-        // FRAME SEGMENT //
-        if (this._tree._sequenceMode) {
-          let highlight = new Highlight();
-          highlight.addNodeHighlight(this._childs[childIndex]._id, true, "Merged node")
-          highlight.addNodeIndexHighlight(this._childs[childIndex]._id, leftKeyCount,"")
-          pushTreeFrame(this._tree, highlight);
-        }
+    // FRAME SEGMENT //
+    if (this._tree._sequenceMode) {
+      let highlight = new Highlight();
+      highlight.addNodeHighlight(
+        this._childs[childIndex]._id,
+        true,
+        "Merged node"
+      );
+      highlight.addNodeIndexHighlight(
+        this._childs[childIndex]._id,
+        leftKeyCount,
+        ""
+      );
+      pushTreeFrame(this._tree, highlight);
+    }
 
-    return
+    return;
   }
 
-   // TRY ROTATION WITH LEFT CHILD
-   if (childIndex > 0 && this._childs[childIndex - 1]._keyCount > minKeys) {
+  // TRY ROTATION WITH LEFT CHILD
+  if (childIndex > 0 && this._childs[childIndex - 1]._keyCount > minKeys) {
     const leftChild = this._childs[childIndex - 1];
 
-        // FRAME SEGMENT //
-        if (this._tree._sequenceMode) {
-          let highlight = new Highlight();
-          highlight.addNodeHighlight(child._id, true, `${leftChild.isLeaf() ? "Small" : "Big"} Rotation with left Sibling`);
-          highlight.addNodeHighlight(leftChild._id,true, "")
-          pushTreeFrame(this._tree, highlight);
-          highlight = new Highlight();
-          highlight.addNodeHighlight(child._id, true, ``);
-          highlight.addNodeHighlight(leftChild._id,true, "")
-          highlight.addNodeIndexHighlight(this._id, childIndex -1, "rotate right")
-          highlight.addNodeIndexHighlight(leftChild._id, leftChild._keyCount -1, "rotate right")
-          pushTreeFrame(this._tree, highlight);
-        }
+    // FRAME SEGMENT //
+    if (this._tree._sequenceMode) {
+      let highlight = new Highlight();
+      highlight.addNodeHighlight(
+        child._id,
+        true,
+        `${leftChild.isLeaf() ? "Small" : "Big"} Rotation with left Sibling`
+      );
+      highlight.addNodeHighlight(leftChild._id, true, "");
+      pushTreeFrame(this._tree, highlight);
+      highlight = new Highlight();
+      highlight.addNodeHighlight(child._id, true, ``);
+      highlight.addNodeHighlight(leftChild._id, true, "");
+      highlight.addNodeIndexHighlight(this._id, childIndex - 1, "rotate right");
+      highlight.addNodeIndexHighlight(
+        leftChild._id,
+        leftChild._keyCount - 1,
+        "rotate right"
+      );
+      pushTreeFrame(this._tree, highlight);
+    }
 
     // remember the last child on internal rebalances
-    let lostChild = null
-    if(! leftChild.isLeaf()){
-      lostChild = leftChild._childs[leftChild._keyCount]
+    let lostChild = null;
+    if (!leftChild.isLeaf()) {
+      lostChild = leftChild._childs[leftChild._keyCount];
     }
 
     for (var i = child._keyCount - 1; i >= 0; i--) {
@@ -736,41 +731,44 @@ BTreeNode.prototype.rebalance = function (childIndex) {
     this._keys[childIndex - 1] = leftChild._keys[leftChild._keyCount - 1];
 
     //re attach the lost child at the correct position
-    if(lostChild){
-      this._tree._bigRotationCounter++
+    if (lostChild) {
+      this._tree._bigRotationCounter++;
 
       for (var i = child._keyCount; i >= 0; i--) {
         child._childs[i + 1] = child._childs[i];
       }
 
-          // FRAME SEGMENT //
-          if (this._tree._sequenceMode) {
-          child._childs[0] = new BTreeNode(this._tree, this._maxKeys)
-          leftChild._keys[leftChild._keyCount - 1] = " ";
+      // FRAME SEGMENT //
+      if (this._tree._sequenceMode) {
+        child._childs[0] = new BTreeNode(this._tree, this._maxKeys);
+        leftChild._keys[leftChild._keyCount - 1] = " ";
 
-          let highlight = new Highlight();
-          highlight.addNodeHighlight(child._id, true, );
-          highlight.addNodeHighlight(leftChild._id,true, "")
-          highlight.addNodeIndexHighlight(this._id,childIndex -1,"")
-          highlight.addNodeIndexHighlight(child._id,0,"")
-          pushTreeFrame(this._tree, highlight);
-          highlight = new Highlight();
-          highlight.addNodeHighlight(child._id, true, );
-          highlight.addNodeHighlight(leftChild._id,true, "")
-          highlight.addNodeHighlight(lostChild._id,false, "leftover child")
-          highlight.addNodeSeparatorHighlight(child._id,0, "here")
-          highlight.addHighlightedSubtree(
-            leftChild._childs[leftChild._keyCount]._id,
-            Array.from({ length: leftChild._childs[leftChild._keyCount]._keyCount}, (_, index) => index), 
-            this._tree.toTreeData())
-          pushTreeFrame(this._tree, highlight);
-          }
-        
+        let highlight = new Highlight();
+        highlight.addNodeHighlight(child._id, true);
+        highlight.addNodeHighlight(leftChild._id, true, "");
+        highlight.addNodeIndexHighlight(this._id, childIndex - 1, "");
+        highlight.addNodeIndexHighlight(child._id, 0, "");
+        pushTreeFrame(this._tree, highlight);
+        highlight = new Highlight();
+        highlight.addNodeHighlight(child._id, true);
+        highlight.addNodeHighlight(leftChild._id, true, "");
+        highlight.addNodeHighlight(lostChild._id, false, "leftover child");
+        highlight.addNodeSeparatorHighlight(child._id, 0, "here");
+        highlight.addHighlightedSubtree(
+          leftChild._childs[leftChild._keyCount]._id,
+          Array.from(
+            { length: leftChild._childs[leftChild._keyCount]._keyCount },
+            (_, index) => index
+          ),
+          this._tree.toTreeData()
+        );
+        pushTreeFrame(this._tree, highlight);
+      }
+
       //reappend lost child
-      child._childs[0] = lostChild
-    }
-    else{
-      this._tree._smallRotationCounter++
+      child._childs[0] = lostChild;
+    } else {
+      this._tree._smallRotationCounter++;
     }
 
     // fix left child
@@ -780,21 +778,21 @@ BTreeNode.prototype.rebalance = function (childIndex) {
     // FRAME SEGMENT //
     if (this._tree._sequenceMode) {
       let highlight = new Highlight();
-      if(lostChild){
-        highlight.addNodeHighlight(child._id, true, );
-        highlight.addNodeHighlight(leftChild._id,true, "")
+      if (lostChild) {
+        highlight.addNodeHighlight(child._id, true);
+        highlight.addNodeHighlight(leftChild._id, true, "");
         highlight.addHighlightedSubtree(
           child._childs[0]._id,
-          Array.from({ length: lostChild._keyCount}, (_, index) => index), 
-          this._tree.toTreeData())
+          Array.from({ length: lostChild._keyCount }, (_, index) => index),
+          this._tree.toTreeData()
+        );
         pushTreeFrame(this._tree, highlight);
-      }
-      else{
+      } else {
         highlight = new Highlight();
-        highlight.addNodeHighlight(child._id, true, );
-        highlight.addNodeHighlight(leftChild._id,true, "")
-        highlight.addNodeIndexHighlight(this._id,childIndex -1,"")
-        highlight.addNodeIndexHighlight(child._id,0,"")
+        highlight.addNodeHighlight(child._id, true);
+        highlight.addNodeHighlight(leftChild._id, true, "");
+        highlight.addNodeIndexHighlight(this._id, childIndex - 1, "");
+        highlight.addNodeIndexHighlight(child._id, 0, "");
         pushTreeFrame(this._tree, highlight);
       }
     }
@@ -802,66 +800,77 @@ BTreeNode.prototype.rebalance = function (childIndex) {
   }
 
   // TRY ROTATION WITH RIGHT CHILD
-  if (childIndex < this._keyCount && this._childs[childIndex + 1]._keyCount > minKeys){
+  if (
+    childIndex < this._keyCount &&
+    this._childs[childIndex + 1]._keyCount > minKeys
+  ) {
     const rightChild = this._childs[childIndex + 1];
 
-
-        // FRAME SEGMENT //
-        if (this._tree._sequenceMode) {
-          let highlight = new Highlight();
-          highlight.addNodeHighlight(child._id, true, `${rightChild.isLeaf() ? "Small" : "Big"} Rotation with left Sibling`);
-          highlight.addNodeHighlight(rightChild._id,true, "")
-          pushTreeFrame(this._tree, highlight);
-          highlight = new Highlight();
-          highlight.addNodeHighlight(child._id, true, ``);
-          highlight.addNodeHighlight(rightChild._id,true, "")
-          highlight.addNodeIndexHighlight(this._id, childIndex, "rotate left")
-          highlight.addNodeIndexHighlight(rightChild._id, 0, "rotate left")
-          pushTreeFrame(this._tree, highlight);
-        }
-
-
-    // remember the first child for on internal rebalances
-    let lostChild = null
-    if(! rightChild.isLeaf()){
-      lostChild = rightChild._childs[0]
+    // FRAME SEGMENT //
+    if (this._tree._sequenceMode) {
+      let highlight = new Highlight();
+      highlight.addNodeHighlight(
+        child._id,
+        true,
+        `${rightChild.isLeaf() ? "Small" : "Big"} Rotation with left Sibling`
+      );
+      highlight.addNodeHighlight(rightChild._id, true, "");
+      pushTreeFrame(this._tree, highlight);
+      highlight = new Highlight();
+      highlight.addNodeHighlight(child._id, true, ``);
+      highlight.addNodeHighlight(rightChild._id, true, "");
+      highlight.addNodeIndexHighlight(this._id, childIndex, "rotate left");
+      highlight.addNodeIndexHighlight(rightChild._id, 0, "rotate left");
+      pushTreeFrame(this._tree, highlight);
     }
 
-    child._keys[minKeys -1] = this._keys[childIndex];
+    // remember the first child for on internal rebalances
+    let lostChild = null;
+    if (!rightChild.isLeaf()) {
+      lostChild = rightChild._childs[0];
+    }
+
+    child._keys[minKeys - 1] = this._keys[childIndex];
     child._keyCount++;
-    
+
     // fix parent
     this._keys[childIndex] = rightChild._keys[0];
 
-    if(lostChild){
-      this._tree._bigRotationCounter++
-        // FRAME SEGMENT //
-        if (this._tree._sequenceMode) {
-          child._childs[child._keyCount] = new BTreeNode(this._tree, this._maxKeys)
-          rightChild._keys[0] = " ";
+    if (lostChild) {
+      this._tree._bigRotationCounter++;
+      // FRAME SEGMENT //
+      if (this._tree._sequenceMode) {
+        child._childs[child._keyCount] = new BTreeNode(
+          this._tree,
+          this._maxKeys
+        );
+        rightChild._keys[0] = " ";
 
-          let highlight = new Highlight();
-          highlight.addNodeHighlight(child._id, true, );
-          highlight.addNodeHighlight(rightChild._id,true, "")
-          highlight.addNodeIndexHighlight(this._id,childIndex,"")
-          highlight.addNodeIndexHighlight(child._id,child._keyCount -1,"")
-          pushTreeFrame(this._tree, highlight);
-          highlight = new Highlight();
-          highlight.addNodeHighlight(child._id, true, );
-          highlight.addNodeHighlight(rightChild._id,true, "")
-          highlight.addNodeHighlight(lostChild._id,false, "leftover child")
-          highlight.addNodeSeparatorHighlight(child._id,child._keyCount, "here")
-          highlight.addHighlightedSubtree(
-            rightChild._childs[0]._id,
-            Array.from({ length: rightChild._childs[0]._keyCount}, (_, index) => index), 
-            this._tree.toTreeData())
-          pushTreeFrame(this._tree, highlight);
-          }
+        let highlight = new Highlight();
+        highlight.addNodeHighlight(child._id, true);
+        highlight.addNodeHighlight(rightChild._id, true, "");
+        highlight.addNodeIndexHighlight(this._id, childIndex, "");
+        highlight.addNodeIndexHighlight(child._id, child._keyCount - 1, "");
+        pushTreeFrame(this._tree, highlight);
+        highlight = new Highlight();
+        highlight.addNodeHighlight(child._id, true);
+        highlight.addNodeHighlight(rightChild._id, true, "");
+        highlight.addNodeHighlight(lostChild._id, false, "leftover child");
+        highlight.addNodeSeparatorHighlight(child._id, child._keyCount, "here");
+        highlight.addHighlightedSubtree(
+          rightChild._childs[0]._id,
+          Array.from(
+            { length: rightChild._childs[0]._keyCount },
+            (_, index) => index
+          ),
+          this._tree.toTreeData()
+        );
+        pushTreeFrame(this._tree, highlight);
+      }
+    } else {
+      this._tree._smallRotationCounter++;
     }
-    else{
-      this._tree._smallRotationCounter++
-    }
-    
+
     for (var i = 0; i < rightChild._keyCount - 1; i++) {
       rightChild._keys[i] = rightChild._keys[i + 1];
     }
@@ -876,28 +885,27 @@ BTreeNode.prototype.rebalance = function (childIndex) {
     rightChild._keys[rightChild._keyCount] = null;
     rightChild._keyCount--;
 
-
-          // FRAME SEGMENT //
-          if (this._tree._sequenceMode) {
-            let highlight = new Highlight();
-            if(lostChild){
-              highlight.addNodeHighlight(child._id, true, );
-              highlight.addNodeHighlight(rightChild._id,true, "")
-              highlight.addHighlightedSubtree(
-                child._childs[child._keyCount]._id,
-                Array.from({ length: lostChild._keyCount}, (_, index) => index), 
-                this._tree.toTreeData())
-              pushTreeFrame(this._tree, highlight);
-            }
-            else{
-              highlight = new Highlight();
-              highlight.addNodeHighlight(child._id, true, );
-              highlight.addNodeHighlight(rightChild._id,true, "")
-              highlight.addNodeIndexHighlight(this._id,childIndex,"")
-              highlight.addNodeIndexHighlight(child._id,child._keyCount,"")
-              pushTreeFrame(this._tree, highlight);
-            }
-          }
+    // FRAME SEGMENT //
+    if (this._tree._sequenceMode) {
+      let highlight = new Highlight();
+      if (lostChild) {
+        highlight.addNodeHighlight(child._id, true);
+        highlight.addNodeHighlight(rightChild._id, true, "");
+        highlight.addHighlightedSubtree(
+          child._childs[child._keyCount]._id,
+          Array.from({ length: lostChild._keyCount }, (_, index) => index),
+          this._tree.toTreeData()
+        );
+        pushTreeFrame(this._tree, highlight);
+      } else {
+        highlight = new Highlight();
+        highlight.addNodeHighlight(child._id, true);
+        highlight.addNodeHighlight(rightChild._id, true, "");
+        highlight.addNodeIndexHighlight(this._id, childIndex, "");
+        highlight.addNodeIndexHighlight(child._id, child._keyCount, "");
+        pushTreeFrame(this._tree, highlight);
+      }
+    }
     return;
   }
 };
@@ -908,14 +916,14 @@ BTreeNode.prototype.mergeChilds = function (leftIndex) {
   var left = this._childs[leftIndex];
   var right = this._childs[leftIndex + 1];
 
-      // FRAME SEGMENT //
-      if (this._tree._sequenceMode) {
-        let highlight = new Highlight();
-        highlight.addNodeIndexHighlight(this._id, leftIndex, "Middle Key")
-        highlight.addNodeHighlight(left._id, true, "");
-        highlight.addNodeHighlight(right._id,true, "")
-        pushTreeFrame(this._tree, highlight);
-      }
+  // FRAME SEGMENT //
+  if (this._tree._sequenceMode) {
+    let highlight = new Highlight();
+    highlight.addNodeIndexHighlight(this._id, leftIndex, "Middle Key");
+    highlight.addNodeHighlight(left._id, true, "");
+    highlight.addNodeHighlight(right._id, true, "");
+    pushTreeFrame(this._tree, highlight);
+  }
 
   left._keys[left._keyCount] = key;
   left._keyCount++;
@@ -932,27 +940,39 @@ BTreeNode.prototype.mergeChilds = function (leftIndex) {
 };
 
 BTreeNode.prototype.extractMax = function (highlightSnapshot) {
-      // FRAME SEGMENT //
-      if (this._tree._sequenceMode) {
-        let highlight = _.cloneDeep(highlightSnapshot)
+  // FRAME SEGMENT //
+  if (this._tree._sequenceMode) {
+    let highlight = _.cloneDeep(highlightSnapshot);
 
-        if(this.isLeaf()){
-          highlight.addNodeIndexHighlight(this._id,this._keyCount -1,"Predecessor")
-          pushTreeFrame(this._tree, highlight);
-        } else {
-          highlight.addNodeHighlight(this._childs[this._keyCount]._id, true, "")
-          highlight.addEdgeHighlightFromNodeId(this._id, this._childs[this._keyCount]._id, true)
-          pushTreeFrame(this._tree, highlight);
+    if (this.isLeaf()) {
+      highlight.addNodeIndexHighlight(
+        this._id,
+        this._keyCount - 1,
+        "Predecessor"
+      );
+      pushTreeFrame(this._tree, highlight);
+    } else {
+      highlight.addNodeHighlight(this._childs[this._keyCount]._id, true, "");
+      highlight.addEdgeHighlightFromNodeId(
+        this._id,
+        this._childs[this._keyCount]._id,
+        true
+      );
+      pushTreeFrame(this._tree, highlight);
 
-          highlight = _.cloneDeep(highlightSnapshot)
-          highlight.addNodeHighlight(this._childs[this._keyCount]._id, false, `Find Predecessor`)
-          pushTreeFrame(this._tree, highlight);
-        }
-      }
+      highlight = _.cloneDeep(highlightSnapshot);
+      highlight.addNodeHighlight(
+        this._childs[this._keyCount]._id,
+        false,
+        `Find Predecessor`
+      );
+      pushTreeFrame(this._tree, highlight);
+    }
+  }
 
   var ret;
   if (this.isLeaf()) {
-    ret = {maxKey: this._keys[this._keyCount - 1], node: this}
+    ret = { maxKey: this._keys[this._keyCount - 1], node: this };
   } else {
     var child = this._childs[this._keyCount];
     ret = child.extractMax(highlightSnapshot);
@@ -964,10 +984,9 @@ BTreeNode.prototype.removeMax = function () {
   if (this.isLeaf()) {
     this._keyCount--;
 
-         // FRAME FRAGMENT //
-         let highlight = new Highlight();
-         pushTreeFrame(this._tree, highlight);
-
+    // FRAME FRAGMENT //
+    let highlight = new Highlight();
+    pushTreeFrame(this._tree, highlight);
   } else {
     var child = this._childs[this._keyCount];
     child.removeMax();
@@ -1105,13 +1124,16 @@ BTreeNode.prototype.import = function (treeData, keyType) {
   this._id = treeData.name.id;
   this._keyCount = treeData.name.keys.length;
 
-  console.log("supposed type " + keyType)
-  console.log(keyType == "number")
+  console.log("supposed type " + keyType);
+  console.log(keyType == "number");
 
   for (let i = 0; i < this._keyCount; i++) {
-    this._keys[i] = keyType == "number" ? parseFloat(treeData.name.keys[i]) : String(treeData.name.keys[i]);
+    this._keys[i] =
+      keyType == "number"
+        ? parseFloat(treeData.name.keys[i])
+        : String(treeData.name.keys[i]);
   }
-  
+
   if (treeData.hasOwnProperty("children")) {
     for (let i = 0; i < treeData.children.length; i++) {
       this._childs[i] = new BTreeNode(this._tree, this._maxKeys);
@@ -1216,17 +1238,17 @@ BTree.prototype.toTreeData = function () {
 };
 
 BTree.prototype.import = function (treeImport) {
-  treeImport = JSON.parse(treeImport); 
+  treeImport = JSON.parse(treeImport);
   const btree = new BTree(treeImport.maxKeys, this._setTreeProps);
   btree._root = btree._root.import(treeImport.treeData, treeImport.keyType);
-  console.log("Type " + typeof(btree._root._keys[0])) 
+  console.log("Type " + typeof btree._root._keys[0]);
   return btree;
 };
 
 BTree.prototype.export = function () {
   return JSON.stringify({
     maxKeys: this._maxKeys,
-    keyType: this._root.isEmpty? "number": typeof(this._root._keys[0]),
+    keyType: this._root.isEmpty ? "number" : typeof this._root._keys[0],
     treeData: this.toTreeData(),
   });
 };
