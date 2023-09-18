@@ -1,7 +1,10 @@
 import React from "react";
-import "./BTreeInfo.css"; // Make sure to create the corresponding CSS file#
+import "./BTreeInfo.css"; // Make sure to create the corresponding CSS file
+import Button from "@mui/material/Button";
 
-const BTreeInfo = () => {
+import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
+
+const BTreeInfo = ({ loadTreePreset }) => {
   return (
     <div className="info-container">
       <h1>The B-Tree</h1>
@@ -11,9 +14,8 @@ const BTreeInfo = () => {
           <div className="info-section-segment-title">
             <p>Inventors:</p>
           </div>
-          
+
           <p>Conceived by Rudolf Bayer and Edward McCreight in 1970.</p>
-       
         </div>
         <div className="info-section-segment-text">
           <p>
@@ -41,13 +43,17 @@ const BTreeInfo = () => {
             </p>
 
             <ol className="b-tree-property-list">
-              <li>Nodes store keys as separators between sub-trees (children).</li>
+              <li>
+                Nodes store keys as separators between sub-trees (children).
+              </li>
               <li>Nodes store keys in order.</li>
               <li>
-                The sub-tree "left" to a key only contains smaller keys, and
-                the "right" sub-tree contains bigger ones.
+                The sub-tree "left" to a key only contains smaller keys, and the
+                "right" sub-tree contains bigger ones.
               </li>
-              <li>Each node has at most <i>p</i> children.</li>
+              <li>
+                Each node has at most <i>p</i> children.
+              </li>
               <li>
                 Every internal node has at least ⌈<i>p</i>/2⌉ children. The root
                 node has at least 2 children unless it is the only node in the
@@ -68,12 +74,12 @@ const BTreeInfo = () => {
 
             <p>
               Note that the terminology used for B-Trees often varies. In the
-              original paper<span className="greyed-out-text">[1]</span>, Bayer and McCreight
-              define a B-Tree as part of <b>Class</b> <i>τ</i>(<i>k</i>,{" "}
-              <i>h</i>), where <i>h</i> refers to the height of the tree, and{" "}
-              <i>k</i> refers to the minimum number of keys in each non-root
-              node. Since then, less ambiguous definitions like the one above
-              have been used more frequently, where B-Tree <b>Order</b> is
+              original paper<span className="greyed-out-text">[1]</span>, Bayer
+              and McCreight define a B-Tree as part of <b>Class</b> <i>τ</i>(
+              <i>k</i>, <i>h</i>), where <i>h</i> refers to the height of the
+              tree, and <i>k</i> refers to the minimum number of keys in each
+              non-root node. Since then, less ambiguous definitions like the one
+              above have been used more frequently, where B-Tree <b>Order</b> is
               defined as the maximum number of children per node. Even still,
               terminology differs. Just to name a few examples from important
               educational literature: Knuth uses <i>m</i> for order
@@ -127,8 +133,8 @@ const BTreeInfo = () => {
 
         <div className="info-section-segment-text">
           <p>
-            The B-Tree is/was widely used in real-world applications, especially in
-            file and database systems. Even more common are variations of the
+            The B-Tree is/was widely used in real-world applications, especially
+            in file and database systems. Even more common are variations of the
             B-Tree, improving the original concept in different ways.
           </p>
         </div>
@@ -303,6 +309,21 @@ const BTreeInfo = () => {
               Should the root overflow, then the node holding the median key
               becomes the new root, increasing the tree's height by one.
             </p>
+
+            {/* INSERT EXAMPLE BUTTON*/}
+            <div className="btree-show-example-button-container-margin">
+              <Button
+                className="btree-info-button"
+                variant="text"
+                size="small"
+                color="orange"
+                startIcon={<KeyboardDoubleArrowUpIcon />}
+                endIcon={<KeyboardDoubleArrowUpIcon />}
+                onClick={() => loadTreePreset("insertExample")}
+              >
+                see insert example
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -332,24 +353,46 @@ const BTreeInfo = () => {
 
               <li>
                 The node containing the key is not a leaf-node<br></br>
-                &nbsp;&nbsp;&nbsp;<i>In an internal node, keys act as separators between sub-trees,
-                therefore they cannot simply be deleted.</i>
+                &nbsp;&nbsp;&nbsp;
+                <i>
+                  In an internal node, keys act as separators between sub-trees,
+                  therefore they cannot simply be deleted.
+                </i>
               </li>
               <ol>
                 <li>
-                  Locate the predecessor, i.e. the biggest key of the left sub-tree, by moving down to the leaf level always through the rightmost child. The last key of that node is what you are looking for.
+                  Locate the predecessor, i.e. the biggest key of the left
+                  sub-tree, by moving down to the leaf level always through the
+                  rightmost child. The last key of that node is what you are
+                  looking for.
                 </li>
                 <li>
-                  Remove the predecessor from its node and use it as a replacement for
-                  the to-be-deleted key.
+                  Remove the predecessor from its node and use it as a
+                  replacement for the to-be-deleted key.
                 </li>
                 <li>
-                  If step 2 triggers an <b>Underflow</b> at the
-                  leaf level, resolve it with a <b>Rebalance</b>{" "}
-                  (explained in the section below).
+                  If step 2 triggers an <b>Underflow</b> at the leaf level,
+                  resolve it with a <b>Rebalance</b> (explained in the section
+                  below).
                 </li>
               </ol>
             </ul>
+
+            {/* DELETE EXAMPLE BUTTON */}
+            <div className="btree-show-example-button-container">
+              <Button
+                className="btree-info-button"
+                variant="text"
+                size="small"
+                color="orange"
+                startIcon={<KeyboardDoubleArrowUpIcon />}
+                endIcon={<KeyboardDoubleArrowUpIcon />}
+                onClick={() => loadTreePreset("deleteExample")}
+              >
+                see delete examples
+              </Button>
+            </div>
+
             <p className="small-top-margin">
               <b>Rebalance</b>
             </p>
@@ -383,6 +426,24 @@ const BTreeInfo = () => {
                   </li>
                 </ol>
               </li>
+
+              </ul>
+              {/* MERGE EXAMPLE BUTTON */}
+              <div className="btree-show-example-button-container">
+                <Button
+                  className="btree-info-button"
+                  variant="text"
+                  size="small"
+                  color="orange"
+                  startIcon={<KeyboardDoubleArrowUpIcon />}
+                  endIcon={<KeyboardDoubleArrowUpIcon />}
+                  onClick={() => loadTreePreset("mergeExample")}
+                >
+                  see merge example
+                </Button>
+              </div>
+              <ul>
+
               <li>
                 If no mergable sibling exists, choose a sibling that contains at
                 least ⌈<i>p</i>/2⌉ keys and perform a <b>Rotation</b> with it.
@@ -392,8 +453,8 @@ const BTreeInfo = () => {
                   <li>
                     If the rotation-sibling is a left-sibling, take its biggest
                     key; otherwise, take its smallest, remove it, and move it up
-                    to the parent-node, where it replaces the separator key between
-                    the siblings.
+                    to the parent-node, where it replaces the separator key
+                    between the siblings.
                   </li>
                   <li>
                     Insert the separator key in the underflow-node, on the side
@@ -409,12 +470,27 @@ const BTreeInfo = () => {
                 </ol>
               </li>
             </ul>
+            {/* ROTATION EXAMPLE BUTTON */}
+            <div className="btree-show-example-button-container-margin">
+              <Button
+                className="btree-info-button"
+                variant="text"
+                size="small"
+                color="orange"
+                startIcon={<KeyboardDoubleArrowUpIcon />}
+                endIcon={<KeyboardDoubleArrowUpIcon />}
+                onClick={() => loadTreePreset("rotationExample")}
+              >
+                see rotation examples
+              </Button>
+            </div>
           </div>
-          
         </div>
         <div className="info-section-segment-text">
           <p>
-            Note that the algorithms above are described as they are implemented in the visualization. While the general concepts are always the same, details may differ across implementations.
+            Note that the algorithms above are described as they are implemented
+            in the visualization. While the general concepts are always the
+            same, details may differ across implementations.
           </p>
         </div>
       </div>

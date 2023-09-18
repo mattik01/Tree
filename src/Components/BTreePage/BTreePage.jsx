@@ -18,6 +18,7 @@ import BTreeInfo from "./BTreeInfo";
 
 // scripts
 import BTree from "./BTree";
+import bTreePresets from "../../utility/BTreePresets";
 import determineKeyStringType from "../../utility/DetermineKeyType";
 import generateKeys from "../../utility/GenerateKeys";
 import shuffleArray from "../../utility/ArrayShuffle";
@@ -35,13 +36,13 @@ import {
 
 // ---------- GLOBAL VARIABLES ----------
 
-const INIT_BTREE_MAX_KEYS = 3;
-const INIT_BTREE_NKEYS = 10;
+const INIT_BTREE_MAX_KEYS = 4;
+const INIT_BTREE_NKEYS = 25 ;
 
 let btree = new BTree(INIT_BTREE_MAX_KEYS, null);
 let frameSequencer;
 
-//when the frameSequencer runs in automode, the Interval referance is stored in here.
+//when the frameSequencer runs in automode, the Interval reference is stored in here.
 let delayedFrameInterval;
 
 export default function BTreePage() {
@@ -116,8 +117,9 @@ export default function BTreePage() {
     importExportTextAreaValue: "",
     importWarning: "",
   });
-  // which keys are in the tree, after the key queue is finished,
+
   // input form requires this for proper input validation
+  // which keys are in the tree, after the key queue is finished,
   const [futureKeys, setFutureKeys] = useState(simulateFutureKeys());
 
   // ---------- EFFECTS ----------
@@ -215,7 +217,8 @@ export default function BTreePage() {
 
   // effect that keeps the futureKeys sequence up to date
   useEffect(() => {
-    setFutureKeys(() => simulateFutureKeys());
+    let futureKeys = simulateFutureKeys()
+    setFutureKeys(futureKeys);
   }, [sequencerProps.keyQueue, treeFrame]);
 
   // effect, that keeps treeProps state up to date
@@ -268,6 +271,12 @@ export default function BTreePage() {
     }));
   }
 
+  function forceUpdateFutureKeys(){
+    // effect that keeps the futureKeys sequence up to date
+    let futureKeys = simulateFutureKeys()
+    setFutureKeys(futureKeys);
+  }
+
   function restartFrameSequencer() {
     setSequencerProps((prevProps) => ({
       ...prevProps,
@@ -293,6 +302,45 @@ export default function BTreePage() {
       }
     }
     return existingKeys;
+  }
+
+  function loadTreePreset(preset){
+    console.log("called")
+    let newBTree;
+    
+    newBTree = btree.import(bTreePresets[preset].importData);
+    btree = newBTree;
+
+    //set sequencer mode on auto
+    setSequencerProps((prevProps) => ({
+      ...prevProps,
+      sequenceMode: "auto",
+      sequenceSpeed: 2.0,
+    }));
+
+    restartFrameSequencer();
+
+    scrollToTop();
+
+    frameSequencer.addKeys(bTreePresets[preset].addKeys)
+    frameSequencer.removeKeys(bTreePresets[preset].removeKeys)
+    
+    // Update FormData
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      keyWarning: "",
+      generateWarning: "",
+      orderWarning: "",
+      generateRangeInfo: "",
+      importWarning: "",
+      generateKeyTypeInput:
+        futureKeys.length > 0
+          ? determineKeyStringType(futureKeys[futureKeys.length - 1])
+          : "number",
+    }));
+
+    // render imported tree
+    simpleTreeFrameUpdate();
   }
 
   function validateKeyAdd(keyString) {
@@ -409,10 +457,10 @@ export default function BTreePage() {
           //----- SUCCESS CASES ------
           case "number":
             // Convert keyString to float if it has a float type
-            keyString = parseFloat(keyString);
+            let keyFloat = parseFloat(keyString);
           // Fall through to the default case to execute the common code
           default:
-            frameSequencer.addKeys([keyString]);
+            frameSequencer.addKeys([keyFloat]);
 
             // Update FormData
             setFormData((prevFormData) => ({
@@ -436,6 +484,8 @@ export default function BTreePage() {
         if (keyType == "number") {
           key = parseFloat(key);
         }
+
+        console.log("FUTURE KEYS " + typeof(futureKeys[0]))
 
         if (!futureKeys.includes(key)) {
           setFormData((prevFormData) => ({
@@ -572,6 +622,7 @@ export default function BTreePage() {
 
             // render imported tree
             simpleTreeFrameUpdate();
+            forceUpdateFutureKeys();
           }
         }
 
@@ -783,7 +834,9 @@ export default function BTreePage() {
                 </Button>
               </div>
 
-              <BTreeInfo />
+              <BTreeInfo 
+                loadTreePreset={loadTreePreset}
+              />
             </div>
           )}
         </div>

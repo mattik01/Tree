@@ -120,5 +120,21 @@ h4 {
 }
 
 .small-top-margin {
-  margin-top: 50px;
+  margin-top: 20px;
 }
+
+.btree-show-example-button-container-margin {
+ width: 100%;
+ display: flex;
+ align-items: center;
+ flex-direction: column;
+ margin-bottom: 15px;
+}
+
+.btree-show-example-button-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+ }
+ 

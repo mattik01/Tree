@@ -689,6 +689,8 @@ BTreeNode.prototype.rebalance = function (childIndex) {
     this._keyCount--;
     this._childs[childIndex] = merged;
 
+    this._tree._mergeCounter++
+
         // FRAME SEGMENT //
         if (this._tree._sequenceMode) {
           let highlight = new Highlight();
@@ -735,6 +737,8 @@ BTreeNode.prototype.rebalance = function (childIndex) {
 
     //re attach the lost child at the correct position
     if(lostChild){
+      this._tree._bigRotationCounter++
+
       for (var i = child._keyCount; i >= 0; i--) {
         child._childs[i + 1] = child._childs[i];
       }
@@ -764,6 +768,9 @@ BTreeNode.prototype.rebalance = function (childIndex) {
         
       //reappend lost child
       child._childs[0] = lostChild
+    }
+    else{
+      this._tree._smallRotationCounter++
     }
 
     // fix left child
@@ -826,8 +833,10 @@ BTreeNode.prototype.rebalance = function (childIndex) {
     // fix parent
     this._keys[childIndex] = rightChild._keys[0];
 
+    if(lostChild){
+      this._tree._bigRotationCounter++
         // FRAME SEGMENT //
-        if (this._tree._sequenceMode && lostChild) {
+        if (this._tree._sequenceMode) {
           child._childs[child._keyCount] = new BTreeNode(this._tree, this._maxKeys)
           rightChild._keys[0] = " ";
 
@@ -848,6 +857,10 @@ BTreeNode.prototype.rebalance = function (childIndex) {
             this._tree.toTreeData())
           pushTreeFrame(this._tree, highlight);
           }
+    }
+    else{
+      this._tree._smallRotationCounter++
+    }
     
     for (var i = 0; i < rightChild._keyCount - 1; i++) {
       rightChild._keys[i] = rightChild._keys[i + 1];
@@ -1088,18 +1101,21 @@ BTreeNode.prototype.getHeight = function () {
   }
 };
 
-BTreeNode.prototype.import = function (treeData) {
+BTreeNode.prototype.import = function (treeData, keyType) {
   this._id = treeData.name.id;
   this._keyCount = treeData.name.keys.length;
-  this._keys = this._keys.map((key) => null);
+
+  console.log("supposed type " + keyType)
+  console.log(keyType == "number")
+
   for (let i = 0; i < this._keyCount; i++) {
-    this._keys[i] = treeData.name.keys[i];
+    this._keys[i] = keyType == "number" ? parseFloat(treeData.name.keys[i]) : String(treeData.name.keys[i]);
   }
-  this._childs = this._childs.map((child) => null);
+  
   if (treeData.hasOwnProperty("children")) {
     for (let i = 0; i < treeData.children.length; i++) {
       this._childs[i] = new BTreeNode(this._tree, this._maxKeys);
-      this._childs[i] = this._childs[i].import(treeData.children[i]);
+      this._childs[i] = this._childs[i].import(treeData.children[i], keyType);
     }
   }
   return this;
@@ -1200,15 +1216,17 @@ BTree.prototype.toTreeData = function () {
 };
 
 BTree.prototype.import = function (treeImport) {
-  treeImport = JSON.parse(treeImport);
+  treeImport = JSON.parse(treeImport); 
   const btree = new BTree(treeImport.maxKeys, this._setTreeProps);
-  btree._root = btree._root.import(treeImport.treeData);
+  btree._root = btree._root.import(treeImport.treeData, treeImport.keyType);
+  console.log("Type " + typeof(btree._root._keys[0])) 
   return btree;
 };
 
 BTree.prototype.export = function () {
   return JSON.stringify({
     maxKeys: this._maxKeys,
+    keyType: this._root.isEmpty? "number": typeof(this._root._keys[0]),
     treeData: this.toTreeData(),
   });
 };
