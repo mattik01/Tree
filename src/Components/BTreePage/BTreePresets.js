@@ -1,3 +1,7 @@
+/**
+ * Class where B-Tree Preset, aswell as "to perform" operations can be stored.
+ * The loadBTreePreset function in BTreePage.jsx for example loads these and queues the opeartions
+ */
 const bTreePresets = {
 
   insertExample: {

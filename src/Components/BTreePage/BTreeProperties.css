@@ -1,10 +1,10 @@
 .btree-properties-segment {
-    border-top: 1px solid grey; /* Use the correct order for border properties */
-    padding-top: 5px; /* You can remove "px" for values with zero */
+    border-top: 1px solid grey;
+    padding-top: 5px; 
   }
 
 .btree-balancing-segment {
     margin-top: 5px;
-    border-top: 1px solid grey; /* Use the correct order for border properties */
-    padding-top: 5px; /* You can remove "px" for values with zero */
+    border-top: 1px solid grey; 
+    padding-top: 5px;
   }

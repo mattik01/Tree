@@ -1,11 +1,3 @@
-
-input {
-  width: 40px;
-  padding: 3px 6px;
-  border: 1px solid #70757a;
-  border-radius: 4px;
-}
-
 .input-form-segment {
   width: 100%;
   border-top: #70757a solid 1px;
@@ -24,45 +16,50 @@ input {
   padding: 5px 0px 0px 0px;
 }
 
+input {
+  width: 40px;
+  padding: 3px 6px;
+  border: 1px solid #70757a;
+  border-radius: 4px;
+}
 
+.input-form-button {
+  background-color: white !important;
+  border: 1px solid #70757a !important;
+  margin: 5px 5px !important;
+  padding: 0px 10px !important;
+}
 
-  .input-form-button {
-    background-color: white !important;
-    border: 1px solid #70757a !important;
-    margin: 5px 5px !important;
-    padding: 0px 10px !important;
-  }
+.icon-button {
+  background-color: white !important;
+  border-radius: 0px !important;
+  padding: 0px !important;
+  border: 1px solid #70757a !important;
+  border-radius: 5px !important;
+  height: 23px;
+  width: 23px;
+}
 
-  .icon-button{
-    background-color: white !important;
-    border-radius: 0px !important;
-    padding: 0px !important;
-    border: 1px solid #70757a !important;
-    border-radius: 5px !important;
-    height: 23px;
-    width: 23px;
-  }
+.input-form-button-fixed-medium {
+  background-color: white !important;
+  border: 1px solid #70757a !important;
+  width: 70px !important;
+  margin: 5px 5px !important;
+  padding: 0px 10px !important;
+}
 
-  .input-form-button-fixed-medium {
-    background-color: white !important;
-    border: 1px solid #70757a !important;
-    width: 70px !important;
-    margin: 5px 5px !important;
-    padding: 0px 10px !important;
-  }
-  
-  .line {
-    padding: 3px 0px;
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-  }
+.line {
+  padding: 3px 0px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
 
 .line > :not(:last-child) {
   margin-right: 10px; /* Adjust the margin value as needed */
 }
 
-.input-form-checkbox{
+.input-form-checkbox {
   margin: 0px;
   padding: 0px;
 }

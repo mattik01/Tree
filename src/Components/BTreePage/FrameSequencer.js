@@ -1,5 +1,5 @@
 import { HighQuality } from "@mui/icons-material";
-import Highlight from "./Highlight";
+import HighlightData from "./HighlightData";
 
 const FRAME_BUFFER_SIZE = 50;
 
@@ -34,13 +34,15 @@ class FrameSequencer {
     }));
 
     return {
-      treeData: this.tree.toTreeData(),
-      highlights: new Highlight(),
+      nodeData: this.tree.toNodeData(),
+      highlightData: new HighlightData(),
 
-      splits: this.tree._splitCounter,
-      merges: this.tree._mergeCounter,
-      smallRotations: this.tree._smallRotationCounter,
-      bigRotations: this.tree._bigRotationCounter,
+      counters: {
+        splits: this.tree._splitCounter,
+        merges: this.tree._mergeCounter,
+        smallRotations: this.tree._smallRotationCounter,
+        bigRotations: this.tree._bigRotationCounter,
+      },
     };
   }
 
@@ -75,13 +77,14 @@ class FrameSequencer {
           inSequence: false,
         }));
         return {
-          treeData: this.tree.toTreeData(),
-          highlights: new Highlight(),
-
+          nodeData: this.tree.toNodeData(),
+          highlightData: new HighlightData(),
+          counters:{
           splits: this.tree._splitCounter,
           merges: this.tree._mergeCounter,
           smallRotations: this.tree._smallRotationCounter,
           bigRotations: this.tree._bigRotationCounter,
+          }
         };
       }
     }
