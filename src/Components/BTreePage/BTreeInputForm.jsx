@@ -162,6 +162,8 @@ function BTreeInputForm({
               <div className="line">
                 <label htmlFor="generateKeyOrderInput">key order:</label>
                 <select
+                  onMouseEnter={() => setAllowDrag(false)}
+                  onMouseLeave={() => setTimeout(() => setAllowDrag(true), 0)}
                   name="generateKeyOrderInput"
                   id="generateKeyOrderInput"
                   value={formData.generateKeyOrderInput}
@@ -176,6 +178,8 @@ function BTreeInputForm({
                 <label htmlFor="generateKeyTypeInput">key type:</label>
                 {futureKeys.length == 0 ? (
                   <select
+                    onMouseEnter={() => setAllowDrag(false)}
+                    onMouseLeave={() => setTimeout(() => setAllowDrag(true), 0)}
                     name="generateKeyTypeInput"
                     id="generateKeyTypeInput"
                     value={formData.generateKeyTypeInput}

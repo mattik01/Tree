@@ -1,6 +1,6 @@
 .custom-display-toggle-button {
-    height: 20px !important; /* Set your desired height */
-    width: 200px !important; /* Set your desired width */
+    height: 20px !important; 
+    width: 220px !important; 
     font-size: 16px !important;
     background-color: #cdd6e0 !important;
     border: 0px solid #ccc !important;
@@ -15,9 +15,9 @@
   }
 
 .MuiToggleButton-root.Mui-selected {
-    background-color: #f7b44f !important; /* Use your desired color here */ 
-    border-right: 1px solid #7a4a02 !important; /* Add a 1px border wth desired color */
-    border-left: 1px solid #7a4a02 !important; /* Add a 1px border wth desired color */
+    background-color: #f7b44f !important; 
+    border-right: 1px solid #7a4a02 !important; 
+    border-left: 1px solid #7a4a02 !important; 
 
     color: #492c01 !important;
   }
