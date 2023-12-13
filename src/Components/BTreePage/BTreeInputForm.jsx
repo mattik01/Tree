@@ -41,7 +41,7 @@ function BTreeInputForm({
                   id="orderInput"
                   name="orderInput"
                   value={formData.orderInput}
-                  min="4"
+                  min="3"
                   onChange={onInputChange}
                 />
               </div>

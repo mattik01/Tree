@@ -396,10 +396,10 @@ export default function BTreePage() {
       case "orderSet":
         const newMaxKeys = parseInt(formData.orderInput - 1, 10);
 
-        if (isNaN(newMaxKeys) || newMaxKeys < 3) {
+        if (isNaN(newMaxKeys) || newMaxKeys < 2) {
           setFormData((prevFormData) => ({
             ...prevFormData,
-            orderWarning: "The order needs to be an integer >= 4",
+            orderWarning: "The order needs to be an integer >= 3",
           }));
         } else {
           if (newMaxKeys != btree.getMaxKeys()) {
