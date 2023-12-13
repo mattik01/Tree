@@ -58,11 +58,6 @@ const InfoPage = () => {
       <h2>What's Coming Next ?</h2>
       <div className="upcoming-section">
         <ul>
-          <li>
-            Step-by-step "animated" walkthrough of B-Tree of the delete (very
-            very arduous) (work in progress)
-          </li>
-          <li>See Example button in Info Segment</li>
           <li>__________________________________________</li>
           <li>Below, Low prio ↓↓↓</li>
           <li>Add some small animations for UI component changes</li>

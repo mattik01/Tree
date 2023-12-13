@@ -2,7 +2,7 @@ import { Tree } from "react-d3-tree";
 import React, { useState, useEffect } from "react";
 
 import "./BTreePlot.css";
-import { tree } from "d3";
+
 
 // ---------- GLOBAL VARIABLES ----------
 
