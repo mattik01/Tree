@@ -1,3 +1,5 @@
+// Custom Mui theme, that the MUI UI components are using
+
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({

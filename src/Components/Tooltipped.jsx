@@ -1,7 +1,11 @@
+// libraries
 import React from "react";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 
+/** You can wrap a simple html(not react component) element with this component, and it will render a small tooltipon the right top corner above it.
+ * Furthermore, whenever the Element is hovered, a small desired message will be displayed above it.
+ */
 const Tooltipped = ({ children, tooltipText }) => {
   return (
     <div style={{ position: "relative", display: "inline-block" }}>
@@ -20,7 +24,7 @@ const Tooltipped = ({ children, tooltipText }) => {
               padding: "4px",
               zIndex: "1",
               fontSize: "14px",
-              color: "grey"
+              color: "grey",
             }}
           >
             &#8505;

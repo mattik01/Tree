@@ -1,13 +1,20 @@
+
+import "./ImportExportBar.css";
+
+// libraries
 import React, { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-
-import Warning from "../Warning";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 
-import "./ImportExportBar.css";
+// components
+import Warning from "../Warning";
 
+/**
+ * This component renders the bottom button row on the Input Form UI Window. 
+ * It may also expand with a Textbox for Import or Export when called for.
+ */
 const ImportExportBar = ({
   formData,
   onInputChange,
@@ -92,7 +99,7 @@ const ImportExportBar = ({
             value={formData.importExportTextAreaValue}
             onChange={onInputChange}
             placeholder="Paste tree data here"
-            rows={6} // Set the initial number of rows
+            rows={6} 
           />
         </div>
       )}
@@ -141,7 +148,7 @@ const ImportExportBar = ({
             value={formData.importExportTextAreaValue}
             onChange={onInputChange}
             readOnly
-            rows={6} // Set the initial number of rows
+            rows={6} 
           />
         </div>
       )}

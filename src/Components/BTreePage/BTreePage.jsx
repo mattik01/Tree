@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import "./BTreePage.css";
 import "../../utility/GradientBorder.css";
 
 // libraries
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import Draggable from "react-draggable";
 import Button from "@mui/material/Button";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
@@ -18,12 +18,12 @@ import BTreeInfo from "./BTreeInfo";
 
 // scripts
 import BTree from "./BTree";
-import bTreePresets from "../../utility/BTreePresets";
+import bTreePresets from "./BTreePresets";
 import determineKeyStringType from "../../utility/DetermineKeyType";
 import generateKeys from "../../utility/GenerateKeys";
 import shuffleArray from "../../utility/ArrayShuffle";
 import FrameSequencer from "./FrameSequencer";
-import Highlight from "./Highlight";
+import HighlightData from "./HighlightData";
 import {
   countNodes,
   countKeys,
@@ -31,23 +31,26 @@ import {
 } from "../../utility/InfoFromTreeData";
 import {
   scrollToTop,
-  scrollDownOneScreen,
+  scrollDownToOneScreen,
 } from "../../utility/WindowScrolling";
+
+/**
+ * Central/Root Component for rendering the B-Tree Page and every Component on it.
+ */
 
 // ---------- GLOBAL VARIABLES ----------
 
 const INIT_BTREE_MAX_KEYS = 4;
-const INIT_BTREE_NKEYS = 25 ;
+const INIT_BTREE_NKEYS = 25;
 
-let btree = new BTree(INIT_BTREE_MAX_KEYS, null);
+let btree = new BTree(INIT_BTREE_MAX_KEYS);
 let frameSequencer;
 
 //when the frameSequencer runs in automode, the Interval reference is stored in here.
 let delayedFrameInterval;
 
 export default function BTreePage() {
-
-
+  
   // ---------- STATE VARIABLES ----------
 
   // State for BTree Page
@@ -56,15 +59,14 @@ export default function BTreePage() {
 
   // State for Tree Plot
   const [treeFrame, setTreeFrame] = useState({
-    treeData: {},
-    highlights: new Highlight(),
-
-    //Counters asociated with each frame, since the cannot be calculated from frameData alone.
-    //cannot be taken from btree, since btree status often does not match the displayed frame.
-    splits: 0,
-    merges: 0,
-    smallRotations:0,
-    bigRotations:0,
+    nodeData: {},
+    highlightData: new HighlightData(),
+    counters: {
+      splits: 0,
+      merges: 0,
+      smallRotations: 0,
+      bigRotations: 0,
+    },
   });
   // canvas size of the page, so the tree can be rendered at the correct position
   const plotContainerRef = useRef(null);
@@ -82,7 +84,7 @@ export default function BTreePage() {
   let nKeys = btree.getKeys().length;
   const [treeProps, setTreeProps] = useState({
     isEmpty: btree.isEmpty(),
-    height: countHeight(treeFrame.treeData),
+    height: countHeight(treeFrame.nodeData),
     maxKeys: maxKeys,
     nNodes: nNodes,
     nKeys: nKeys,
@@ -119,7 +121,7 @@ export default function BTreePage() {
   });
 
   // input form requires this for proper input validation
-  // which keys are in the tree, after the key queue is finished,
+  // which keys would be in the tree, after the key queue is finished, always up to date
   const [futureKeys, setFutureKeys] = useState(simulateFutureKeys());
 
   // ---------- EFFECTS ----------
@@ -140,7 +142,7 @@ export default function BTreePage() {
     }
 
     // Reset B-Tree Balancing Count Operations
-    btree.resetCounters()
+    btree.resetCounters();
 
     // Render new Tree
     simpleTreeFrameUpdate();
@@ -150,7 +152,7 @@ export default function BTreePage() {
 
     // This is the cleanup function, runs when the component unmounts
     return () => {
-      btree = new BTree(INIT_BTREE_MAX_KEYS, setTreeProps);
+      btree = new BTree(INIT_BTREE_MAX_KEYS);
       frameSequencer = undefined;
     };
   }, []);
@@ -217,7 +219,7 @@ export default function BTreePage() {
 
   // effect that keeps the futureKeys sequence up to date
   useEffect(() => {
-    let futureKeys = simulateFutureKeys()
+    let futureKeys = simulateFutureKeys();
     setFutureKeys(futureKeys);
   }, [sequencerProps.keyQueue, treeFrame]);
 
@@ -236,47 +238,47 @@ export default function BTreePage() {
           ? btree.export()
           : "",
     }));
-  }, [treeFrame.treeData, formData.importExportDisplay]);
+  }, [treeFrame.nodeData, formData.importExportDisplay]);
 
   // ---------- FUNTIONS ----------
 
-  // Update TreeProps
+  /**
+   * Update tree props based on data in treeFrame. All information is extracted from the frame and not the actual tree,
+   * so that the info displayed always matched the visible frame
+   */
   function simpleTreePropsUpdate() {
     let maxKeys = btree.getMaxKeys();
-    let nNodes = countNodes(treeFrame.treeData);
-    let nKeys = countKeys(treeFrame.treeData);
+    let nNodes = countNodes(treeFrame.nodeData);
+    let nKeys = countKeys(treeFrame.nodeData);
     setTreeProps(() => ({
-      height: countHeight(treeFrame.treeData),
+      height: countHeight(treeFrame.nodeData),
       isEmpty: btree.isEmpty(),
       maxKeys: maxKeys,
       nNodes: nNodes,
       nKeys: nKeys,
       fillingDegree: nNodes * maxKeys != 0 ? nKeys / (nNodes * maxKeys) : 0,
-      splits: treeFrame.splits,
-      merges: treeFrame.merges,
-      smallRotations: treeFrame.smallRotations,
-      bigRotations: treeFrame.bigRotations,
     }));
   }
 
+  /**
+   * Update the treeFrame to the current state of the btree
+   */
   function simpleTreeFrameUpdate() {
-    setTreeFrame(() => ({  
-      treeData: btree.toTreeData(), // Update treeData
-      highlights: new Highlight(), // Update highlight
-
-      splits: btree._splitCounter,
-      merges: btree._mergeCounter,
-      smallRotations: btree._smallRotationCounter,
-      bigRotations: btree._bigRotationCounter,
+    setTreeFrame(() => ({
+      nodeData: btree.toNodeData(), // update nodeData
+      highlightData: new HighlightData(), // clear highlights
+      counters: {
+        splits: btree._splitCounter, // update counters
+        merges: btree._mergeCounter,
+        smallRotations: btree._smallRotationCounter,
+        bigRotations: btree._bigRotationCounter,
+      },
     }));
   }
 
-  function forceUpdateFutureKeys(){
-    // effect that keeps the futureKeys sequence up to date
-    let futureKeys = simulateFutureKeys()
-    setFutureKeys(futureKeys);
-  }
-
+  /**
+   * resets the Framesequencer props, initiate a new Framesequencer, key Queue and frame buffer are both cleare
+   */
   function restartFrameSequencer() {
     setSequencerProps((prevProps) => ({
       ...prevProps,
@@ -289,6 +291,11 @@ export default function BTreePage() {
     frameSequencer = new FrameSequencer(btree, setSequencerProps);
   }
 
+  /**
+   * Simulates keys that are in the B-Tree if the key queue is worked off
+   *
+   * @return { Array } Array of keys, that would be contained in the B-Tree if the key queue was worked off
+   */
   function simulateFutureKeys() {
     let existingKeys = btree.getKeys();
     for (let i = 0; i < sequencerProps.keyQueue.length; i++) {
@@ -304,10 +311,37 @@ export default function BTreePage() {
     return existingKeys;
   }
 
-  function loadTreePreset(preset){
-    console.log("called")
+  /**
+   * Toggles a component's display state. This is a function that takes a componentName and modifies the displayList,
+   * so that the components visibility is toggled.
+   *
+   * @param componentName - The name/id of the component to toggle
+   *
+   * @return { Object } the modified display list
+   */
+  function toggleUiComponentDisplay(componentName) {
+    setDisplayUiComponents((prevDisplayUiComponents) => {
+      const displayList = [...prevDisplayUiComponents]; // Create a copy of the array
+
+      const toggleIndex = displayList.indexOf(componentName);
+      if (toggleIndex === -1) {
+        displayList.push(componentName); // Add if not present
+      } else {
+        displayList.splice(toggleIndex, 1); // Remove if present
+      }
+
+      return displayList;
+    });
+  }
+
+  /**
+   * Loads a B-Tree preset from BTreePresets.js, is called f.e when pressing example buttons in the b-Tree info section,
+   * also set sequencer back to auto mode and medium speed and scroll to the plot.
+   *
+   * @param preset - name/key of the preset that should be loaded
+   */
+  function loadBTreePreset(preset) {
     let newBTree;
-    
     newBTree = btree.import(bTreePresets[preset].importData);
     btree = newBTree;
 
@@ -319,12 +353,11 @@ export default function BTreePage() {
     }));
 
     restartFrameSequencer();
-
     scrollToTop();
 
-    frameSequencer.addKeys(bTreePresets[preset].addKeys)
-    frameSequencer.removeKeys(bTreePresets[preset].removeKeys)
-    
+    frameSequencer.addKeys(bTreePresets[preset].addKeys);
+    frameSequencer.removeKeys(bTreePresets[preset].removeKeys);
+
     // Update FormData
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -343,6 +376,13 @@ export default function BTreePage() {
     simpleTreeFrameUpdate();
   }
 
+  /**
+   * Validates an input that should be added to the tree.
+   *
+   * @param keyString - Theinputto be added
+   *
+   * @return { string } type of the input as string, or an error response ("empty", "type mismatch", "duplicate")
+   */
   function validateKeyAdd(keyString) {
     if (keyString == "") {
       return "empty";
@@ -368,22 +408,8 @@ export default function BTreePage() {
     return keyType;
   }
 
-  function toggleUiComponentDisplay(componentName) {
-    setDisplayUiComponents((prevDisplayUiComponents) => {
-      const displayList = [...prevDisplayUiComponents]; // Create a copy of the array
-
-      const toggleIndex = displayList.indexOf(componentName);
-      if (toggleIndex === -1) {
-        displayList.push(componentName); // Add if not present
-      } else {
-        displayList.splice(toggleIndex, 1); // Remove if present
-      }
-
-      return displayList; // Update the state
-    });
-  }
-
-  const handleInputChange = (event) => {
+  // updates the state of the Formdata fields, whenever change occours.
+  const handleInputFormChange = (event) => {
     const { name, value, type, checked } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -391,7 +417,8 @@ export default function BTreePage() {
     }));
   };
 
-  const handleInputButtonClick = (action) => {
+  // actions, that are performed when Buttons in the Input Form are clicked.
+  const handleInputFormButtonClick = (action) => {
     switch (action) {
       case "orderSet":
         const newMaxKeys = parseInt(formData.orderInput - 1, 10);
@@ -404,7 +431,7 @@ export default function BTreePage() {
         } else {
           if (newMaxKeys != btree.getMaxKeys()) {
             let existingKeys = btree.getKeys();
-            btree = new BTree(newMaxKeys, setTreeProps);
+            btree = new BTree(newMaxKeys);
             frameSequencer = new FrameSequencer(btree, setSequencerProps);
 
             //randomize existing key array for non sorted inputs
@@ -423,7 +450,6 @@ export default function BTreePage() {
             simpleTreeFrameUpdate();
           }
         }
-
         break;
 
       case "keyAdd":
@@ -460,7 +486,7 @@ export default function BTreePage() {
             let keyFloat = parseFloat(keyString);
           // Fall through to the default case to execute the common code
           default:
-            frameSequencer.addKeys([keyFloat]);
+            frameSequencer.addKeys([keyString]);
 
             // Update FormData
             setFormData((prevFormData) => ({
@@ -485,7 +511,7 @@ export default function BTreePage() {
           key = parseFloat(key);
         }
 
-        console.log("FUTURE KEYS " + typeof(futureKeys[0]))
+        console.log("FUTURE KEYS " + typeof futureKeys[0]);
 
         if (!futureKeys.includes(key)) {
           setFormData((prevFormData) => ({
@@ -565,7 +591,7 @@ export default function BTreePage() {
         break;
 
       case "reset":
-        btree = new BTree(btree.getMaxKeys(), setTreeProps);
+        btree = new BTree(btree.getMaxKeys());
         restartFrameSequencer();
 
         // Update FormData
@@ -622,7 +648,6 @@ export default function BTreePage() {
 
             // render imported tree
             simpleTreeFrameUpdate();
-            forceUpdateFutureKeys();
           }
         }
 
@@ -694,7 +719,7 @@ export default function BTreePage() {
     }
   };
 
-  const highlights = new Highlight();
+  const highlightData = new HighlightData();
 
   // ---------- JSX ----------
 
@@ -715,10 +740,9 @@ export default function BTreePage() {
             {displayUiComponents.includes("inputForm") && (
               <BTreeInputForm
                 formData={formData}
-                treeProps={treeProps}
                 futureKeys={futureKeys}
-                onInputChange={handleInputChange}
-                onButtonClick={handleInputButtonClick}
+                onInputChange={handleInputFormChange}
+                onButtonClick={handleInputFormButtonClick}
                 setAllowDrag={setAllowDrag}
                 toggleUiComponentDisplay={toggleUiComponentDisplay}
               />
@@ -751,12 +775,7 @@ export default function BTreePage() {
             {displayUiComponents.includes("treeProperties") && (
               <TreeProperties
                 treeProps={treeProps}
-                counters={{
-                  splits: treeFrame.splits,
-                  merges: treeFrame.merges,
-                  smallRotations: treeFrame.smallRotations,
-                  bigRotations: treeFrame.bigRotations,
-                }}
+                counters={treeFrame.counters}
                 toggleUiComponentDisplay={toggleUiComponentDisplay}
               />
             )}
@@ -767,8 +786,8 @@ export default function BTreePage() {
         <div className="btree-plot-container" ref={plotContainerRef}>
           {!btree.isEmpty() > 0 && (
             <BTreePlot
-              treeData={treeFrame.treeData}
-              highlights={treeFrame.highlights}
+              nodeData={treeFrame.nodeData}
+              highlightData={treeFrame.highlightData}
               plotProps={plotProps}
             />
           )}
@@ -794,7 +813,7 @@ export default function BTreePage() {
               });
               setTimeout(() => {
                 // Zoom down one full screen height
-                scrollDownOneScreen();
+                scrollDownToOneScreen();
               }, 100); // 100 milliseconds = 0.1 seconds
             }}
           >
@@ -833,10 +852,7 @@ export default function BTreePage() {
                   hide B-Tree Info
                 </Button>
               </div>
-
-              <BTreeInfo 
-                loadTreePreset={loadTreePreset}
-              />
+              <BTreeInfo loadTreePreset={loadBTreePreset} />
             </div>
           )}
         </div>

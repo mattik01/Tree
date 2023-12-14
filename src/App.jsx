@@ -1,12 +1,26 @@
-import {useState} from 'react';
 import './App.css';
+
+// libraries
+import {useState} from 'react';
+
+//components
 import BTreePage from './Components/BTreePage/BTreePage';
 import Navbar from './Components/Navbar';
 import InfoPage from './Components/InfoPage/InfoPage';
 
+/**
+ * Root component of the webpage
+ */
+
 function App() {
+
+  // ---------- STATE ----------
+
   const [selectedSegment, setSelectedSegment] = useState('B-Tree');
 
+  // ---------- FUNCTIONS -----------
+
+  //handles clicks on the navbar, determines what page is to be rendered
   const handleSegmentClick = (segment) => {
     setSelectedSegment(segment);
   };
@@ -24,6 +38,8 @@ function App() {
         return null;
     }
   };
+
+  // ---------- JSX ----------
 
   return (
     <div>

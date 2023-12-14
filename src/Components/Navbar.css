@@ -9,8 +9,8 @@
   justify-content: start;
   padding: 10px 40px;
   background-color: #e6ebf0;
-  z-index: 99999;
-  box-shadow: 0 2px 6px grey; /* Add the box shadow */
+  z-index: 99999; /* So that it is always rendered above other components*/
+  box-shadow: 0 2px 6px grey; 
 
   box-sizing: border-box;
 }

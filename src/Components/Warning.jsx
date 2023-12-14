@@ -1,13 +1,18 @@
-import * as React from "react";
+// libraries
+import React from "react";
 import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
 import CloseIcon from "@mui/icons-material/Close";
 
+/**
+ * This Component renders a colored and closable field with a message in it. It is intended for Warnings or informative Pop Ups.
+ * 4 severity levels may be passed, they will determine the coloring of the field:"error"-red, "warning"-yellow, "info"-blue, "success"-green.
+ */
 export default function Warning({ message, severity, onClose }) {
   let borderColor = ""; // Initialize borderColor variable
 
-  // Set the border color based on the severity value
+  // Set the border color based on the passed severity value
   if (severity === "error") {
     borderColor = "red";
   } else if (severity === "warning") {
@@ -37,8 +42,8 @@ export default function Warning({ message, severity, onClose }) {
         }
         sx={{
           mb: 0,
-          padding: "0px 10px", // Updated padding value
-          border: `1px solid ${borderColor}`, // Use the calculated border color
+          padding: "0px 10px",
+          border: `1px solid ${borderColor}`,
         }}
       >
         {message}

@@ -1,8 +1,13 @@
-import React from "react";
-import "./BTreeInfo.css"; // Make sure to create the corresponding CSS file
-import Button from "@mui/material/Button";
+import "./BTreeInfo.css";
 
+//libraries
+import React from "react";
+import Button from "@mui/material/Button";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
+
+/**
+ * Component displaying info about the B-Tree, displayed below the Tree Plot
+ */
 
 const BTreeInfo = ({ loadTreePreset }) => {
   return (

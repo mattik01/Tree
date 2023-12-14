@@ -1,8 +1,13 @@
+import "./DisplayComponentsBar.css";
+
+// libraries
 import React, { useState } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-import "./DisplayComponentsBar.css";
+/**
+ * Component that renders the small bar below the Navbar, where UI Window visibility can be toggled
+ */
 
 const DisplayComponentsBar = ({
   displayUiComponents,

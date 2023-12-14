@@ -1,18 +1,24 @@
+import "./SequenceControl.css";
+
+//libraries
 import React, { useState } from "react";
 import UiComponent from "../UiComponent";
-import "./SequenceControl.css";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
 
 
+/**
+ * This Component renders the Sequence Control UI Window.
+ */
 const SequenceControl = ({
   sequencerProps,
   setSequencerProps,
   setAllowDrag,
   toggleUiComponentDisplay,
 }) => {
+
+  //These functions update the underlying state variables according to user Input in the Sequence Control Window
   const handleModeChange = (event, newMode) => {
     setSequencerProps((prevProps) => ({
       ...prevProps,
@@ -79,7 +85,7 @@ const SequenceControl = ({
               </ToggleButtonGroup>
             </div>
           </div>
-          {/* CONTROL SEGMENT */}
+          {/* ADJUSTMENT SEGMENT */}
           {sequencerProps.sequenceMode === "auto" && (
             <div className="speed-container">
               <label className="speed-label">Speed:</label>

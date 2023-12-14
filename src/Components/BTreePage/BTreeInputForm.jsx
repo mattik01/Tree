@@ -1,15 +1,24 @@
+import "./BTreeInputForm.css";
+
+// libraries
 import React from "react";
-import ImportExportBar from "./ImportExportBar";
-import UiComponent from "../UiComponent";
-import Warning from "../Warning";
-import Tooltipped from "../Tooltipped";
-import determineKeyStringType from "../../utility/DetermineKeyType";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import IconButton from "@mui/material/IconButton";
 
-import "./BTreeInputForm.css";
+// components
+import ImportExportBar from "./ImportExportBar";
+import UiComponent from "../UiComponent";
+import Warning from "../Warning";
+import Tooltipped from "../Tooltipped";
+
+//scripts
+import determineKeyStringType from "../../utility/DetermineKeyType";
+
+/**
+ * Component that allow the user to modify the B-Tree, the Input form
+ */
 
 function BTreeInputForm({
   formData,
@@ -100,7 +109,6 @@ function BTreeInputForm({
                     color="green"
                     className="icon-button"
                     variant="outlined"
-                    //className="input-form-button-fixed-medium"
                     onClick={() => onButtonClick("keyAdd")}
                     disableElevation
                   >
@@ -110,7 +118,6 @@ function BTreeInputForm({
                     color="red"
                     className="icon-button"
                     variant="contained"
-                    //className="input-form-button-fixed-medium"
                     onClick={() => onButtonClick("keyRemove")}
                     disableElevation
                   >
@@ -189,7 +196,6 @@ function BTreeInputForm({
                     <option value="string">strings</option>
                   </select>
                 ) : (
-                  // disabled type selector when tree/queue alreay has keys in it
                   <Tooltipped
                     children={
                       <select

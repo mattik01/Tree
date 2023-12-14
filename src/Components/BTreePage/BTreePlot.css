@@ -1,7 +1,16 @@
-
-
-.link__normal {
+.link-normal {
   stroke-width: 1;
+}
+
+.link-blue-highlighted {
+  stroke: blue !important;
+  stroke-width: 1;
+}
+
+.link-orange-highlighted {
+  stroke: #f49404;
+  stroke-width: 3;
+  animation: link-pulse 2s ease infinite;
 }
 
 .key-text-normal {
@@ -18,12 +27,6 @@
 .node-normal {
   fill: white;
   stroke-width: 2;
-}
-
-.link__highlighted {
-  stroke: #f49404 ;
-  stroke-width: 3;
-  animation: link-pulse 2s ease infinite;
 }
 
 @keyframes link-pulse {
@@ -69,8 +72,8 @@
 }
 
 .message-bubble-text {
-  fill: white; /* Text color */
-  stroke: white; /* Text outline color */
-  stroke-width: 0.3; /* Text outline width */
+  fill: white; 
+  stroke: white; 
+  stroke-width: 0.3; 
   fill-opacity: 1 !important;
 }

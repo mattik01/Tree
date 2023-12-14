@@ -1,3 +1,5 @@
+/* css containing some deafult styles.*/ 
+
 :root {
   font-family: Inter, Courier,  system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -9,7 +11,6 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
-
 
 body {
   margin: 0;

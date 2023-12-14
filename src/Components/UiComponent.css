@@ -29,9 +29,9 @@
 }
 
 .ui-title {
-  flex-grow: 1; /* Allow the title to take up the available space */
-  text-align: center; /* Center the title text */
-  margin: 0; /* Remove default margin to avoid spacing issues */
+  flex-grow: 1; 
+  text-align: center; 
+  margin: 0; 
 }
 .draggable-icon {
   width: 18px !important; /* Adjust the size of the icon as needed */

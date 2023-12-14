@@ -1,6 +1,11 @@
-import React, { useState } from "react";
 import "./Navbar.css";
 
+//libraries
+import React, { useState } from "react";
+
+/**
+ * This Component renders the Navbar at the very top of the screen.
+ */
 export default function Navbar({ selectedSegment, onSegmentClick }) {
   const handleSegmentClick = (segment) => {
     onSegmentClick(segment);

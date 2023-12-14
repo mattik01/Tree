@@ -1,6 +1,11 @@
-import React from "react";
 import "./InfoPage.css";
 
+// libraries 
+import React from "react";
+
+/**
+ * This Component renders an Info Page. displaying some Info about how and why the project was created.
+ */
 const InfoPage = () => {
   return (
     <div className="info-page-container">
