@@ -1480,7 +1480,7 @@ BTree.prototype.toNodeData = function () {
 BTree.prototype.import = function (treeData) {
   treeData = JSON.parse(treeData);
   const btree = new BTree(treeData.maxKeys);
-  btree._root = btree._root.import(treeData.treeData, treeData.keyType);
+  btree._root = btree._root.import(treeData.nodeData, treeData.keyType);
   return btree;
 };
 
@@ -1492,7 +1492,7 @@ BTree.prototype.export = function () {
   return JSON.stringify({
     maxKeys: this._maxKeys,
     keyType: this._root.isEmpty ? "number" : typeof this._root._keys[0],
-    treeData: this.toNodeData(),
+    nodeData: this.toNodeData(),
   });
 };
 
