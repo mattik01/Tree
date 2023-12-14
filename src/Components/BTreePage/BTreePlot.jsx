@@ -117,7 +117,7 @@ export default function BTreePlot({ treeData, highlights, plotProps }) {
         separatorMessages = highlights.nodes[id].separatorMessages;
       }
 
-      const nodeMessageWidth = getTextWidth(nodeMessage, "Courier");
+      const nodeMessageWidth = getTextWidth(nodeMessage, "Inters");
 
       // generate key-strings and separator lines elements
       const separator_elements = [];
@@ -427,17 +427,17 @@ export default function BTreePlot({ treeData, highlights, plotProps }) {
 
   return (
     <Tree
-      data={treeData}
       orientation="vertical"
       collapsible={false}
-      renderCustomNodeElement={renderBTreeNode}
-      pathFunc={bTreePathFunc}
-      pathClassFunc={getDynamicPathClass}
-      nodeSize={{ x: biggestNodeWidth + 10, y: rectHeight * 3 }}
       scaleExtent={{ max: 5, min: 0.05 }}
       separation={{ nonSiblings: 1, siblings: 1 }}
       translate={{ x: plotProps.plotWidth / 2, y: plotProps.plotHeight / 4 }}
       zoom={1.25}
+      data={treeData}
+      renderCustomNodeElement={renderBTreeNode}
+      pathFunc={bTreePathFunc}
+      pathClassFunc={getDynamicPathClass}
+      nodeSize={{ x: biggestNodeWidth + 10, y: rectHeight * 3 }}
     />
   );
 }
