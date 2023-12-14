@@ -449,15 +449,11 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
       separation={{ nonSiblings: 1, siblings: 1 }}
       translate={{ x: plotProps.plotWidth / 2, y: plotProps.plotHeight / 4 }}
       zoom={1.25}
-      data={treeData}
       renderCustomNodeElement={renderBTreeNode}
       pathFunc={bTreePathFunc}
       pathClassFunc={getDynamicPathClass}
       nodeSize={{ x: biggestNodeWidth + nodeMargin, y: nodeHeight * 3 }}
-      scaleExtent={{ max: 5, min: 0.05 }}
-      separation={{ nonSiblings: 1, siblings: 1 }}
-      translate={{ x: plotProps.plotWidth / 2, y: plotProps.plotHeight / 4 }}
-      zoom={1.25}
+      
     />
   );
 }
