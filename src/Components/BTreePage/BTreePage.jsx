@@ -483,7 +483,7 @@ export default function BTreePage() {
           //----- SUCCESS CASES ------
           case "number":
             // Convert keyString to float if it has a float type
-            let keyFloat = parseFloat(keyString);
+            keyString = parseFloat(keyString);
           // Fall through to the default case to execute the common code
           default:
             frameSequencer.addKeys([keyString]);

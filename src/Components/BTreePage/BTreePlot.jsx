@@ -8,7 +8,7 @@ import "./BTreePlot.css";
 
 // ---------- GLOBAL VARIABLES ----------
 
-const extraRectWidth = 10; // width padding, that text gets when its put in a box 
+const segmentPadding = 10; // width padding, that text gets when its put in a box 
 const nodeHeight = 30; // Height of the node rectancle
 const nodeMargin = 10;
 
@@ -38,16 +38,16 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
    *
    * @param nodeData - nodeData
    */
-  function setBiggestNodeWith(nodeData) {
+  function NodeWithCalculations(nodeData) {
     if (nodeData.name.keys) {
-      let [rectWidth, sub_node_width] = widthCalculations(nodeData.name.keys);
+      let [rectWidth, nodeSegmentWidth] = KeySetWidthCalculations(nodeData.name.keys);
       if (rectWidth > biggestNodeWidth) {
         biggestNodeWidth = rectWidth;
       }
     }
     if (nodeData.hasOwnProperty("children")) {
       for (let i = 0; i < nodeData.children.length; i++) {
-        setBiggestNodeWith(nodeData.children[i]);
+        NodeWithCalculations(nodeData.children[i]);
       }
     }
   }
@@ -58,29 +58,29 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
    * @param keyStrings - Array String, representing the keys that the node holds
    * @return { Array } first value is the total width, second value is the width of each keysection
    */
-  function widthCalculations(keyStrings) {
+  function KeySetWidthCalculations(keyStrings) {
     if (keyStrings) {
       // fill or use nodeDict to avoid duplicate Information
-      let rectWidth, sub_node_width;
+      let rectWidth, nodeSegmentWidth;
       if (!nodeDict.hasOwnProperty(keyStrings)) {
         const longestKeyWidth = Math.max(
           ...keyStrings.map((keyString) => textWidthCalculations(keyString))
         );
         rectWidth =
           longestKeyWidth * keyStrings.length +
-          extraRectWidth * keyStrings.length;
-        sub_node_width = rectWidth / keyStrings.length;
+          segmentPadding * keyStrings.length;
+        nodeSegmentWidth = rectWidth / keyStrings.length;
 
         //once calculated store the values for the specific key string configuration in a lookup table, so they dont have to be computed twice.
         nodeDict[keyStrings] = {
           rectWidth: rectWidth,
-          sub_node_width: sub_node_width,
+          nodeSegmentWidth: nodeSegmentWidth,
         };
       } else {
         rectWidth = nodeDict[keyStrings].rectWidth;
-        sub_node_width = nodeDict[keyStrings].sub_node_width;
+        nodeSegmentWidth = nodeDict[keyStrings].nodeSegmentWidth;
       }
-      return [rectWidth, sub_node_width];
+      return [rectWidth, nodeSegmentWidth];
     }
     return [0, 0];
   }
@@ -95,7 +95,7 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
   function textWidthCalculations(text) {
     if (!textWidthDict.hasOwnProperty(text)) {
       const span = document.createElement("span");
-      span.style.font = "Courier";
+      span.style.font = "Arial Narrow";
       span.style.visibility = "hidden";
       span.style.position = "absolute";
       span.textContent = text;
@@ -111,7 +111,7 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
   const renderBTreeNode = ({ nodeDatum, toggleNode }) => {
     if (nodeDatum.name) {
       const keyStrings = nodeDatum.name.keys;
-      const [rectWidth, sub_node_width] = widthCalculations(keyStrings);
+      const [rectWidth, nodeSegmentWidth] = KeySetWidthCalculations(keyStrings);
 
       //parse highlightdata
       const id = String(nodeDatum.name.id);
@@ -157,7 +157,7 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
             }
             x={
               xOffset +
-              sub_node_width / 2 -
+              nodeSegmentWidth / 2 -
               textWidthCalculations(keyStrings[i]) / 2
             }
             y={nodeHeight / 1.5}
@@ -192,7 +192,7 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
               key={`sep-top-${i}`}
               x1={xOffset}
               y1={0}
-              x2={xOffset + sub_node_width} // Adjust the length of the line as needed
+              x2={xOffset + nodeSegmentWidth} // Adjust the length of the line as needed
               y2={0}
               className="key-separator-highlighted"
             />,
@@ -201,7 +201,7 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
               key={`sep-bottom-${i}`}
               x1={xOffset}
               y1={nodeHeight}
-              x2={xOffset + sub_node_width} // Adjust the length of the line as needed
+              x2={xOffset + nodeSegmentWidth} // Adjust the length of the line as needed
               y2={nodeHeight}
               className="key-separator-highlighted"
             />
@@ -212,7 +212,7 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
         if (indexMessage != "") {
           const indexMessageWidth = textWidthCalculations(indexMessage);
           const indexMessageOffsetX =
-            xOffset + sub_node_width / 2 - (indexMessageWidth + 22) / 2;
+            xOffset + nodeSegmentWidth / 2 - (indexMessageWidth + 22) / 2;
           index_message_elements.push(
             <svg
               width={indexMessageWidth + 22}
@@ -252,10 +252,10 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
         if (separatorMessage != "") {
           const separatorMessageWidth = textWidthCalculations(separatorMessage);
           const separatorMessageOffsetX =
-            xOffset - (separatorMessageWidth + extraRectWidth*2 + 2) / 2;
+            xOffset - (separatorMessageWidth + segmentPadding*2 + 2) / 2;
           index_message_elements.push(
             <svg
-              width={separatorMessageWidth + extraRectWidth*2 + 2}
+              width={separatorMessageWidth + segmentPadding*2 + 2}
               height={nodeHeight + 10}
               xmlns="http://www.w3.org/2000/svg"
               x={separatorMessageOffsetX + 1}
@@ -265,15 +265,15 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
               <rect
                 x="1"
                 y="10"
-                width={separatorMessageWidth + extraRectWidth*2}
+                width={separatorMessageWidth + segmentPadding*2}
                 height={nodeHeight}
                 rx="10"
               />
 
               <polygon
-                points={`${(separatorMessageWidth + extraRectWidth*2) / 2 - 5},${10} ${
-                  (separatorMessageWidth + extraRectWidth*2) / 2 + 5
-                },${10} ${(separatorMessageWidth + extraRectWidth*2) / 2},
+                points={`${(separatorMessageWidth + segmentPadding*2) / 2 - 5},${10} ${
+                  (separatorMessageWidth + segmentPadding*2) / 2 + 5
+                },${10} ${(separatorMessageWidth + segmentPadding*2) / 2},
                 ${0}`}
               />
 
@@ -287,7 +287,7 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
             </svg>
           );
         }
-        xOffset += sub_node_width;
+        xOffset += nodeSegmentWidth;
       }
 
       //push a last separator, if the last element is supposed to be highlighted
@@ -313,10 +313,10 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
 
         const separatorMessageWidth = textWidthCalculations(separatorMessage);
         const separatorMessageOffsetX =
-          xOffset - (separatorMessageWidth + extraRectWidth*2 + 2) / 2;
+          xOffset - (separatorMessageWidth + segmentPadding*2 + 2) / 2;
         index_message_elements.push(
           <svg
-            width={separatorMessageWidth + extraRectWidth*2  + 2}
+            width={separatorMessageWidth + segmentPadding*2  + 2}
             height={nodeHeight + 10}
             xmlns="http://www.w3.org/2000/svg"
             x={separatorMessageOffsetX + 1}
@@ -326,15 +326,15 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
             <rect
               x="1"
               y="10"
-              width={separatorMessageWidth + extraRectWidth*2 }
+              width={separatorMessageWidth + segmentPadding*2 }
               height={nodeHeight}
               rx="10"
             />
 
             <polygon
-              points={`${(separatorMessageWidth + extraRectWidth*2 ) / 2 - 5},${10} ${
-                (separatorMessageWidth + extraRectWidth*2 ) / 2 + 5
-              },${10} ${(separatorMessageWidth + extraRectWidth*2 ) / 2},
+              points={`${(separatorMessageWidth + segmentPadding*2 ) / 2 - 5},${10} ${
+                (separatorMessageWidth + segmentPadding*2 ) / 2 + 5
+              },${10} ${(separatorMessageWidth + segmentPadding*2 ) / 2},
               ${0}`}
             />
 
@@ -366,25 +366,25 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
           {/* NODE MESSAGE TOOLTIP */}
           {nodeMessage && (
             <svg
-              width={nodeMessageWidth + extraRectWidth*2 + 2}
+              width={nodeMessageWidth + segmentPadding*2 + 2}
               height={nodeHeight + 10}
               xmlns="http://www.w3.org/2000/svg"
-              x={(nodeMessageWidth + extraRectWidth*2  + 2) / -2}
+              x={(nodeMessageWidth + segmentPadding*2  + 2) / -2}
               y={-nodeHeight - 10}
               className="message-bubble"
             >
               <rect
                 x="1"
                 y="1"
-                width={nodeMessageWidth + extraRectWidth*2 }
+                width={nodeMessageWidth + segmentPadding*2 }
                 height={nodeHeight}
                 rx="10"
               />
 
               <polygon
-                points={`${(nodeMessageWidth + extraRectWidth*2 ) / 2 - 5},${nodeHeight + 1} ${
-                  (nodeMessageWidth + extraRectWidth*2 ) / 2 + 5
-                },${nodeHeight + 1} ${(nodeMessageWidth + extraRectWidth*2 ) / 2},${
+                points={`${(nodeMessageWidth + segmentPadding*2 ) / 2 - 5},${nodeHeight + 1} ${
+                  (nodeMessageWidth + segmentPadding*2 ) / 2 + 5
+                },${nodeHeight + 1} ${(nodeMessageWidth + segmentPadding*2 ) / 2},${
                   nodeHeight + 10
                 }`}
               />
@@ -401,17 +401,17 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
 
   // CUSTOM ANCHOR POINTS FOR TREE EDGES
   const bTreePathFunc = ({ source, target }, orientation) => {
-    const [rectWidth, sub_node_width] = widthCalculations(
+    const [rectWidth, nodeSegmentWidth] = KeySetWidthCalculations(
       source.data.name.keys
     );
 
     let xOffset = -rectWidth / 2;
-    //if target is the nth child, move anchor to the right by n*subnode_width
+    //if target is the nth child, move anchor to the right by n*nodeSegmentWidth
     const sourceChildrenNames = source.children.map(function (node) {
       return node.data.name.keys;
     });
     const targetIndex = sourceChildrenNames.indexOf(target.data.name.keys);
-    xOffset += sub_node_width * targetIndex;
+    xOffset += nodeSegmentWidth * targetIndex;
 
     return (
       `M${source.x + xOffset},${source.y + nodeHeight}` + //source anchor
@@ -435,7 +435,7 @@ export default function BTreePlot({ nodeData, highlightData, plotProps }) {
   };
 
   biggestNodeWidth = 0;
-  setBiggestNodeWith(nodeData);
+  NodeWithCalculations(nodeData);
 
 
   // ---------- JSX ----------

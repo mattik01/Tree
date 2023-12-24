@@ -1,7 +1,7 @@
 /* css containing some deafult styles.*/ 
 
 :root {
-  font-family: Inter, Courier,  system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Arial Narrow', Arial, 'Helvetica Narrow', Helvetica, 'Segoe UI', Tahoma, Geneva, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
