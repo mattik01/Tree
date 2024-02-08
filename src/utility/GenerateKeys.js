@@ -1,5 +1,6 @@
 // libraries
 import Chance from "chance";
+import { ceil } from "lodash";
 
 /**
  * The main function of this script is the generateKeys function, it is the only function that is supposed to be called from outside this script
@@ -12,8 +13,8 @@ import Chance from "chance";
 /**
  * Generates n keys based on the order and type of the input. How they are generated and with what range is broadly indicated below.
  *
- * 
- * ASC number: Range:[q:smallest natural number > biggest existing key; q + n] Interval : 1     start with 0 if noexisting keys
+ *
+ * ASC number: Range:[q (smallest natural number that is bigger than biggest existing key); q + n] Interval : 1     start with 0 if noexisting keys
  *
  * ASC string: Range: n times minimal lexicographical increment of the biggest existing key.    start with "" if no existing keys
  *
@@ -27,9 +28,11 @@ import Chance from "chance";
  *              decrementable. That is if duplicates are disabled, else, we will decrement up to "", and the "" over and over again.
  *                                                                                             start with "rane" if no existing keys
  * RANDOM number: random numbers between floor and ceiling
- *                  floor: no keys = 1, else = the smallest existing key
+ *                  floor: no keys = 1, 1 key = the smallest existing key if positive, else smallest negative number 
+ *                                              with the same amount of digits as (abs(floor) + n*2),
+ *                           else: smallest key, if needed, lowered even further to get to desired range
  *                  ceiling: less than 2 keys = biggest number with the same amount of digits as (floor + n*2),
- *                           else = the max from (floor + (n + existingKeys length) * 2) and biggest exsting key
+ *                           else = the biggest key, if needed increased, to further get to desired range
  * RANDOM string: random letter only strings between floor and ceiling
  *                  floor: "A"
  *                  ceiling: "z"s of length l, l is the smallest number, so that amount of possilble letters-only strings
@@ -87,7 +90,8 @@ export default function generateKeys(
     case "desc":
       if (type === "number") {
         // first element of existing key is the smallest
-        let smallest = existingKeys.length === 0 ? n + 1 : existingKeys[0];
+        let smallest =
+          existingKeys.length === 0 ? n + 1 : Math.ceil(existingKeys[0]);
         // since all number can be incremented inifinietly. just decrement from n+1 or the smallest existing key. n times
         for (let i = 0; i < n; i++) {
           generatedKeys[i] = smallest - 1 - i;
@@ -95,19 +99,18 @@ export default function generateKeys(
       } else if (type === "string") {
         if (existingKeys.length == 0) {
           // if no existings keys, start with begin by decrementing "rand"
-          generatedKeys = generateDescendingStrings(n, '"rane"');
+          generatedKeys = generateDescendingStrings(n, generateAscendingStrings(n,'"a"')[n-1]);
         } else {
           // put existing keys that could be smaller than our biggest generated key in here, to avoid duplicates
           let potentialDuplicates = [];
           let i = indexSmallestDecrementableString(existingKeys);
           if (i == null) {
             // this means no infinitly decrementable string exists
-            smallestInfiniteIncrement = existingKeys[0];
+            let smallestInfiniteIncrement = existingKeys[0];
             if (!allowDuplicates) {
-              // Add all existing keys, to potential duplicates, that are smaller than smallestString + "a".
-              smallestInfiniteIncrement = `"${
-                removeOuterQuotes(existingKeys[0]) + "a"
-              }"`;
+              // Add all existing keys, to potential duplicates, that are smaller than smallestString + "B".
+              smallestInfiniteIncrement = `${removeOuterQuotes(existingKeys[0])}B`;
+
               for (let i = 0; i < existingKeys.length; i++) {
                 if (existingKeys[i] >= smallestInfiniteIncrement) {
                   break;
@@ -150,28 +153,37 @@ export default function generateKeys(
 
     case "random":
       // floor and ceiling defined in a way, so that the chance of generating a duplicate is always <= 50%
-      // for detail function description
+
       if (type === "number") {
         if (existingKeys.length === 0) {
           floor = 1;
-          ceiling = liftCeilingNumber(floor + n * 2);
+          ceiling = liftCeilingNumber(n * (allowDuplicates? 1 : 2));
         } else if (existingKeys.length === 1) {
-          floor = existingKeys[0];
-          ceiling = liftCeilingNumber(floor + n * 2);
+          floor = Math.floor(Math.abs(existingKeys[0] + 1));
+          ceiling = liftCeilingNumber(Math.floor(Math.abs(existingKeys[0]))+ n * (allowDuplicates? 1 : 2));
+          if (existingKeys[0] < 0) {
+            // for a negative key, produce a negative range
+            floor = -ceiling;
+            ceiling = -Math.floor(Math.abs(existingKeys[0] - 1));
+          }
         } else {
-          floor = Math.min(...existingKeys);
-          ceiling = Math.max(
-            floor + (n + existingKeys.length) * 2,
-            existingKeys[existingKeys.length - 1]
-          );
+          floor = Math.sign(existingKeys[0]) * Math.ceil(Math.abs(existingKeys[0]));
+          ceiling = Math.sign(existingKeys[existingKeys.length-1]) * Math.ceil(Math.abs(existingKeys[existingKeys.length - 1]));
+          //if range is not wide enough extend it on both ends
+          let missingRange = (n + existingKeys.length) * 2 - (ceiling - floor + 1);
+          if (missingRange > 0 && !allowDuplicates) {
+            floor -= Math.ceil(missingRange / 2);
+            ceiling += Math.ceil(missingRange / 2);
+          }
         }
 
+        // use floor and ceiling to generate keys
         for (let i = 0; i < n; i++) {
           let key;
           do {
             key = getRandomNumber(floor, ceiling);
           } while (
-            !allowDuplicates &&
+            !allowDuplicates && 
             (existingKeys.includes(key) || generatedKeys.includes(key))
           );
           generatedKeys[i] = key;
@@ -373,9 +385,10 @@ function getKeySpaceDescendingForDigits(string, digits) {
   }
   let keySpace = 0;
 
-  //If string is longer than digit array, the prefix is one possible smaller key
-  if (string.length > digits.length) {
+  //If string is longer than digit array, the prefix of length digits is one additional possible smaller key
+  if (string.length > digits) {
     keySpace++;
+    console.log(+1)
   }
 
   //more keySpace by decrementing the chars of the original string
@@ -384,7 +397,7 @@ function getKeySpaceDescendingForDigits(string, digits) {
       //after decrementing a character, all digits after are free
       keySpace +=
         getCharDecrementability(charArray[i]) *
-        Math.pow(N_LETTERS, charArray.length - i - 1);
+        Math.pow(N_LETTERS, digits - i - 1);
     }
   }
 
@@ -416,7 +429,7 @@ function determineMaxDigitsAscending(n, string) {
 function determineMaxDigitsDescending(n, string) {
   let digits = 0;
   let keySpace = 1; //last "A" can always be removed decremented to the empty string
-  while (keySpace < n) {
+  while (keySpace <= n) {
     digits++;
     keySpace += getKeySpaceDescendingForDigits(string, digits);
   }
@@ -459,7 +472,7 @@ function incrementCharArray(charArray) {
       // this should not occour if maxDigits was calculated correctly and charrArray is of length maxDigits
       return charArrayCpy;
     } else {
-      //... increment it and make all letters that come after free (null)
+      //... increment it and make all symbols that come after free (null)
       charArrayCpy[lastIncrementableLetterIndex] = incrementLetter(
         charArrayCpy[lastIncrementableLetterIndex]
       );
@@ -468,9 +481,7 @@ function incrementCharArray(charArray) {
         i < charArrayCpy.length;
         i++
       ) {
-        if (isLetter(charArrayCpy[i])) {
           charArrayCpy[i] = null;
-        }
       }
       return charArrayCpy;
     }
@@ -718,6 +729,21 @@ function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function getRandomWeightedNumber(min, max) {
+  const powersOf52 = Array.from({ length: max - min + 1 }, (_, i) => 52 ** (i + min));
+  const totalTickets = powersOf52.reduce((acc, val) => acc + val, 0);
+  const randomIndex = Math.floor(Math.random() * totalTickets);
+
+  let cumulativeSum = 0;
+  for (let i = 0; i < powersOf52.length; i++) {
+    cumulativeSum += powersOf52[i];
+    if (randomIndex < cumulativeSum) {
+      return i + min;
+    }
+  }
+}
+
+
 /**
  * @return { String } A random letters-only String, that is at least 1 and at most maxLength characters long.
  */
@@ -725,7 +751,7 @@ function randomString(maxlength) {
   return (
     '"' +
     chance.string({
-      length: getRandomNumber(1, maxlength),
+      length: getRandomWeightedNumber(1, maxlength),
       pool: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZZ",
     }) +
     '"'

@@ -1236,7 +1236,7 @@ BTreeNode.prototype.getHeight = function () {
         return child.getHeight();
       });
     return Math.max(...childDepths) + 1;
-  }
+  } 
 };
 
 /**
