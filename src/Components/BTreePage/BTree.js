@@ -15,7 +15,7 @@
 import _ from "lodash";
 
 // scripts
-import HighlightData from "./HighlightData";
+import HighlightData from "./BTreePlot/HighlightData";
 
 
 // ---------- UTILITY FUNCTIONS ----------

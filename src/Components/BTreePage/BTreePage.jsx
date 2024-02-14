@@ -1,5 +1,5 @@
 import "./BTreePage.css";
-import "../../utility/GradientBorder.css";
+import "../../utility-scripts/GradientBorder.css";
 
 // libraries
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
@@ -9,30 +9,30 @@ import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 
 // components
-import BTreePlot from "./BTreePlot";
-import BTreeInputForm from "./BTreeInputForm";
-import SequenceControl from "./SequenceControl";
-import TreeProperties from "./BTreeProperties";
-import DisplayComponentsBar from "./DisplayComponentsBar";
-import BTreeInfo from "./BTreeInfo";
+import BTreePlot from "./BTreePlot/BTreePlot";
+import BTreeInputForm from "./BTreeInputForm/BTreeInputForm";
+import SequenceControl from "./SequenceControl/SequenceControl";
+import BTreeProperties from "./BTreeProperties/BTreeProperties";
+import DisplayComponentsBar from "./DisplayComponentsBar/DisplayComponentsBar";
+import BTreeInfo from "./BTreeInfo/BTreeInfo";
 
 // scripts
 import BTree from "./BTree";
-import bTreePresets from "./BTreePresets";
-import determineKeyStringType from "../../utility/DetermineKeyType";
-import generateKeys from "../../utility/GenerateKeys";
-import shuffleArray from "../../utility/ArrayShuffle";
-import FrameSequencer from "./FrameSequencer";
-import HighlightData from "./HighlightData";
+import bTreePresets from "./BTreeInfo/BTreePresets";
+import determineKeyStringType from "../../utility-scripts/DetermineKeyType";
+import generateKeys from "../../utility-scripts/GenerateKeys";
+import shuffleArray from "../../utility-scripts/ArrayShuffle";
+import FrameSequencer from "./SequenceControl/FrameSequencer";
+import HighlightData from "./BTreePlot/HighlightData";
 import {
   countNodes,
   countKeys,
   countHeight,
-} from "../../utility/InfoFromTreeData";
+} from "./BTreeProperties/InfoFromTreeData";
 import {
   scrollToTop,
   scrollDownToOneScreen,
-} from "../../utility/WindowScrolling";
+} from "../../utility-scripts/WindowScrolling";
 
 /**
  * Central/Root Component for rendering the B-Tree Page and every Component on it.
@@ -773,7 +773,7 @@ export default function BTreePage() {
         >
           <div className="btree-tree-properties-container">
             {displayUiComponents.includes("treeProperties") && (
-              <TreeProperties
+              <BTreeProperties
                 treeProps={treeProps}
                 counters={treeFrame.counters}
                 toggleUiComponentDisplay={toggleUiComponentDisplay}

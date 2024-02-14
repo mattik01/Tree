@@ -1,5 +1,5 @@
 import { HighQuality } from "@mui/icons-material";
-import HighlightData from "./HighlightData";
+import HighlightData from "../BTreePlot/HighlightData";
 
 const FRAME_BUFFER_SIZE = 50;
 

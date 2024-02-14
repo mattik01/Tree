@@ -4,13 +4,13 @@ import "./BTreeProperties.css"
 import React from "react";
 
 //components
-import UiComponent from "../UiComponent";
+import UiComponent from "../../utility-components/UiComponent";
 
 /**
  * Component that renders the B-Tree Properties Window, where attributes of the B-Tree are displayed. 
  */
 
-const TreeProperties = ({ treeProps, counters, toggleUiComponentDisplay}) => {
+const BTreeProperties = ({ treeProps, counters, toggleUiComponentDisplay}) => {
   const propertyRows = [
     { label: "Height", value: treeProps.height },
     { label: "Nodes", value: treeProps.nNodes },
@@ -49,4 +49,4 @@ const TreeProperties = ({ treeProps, counters, toggleUiComponentDisplay}) => {
   );
 };
 
-export default TreeProperties;
+export default BTreeProperties;
