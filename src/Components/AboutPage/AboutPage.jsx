@@ -1,4 +1,4 @@
-import "./InfoPage.css";
+import "./AboutPage.css";
 
 // libraries 
 import React from "react";
@@ -6,9 +6,9 @@ import React from "react";
 /**
  * This Component renders an Info Page. displaying some Info about how and why the project was created.
  */
-const InfoPage = () => {
+const AboutPage = () => {
   return (
-    <div className="info-page-container">
+    <div className="about-page-container">
       <h1>About this Project</h1>
 
       <h2>Purpose</h2>
@@ -78,4 +78,4 @@ const InfoPage = () => {
   );
 };
 
-export default InfoPage;
+export default AboutPage;

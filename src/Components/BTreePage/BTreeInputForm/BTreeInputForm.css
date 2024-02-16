@@ -28,6 +28,7 @@ input {
   border: 1px solid #70757a !important;
   margin: 5px 5px !important;
   padding: 0px 10px !important;
+  cursor: pointer;
 }
 
 .icon-button {
@@ -62,8 +63,13 @@ input {
 .input-form-checkbox {
   margin: 0px;
   padding: 0px;
+  cursor: pointer; 
 }
 
 .plus-minus-buttons > :not(:last-child) {
   margin-right: 5px;
+}
+
+.pointer-cursor{
+  cursor: pointer; 
 }

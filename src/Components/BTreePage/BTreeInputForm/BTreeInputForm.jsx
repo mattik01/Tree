@@ -9,12 +9,12 @@ import IconButton from "@mui/material/IconButton";
 
 // components
 import ImportExportBar from "./ImportExportBar";
-import UiComponent from "../../utility-components/UiComponent";
-import Warning from "../../utility-components/Warning";
-import Tooltipped from "../../utility-components/Tooltipped";
+import UiComponent from "../../utilityComponents/UiComponent";
+import Warning from "../../utilityComponents/Warning";
+import Tooltipped from "../../utilityComponents/Tooltipped";
 
 //scripts
-import determineKeyStringType from "../../../utility-scripts/DetermineKeyType";
+import determineKeyStringType from "../../../utilityScripts/DetermineKeyType";
 
 /**
  * Component that allow the user to modify the B-Tree, the Input form
@@ -136,6 +136,7 @@ function BTreeInputForm({
                     id="allowDuplicates"
                     checked={formData.allowDuplicates}
                     onChange={onInputChange}
+    
                   />
                   Allow Duplicates
                 </label>
@@ -169,6 +170,7 @@ function BTreeInputForm({
               <div className="line">
                 <label htmlFor="generateKeyOrderInput">key order:</label>
                 <select
+                className="pointer-cursor"
                   onMouseEnter={() => setAllowDrag(false)}
                   onMouseLeave={() => setTimeout(() => setAllowDrag(true), 0)}
                   name="generateKeyOrderInput"
@@ -184,8 +186,8 @@ function BTreeInputForm({
               <div className="line">
                 <label htmlFor="generateKeyTypeInput">key type:</label>
                 {futureKeys.length == 0 ? (
-                  <select
-                    onMouseEnter={() => setAllowDrag(false)}
+                  <select                    onMouseEnter={() => setAllowDrag(false)}
+                  className="pointer-cursor"
                     onMouseLeave={() => setTimeout(() => setAllowDrag(true), 0)}
                     name="generateKeyTypeInput"
                     id="generateKeyTypeInput"

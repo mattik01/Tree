@@ -24,10 +24,10 @@ export default function Navbar({ selectedSegment, onSegmentClick }) {
           <span className="segment-text">B-TREE</span>
         </div>
         <div
-          className={`segment ${selectedSegment === "Info" ? "selected" : ""}`}
-          onClick={() => handleSegmentClick("Info")}
+          className={`segment ${selectedSegment === "About" ? "selected" : ""}`}
+          onClick={() => handleSegmentClick("About")}
         >
-         <span className="segment-text">INFO</span>
+         <span className="segment-text">ABOUT</span>
         </div>
       </div>
       <img

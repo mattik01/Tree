@@ -1,5 +1,5 @@
 import "./BTreePage.css";
-import "../../utility-scripts/GradientBorder.css";
+import "../../utilityScripts/GradientBorder.css";
 
 // libraries
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
@@ -19,9 +19,9 @@ import BTreeInfo from "./BTreeInfo/BTreeInfo";
 // scripts
 import BTree from "./BTree";
 import bTreePresets from "./BTreeInfo/BTreePresets";
-import determineKeyStringType from "../../utility-scripts/DetermineKeyType";
-import generateKeys from "../../utility-scripts/GenerateKeys";
-import shuffleArray from "../../utility-scripts/ArrayShuffle";
+import determineKeyStringType from "../../utilityScripts/DetermineKeyType";
+import generateKeys from "../../utilityScripts/GenerateKeys";
+import shuffleArray from "../../utilityScripts/ArrayShuffle";
 import FrameSequencer from "./SequenceControl/FrameSequencer";
 import HighlightData from "./BTreePlot/HighlightData";
 import {
@@ -32,7 +32,7 @@ import {
 import {
   scrollToTop,
   scrollDownToOneScreen,
-} from "../../utility-scripts/WindowScrolling";
+} from "../../utilityScripts/WindowScrolling";
 
 /**
  * Central/Root Component for rendering the B-Tree Page and every Component on it.

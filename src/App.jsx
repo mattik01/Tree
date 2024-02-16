@@ -5,8 +5,8 @@ import {useState} from 'react';
 
 //components
 import BTreePage from './Components/BTreePage/BTreePage';
-import Navbar from './Components/Navbar';
-import InfoPage from './Components/InfoPage/InfoPage';
+import Navbar from './Navbar';
+import AboutPage from './Components/AboutPage/AboutPage';
 
 /**
  * Root component of the webpage
@@ -31,8 +31,8 @@ function App() {
       case 'B-Tree':
         return <BTreePage/>;
 
-      case 'Info':
-        return <InfoPage/>;
+      case 'About':
+        return <AboutPage/>;
 
       default:
         return null;

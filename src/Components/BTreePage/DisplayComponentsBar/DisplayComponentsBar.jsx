@@ -27,13 +27,13 @@ const DisplayComponentsBar = ({
         style={{ width: "100%" }}
       >
         <ToggleButton value={"inputForm"} className="custom-display-toggle-button">
-          Input Form
+          Modify
         </ToggleButton>
         <ToggleButton value={"sequenceControl"} className="custom-display-toggle-button">
-          Sequence Control
+          Sequence
         </ToggleButton>
         <ToggleButton value={"treeProperties"} className="custom-display-toggle-button">
-          Tree Properties
+          properties
         </ToggleButton>
       </ToggleButtonGroup>
     </div>

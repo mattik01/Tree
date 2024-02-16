@@ -9,7 +9,7 @@ import MuiAlert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 
 // components
-import Warning from "../../utility-components/Warning";
+import Warning from "../../utilityComponents/Warning";
 
 /**
  * This component renders the bottom button row on the Input Form UI Window. 

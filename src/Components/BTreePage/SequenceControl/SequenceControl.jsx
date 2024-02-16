@@ -2,7 +2,7 @@ import "./SequenceControl.css";
 
 //libraries
 import React, { useState } from "react";
-import UiComponent from "../../utility-components/UiComponent";
+import UiComponent from "../../utilityComponents/UiComponent";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Button from '@mui/material/Button';
