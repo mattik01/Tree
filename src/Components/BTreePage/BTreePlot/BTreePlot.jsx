@@ -4,8 +4,6 @@ import "./BTreePlot.css";
 import React, { useState, useEffect } from "react";
 import { Tree } from "react-d3-tree";
 
-import "./BTreePlot.css";
-
 // ---------- GLOBAL VARIABLES ----------
 
 const segmentPadding = 10; // width padding, that text gets when its put in a box 
@@ -20,6 +18,7 @@ let textWidthDict = {};
 let biggestNodeWidth = 0;
 
 export default function BTreePlot({ nodeData, highlightData, plotProps }) {
+
   // ---------- EFFECTS ----------
 
   // effect for cleanup of global variables
