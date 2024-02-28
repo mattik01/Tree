@@ -28,7 +28,7 @@ import {
   countNodes,
   countKeys,
   countHeight,
-} from "./BTreeProperties/InfoFromTreeData";
+} from "./BTreeProperties/InfoFromNodeData";
 import {
   scrollToTop,
   scrollDownToOneScreen,
