@@ -28,7 +28,7 @@ import {
   countNodes,
   countKeys,
   countHeight,
-} from "./BTreeProperties/InfoFromTreeData";
+} from "./BTreeProperties/InfoFromNodeData";
 import {
   scrollToTop,
   scrollDownToOneScreen,
@@ -719,8 +719,6 @@ export default function BTreePage() {
     }
   };
 
-  const highlightData = new HighlightData();
-
   // ---------- JSX ----------
 
   return (
@@ -787,7 +785,7 @@ export default function BTreePage() {
           {!btree.isEmpty() > 0 && (
             <BTreePlot
               nodeData={treeFrame.nodeData}
-              highlightData={treeFrame.highlightData}
+              highlightData= {treeFrame.highlightData}
               plotProps={plotProps}
             />
           )}

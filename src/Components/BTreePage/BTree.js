@@ -32,38 +32,17 @@ function arrayOfSize(size) {
 }
 
 /**
- * Pushes a frame to the tree's frameBuffer. frames are objects, capsuling a state of a b-tree with all information required to render it.
- *
- * @param tree - Reference to the tree object that should produce the frame.
- * @param highlightData - Highlight Object, containing info on which highlights should be applied
- */
-function pushTreeFrame(tree, highlightData) {
-  if (tree._sequenceMode) {
-    tree._frameBufferRef.push({
-      // FRAME OBJECT
-      nodeData: tree.toNodeData(),
-      highlightData: highlightData,
-      counters: {
-        splits: tree._splitCounter,
-        merges: tree._mergeCounter,
-        smallRotations: tree._smallRotationCounter,
-        bigRotations: tree._bigRotationCounter,
-      },
-    });
-  }
-}
-/**
- * like the pushTreeFrame function, but may provide a nodeData object. It is not taken from the current state of the tree.
+ *  pushTreeFrame function, may provide a nodeData object. It is not taken from the current state of the tree.
  *
  * @param tree - Reference to the tree that should produce the frame.
  * @param highlightData - highlightData Object, containing info on which highlights should be applied
  * @param nodeData - nodeData Object, it does not need to match with the current state of the tree
  */
-function pushTreeFrameCustomData(tree, highlightData, nodeData) {
+function pushTreeFrame(tree, highlightData, nodeData = null) {
   if (tree._sequenceMode) {
     tree._frameBufferRef.push({
       // FRAME OBJECT
-      nodeData: nodeData,
+      nodeData: nodeData == null ? tree.toNodeData() : nodeData,
       highlightData: highlightData,
       counters: {
         splits: tree._splitCounter,
@@ -232,7 +211,7 @@ BTreeNode.prototype.insertKey = function (key) {
         pos,
         `${key} ${keys[pos - 1] > key ? " ?" : " ✓"}`
       );
-      pushTreeFrameCustomData(this._tree, highlight, nodeDataSnapshot);
+      pushTreeFrame(this._tree, highlight, nodeDataSnapshot);
     }
   }
 
@@ -250,7 +229,7 @@ BTreeNode.prototype.insertKey = function (key) {
         pos,
         `${key} ${keys[pos - 1] > key ? " ?" : " ✓"}`
       );
-      pushTreeFrameCustomData(this._tree, highlight, nodeDataSnapshot);
+      pushTreeFrame(this._tree, highlight, nodeDataSnapshot);
     }
   }
 
@@ -294,7 +273,7 @@ BTreeNode.prototype.insertSplit = function (split) {
     let highlight = new HighlightData();
     let nodeDataSnapshot = this._tree.toNodeData();
     highlight.addHighlightedSubtree(this._id, [pos], nodeDataSnapshot);
-    pushTreeFrameCustomData(this._tree, highlight, nodeDataSnapshot);
+    pushTreeFrame(this._tree, highlight, nodeDataSnapshot);
   }
 };
 
@@ -374,7 +353,7 @@ BTreeNode.prototype.split = function (
         `${key} ${keys[pos - 1] > key ? " ?" : " ✓"}`
       );
 
-      pushTreeFrameCustomData(
+      pushTreeFrame(
         this._tree,
         highlight,
         nodeDataSnapshot ? nodeDataSnapshot : this._tree.toNodeData()
@@ -397,7 +376,7 @@ BTreeNode.prototype.split = function (
           pos,
           `${key} ${keys[pos - 1] > key ? " ?" : " ✓"}`
         );
-        pushTreeFrameCustomData(
+        pushTreeFrame(
           this._tree,
           highlight,
           nodeDataSnapshot ? nodeDataSnapshot : this._tree.toNodeData()
@@ -423,7 +402,7 @@ BTreeNode.prototype.split = function (
     if (subTreeHighlightAt) {
       highlight.addHighlightedSubtree(this._id, [pos], nodeDataSnapshot);
     }
-    pushTreeFrameCustomData(this._tree, highlight, nodeDataSnapshot);
+    pushTreeFrame(this._tree, highlight, nodeDataSnapshot);
 
     highlight = new HighlightData();
     highlight.addNodeHighlight(this._id, true, "Overflow");
@@ -450,7 +429,7 @@ BTreeNode.prototype.split = function (
       medianIndex,
       `Splitting at ${medianKey}`
     );
-    pushTreeFrameCustomData(this._tree, highlight, nodeDataSnapshot);
+    pushTreeFrame(this._tree, highlight, nodeDataSnapshot);
     this._keys = prevKeys;
     this._keyCount--;
   }
@@ -511,7 +490,7 @@ BTreeNode.prototype.split = function (
     highlight.addNodeHighlight(this._id, true, "");
     highlight.addNodeHighlight(this._children[0]._id, true, "");
     highlight.addNodeHighlight(this._children[1]._id, true, "");
-    pushTreeFrameCustomData(this._tree, highlight, nodeDataSnapshot);
+    pushTreeFrame(this._tree, highlight, nodeDataSnapshot);
     highlight = new HighlightData();
     highlight.addNodeHighlight(
       this._id,
@@ -521,7 +500,7 @@ BTreeNode.prototype.split = function (
     this._tree._root != this
       ? highlight.addHighlightedSubtree(this._id, [0], nodeDataSnapshot)
       : highlight.addNodeIndexHighlight(this._id, 0, "");
-    pushTreeFrameCustomData(this._tree, highlight, nodeDataSnapshot);
+    pushTreeFrame(this._tree, highlight, nodeDataSnapshot);
 
     if (parent) {
       let separatorIndex = parent._children.indexOf(this);
@@ -532,7 +511,7 @@ BTreeNode.prototype.split = function (
       highlight.addNodeHighlight(parent._id, true, "");
       highlight.addNodeSeparatorHighlight(parent._id, separatorIndex, "");
       highlight.addEdgeHighlightFromNodeId(parent._id, tempID, true);
-      pushTreeFrameCustomData(this._tree, highlight, nodeDataSnapshot);
+      pushTreeFrame(this._tree, highlight, nodeDataSnapshot);
     }
 
     this._id = previousID;
