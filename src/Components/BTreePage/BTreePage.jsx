@@ -379,7 +379,7 @@ export default function BTreePage() {
   /**
    * Validates an input that should be added to the tree.
    *
-   * @param keyString - Theinputto be added
+   * @param keyString - The input to be added
    *
    * @return { string } type of the input as string, or an error response ("empty", "type mismatch", "duplicate")
    */
