@@ -1,5 +1,5 @@
 import "./BTreePage.css";
-import "../../utilityScripts/GradientBorder.css";
+import "../../UtilityScripts/GradientBorder.css";
 
 // libraries
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
@@ -19,9 +19,9 @@ import BTreeInfo from "./BTreeInfo/BTreeInfo";
 // scripts
 import BTree from "./BTree";
 import bTreePresets from "./BTreeInfo/BTreePresets";
-import determineKeyStringType from "../../utilityScripts/DetermineKeyType";
-import generateKeys from "../../utilityScripts/GenerateKeys";
-import shuffleArray from "../../utilityScripts/ArrayShuffle";
+import determineKeyStringType from "../../UtilityScripts/DetermineKeyType";
+import generateKeys from "../../UtilityScripts/GenerateKeys";
+import shuffleArray from "../../UtilityScripts/ArrayShuffle";
 import FrameSequencer from "./SequenceControl/FrameSequencer";
 import HighlightData from "./BTreePlot/HighlightData";
 import {
@@ -32,7 +32,7 @@ import {
 import {
   scrollToTop,
   scrollDownToOneScreen,
-} from "../../utilityScripts/WindowScrolling";
+} from "../../UtilityScripts/WindowScrolling";
 
 /**
  * Central/Root Component for rendering the B-Tree Page and every Component on it.
@@ -379,7 +379,7 @@ export default function BTreePage() {
   /**
    * Validates an input that should be added to the tree.
    *
-   * @param keyString - Theinputto be added
+   * @param keyString - The input to be added
    *
    * @return { string } type of the input as string, or an error response ("empty", "type mismatch", "duplicate")
    */

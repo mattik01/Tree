@@ -9,12 +9,12 @@ import IconButton from "@mui/material/IconButton";
 
 // components
 import ImportExportBar from "./ImportExportBar";
-import UiComponent from "../../utilityComponents/UiComponent";
-import Warning from "../../utilityComponents/Warning";
-import Tooltipped from "../../utilityComponents/Tooltipped";
+import UiComponent from "../../UtilityComponents/UiComponent";
+import Warning from "../../UtilityComponents/Warning";
+import Tooltipped from "../../UtilityComponents/Tooltipped";
 
 //scripts
-import determineKeyStringType from "../../../utilityScripts/DetermineKeyType";
+import determineKeyStringType from "../../../UtilityScripts/DetermineKeyType";
 
 /**
  * Component that allow the user to modify the B-Tree, the Input form

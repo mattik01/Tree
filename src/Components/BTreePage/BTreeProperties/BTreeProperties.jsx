@@ -4,7 +4,7 @@ import "./BTreeProperties.css"
 import React from "react";
 
 //components
-import UiComponent from "../../utilityComponents/UiComponent";
+import UiComponent from "../../UtilityComponents/UiComponent";
 
 /**
  * Component that renders the B-Tree Properties Window, where attributes of the B-Tree are displayed. 
