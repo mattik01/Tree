@@ -1,6 +1,5 @@
 // libraries
 import Chance from "chance";
-import { ceil } from "lodash";
 
 /**
  * The main function of this script is the generateKeys function, it is the only function that is supposed to be called from outside this script
@@ -202,8 +201,8 @@ export default function generateKeys(
           );
           generatedKeys[i] = key;
         }
-        floor = "A";
-        ceiling = "z".repeat(maxLength);
+        floor = '"A"';
+        ceiling = '"' + "z".repeat(maxLength) + '"';
       }
 
       break;
@@ -497,7 +496,7 @@ function incrementCharArray(charArray) {
 function decrementCharArray(charArray) {
   let charArrayCpy = charArray.slice();
 
-  for (let i = charArrayCpy.length - 1; i >= 0; i--) {
+  for (let i = charArrayCpy.length -1; i >= 0; i--) {
     if (charArrayCpy[i] != null) {
       if (isLetter(charArrayCpy[i]) && charArrayCpy[i] != "A") {
         // decrement letter, set all after to maxiaml letter (z)

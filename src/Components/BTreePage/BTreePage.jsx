@@ -313,7 +313,7 @@ export default function BTreePage() {
 
   /**
    * Toggles a component's display state. This is a function that takes a componentName and modifies the displayList,
-   * so that the components visibility is toggled.
+   * so that the components visibility is toggled
    *
    * @param componentName - The name/id of the component to toggle
    *
