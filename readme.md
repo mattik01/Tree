@@ -41,7 +41,7 @@ To build the project for production, run the following command:
 ```npm run build```
 
 
-This command builds the app for production to the `build` folder.
+This command builds the app for production to the `dist` folder.
 
 For deployment, you can use any static site hosting service. The project is currently hosted on Render.
 
